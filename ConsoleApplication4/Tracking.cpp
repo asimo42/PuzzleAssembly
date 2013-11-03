@@ -98,7 +98,7 @@ void drawObject(vector<TrackedPiece> pieces, Mat &frame){
 	}
 }
 
-void trackFilteredObject(TrackedPiece piece, Mat &cameraFeed, Mat &threshold_image){
+void trackFilteredObject(TrackedPiece &piece, Mat &cameraFeed, Mat &threshold_image){
 
 	vector <TrackedPiece> pieces;
 
@@ -114,6 +114,7 @@ void trackFilteredObject(TrackedPiece piece, Mat &cameraFeed, Mat &threshold_ima
 	bool objectFound = false;
 	if (hierarchy.size() > 0) {
 		int numObjects = hierarchy.size();
+		const int thresh = 20;
 		//if number of objects greater than MAX_NUM_OBJECTS we have a noisy filter
 		if(numObjects<MAX_NUM_OBJECTS){
 			for (int index = 0; index >= 0; index = hierarchy[index][0]) {
@@ -128,15 +129,32 @@ void trackFilteredObject(TrackedPiece piece, Mat &cameraFeed, Mat &threshold_ima
 				if(area>MIN_OBJECT_AREA){
 
 					TrackedPiece tmp;
+					int xPos = moment.m10/area;
+					int yPos = moment.m01/area;
 					
-					tmp.setXPos(moment.m10/area);
-					tmp.setYPos(moment.m01/area);
+					tmp.setXPos(xPos);
+					tmp.setYPos(yPos);
 					tmp.setName(piece.getName());
 					tmp.setColor(piece.getColor());
+
+					cout << piece.getName() << ": x: " << xPos << " y: " << yPos << endl;
+					cout << "LastPos: x: " << piece.getLastxPos() << " y: " << piece.getLastyPos() << endl;
 
 					pieces.push_back(tmp);
 
 					objectFound = true;
+
+					// Check for movement
+					if(xPos > (piece.getLastxPos() + thresh) || xPos < (piece.getLastxPos() - thresh))
+					{
+						piece.setLastxPos(xPos);
+						cout << "X movement." << endl;
+					}
+					if(yPos > (piece.getLastyPos() + thresh) || yPos < (piece.getLastyPos() - thresh))
+					{
+						piece.setLastyPos(yPos);
+						cout << "Y movement." << endl;
+					}
 
 				}else objectFound = false;
 
@@ -162,7 +180,7 @@ void trackTrackedPiece(TrackedPiece &piece, Mat &camera_feed, Mat &HSV_image, Ma
 
 int startTrack()
 {
-	bool calibrate_mode = true;
+	bool calibrate_mode = false;
 
 	VideoCapture capture;
 	capture.open(0);	//Open default video device
@@ -186,6 +204,8 @@ int startTrack()
 		createTrackbarWindow();
 	}
 
+	TrackedPiece yellow = TrackedPiece("Tennis Ball", Scalar(25,44,160), Scalar(77,95,256));
+
 	while(1)
 	{
 		capture.read(camera_feed);
@@ -205,12 +225,16 @@ int startTrack()
 		}
 		else
 		{
-			TrackedPiece red = TrackedPiece("Red", Scalar(156,109,175), Scalar(195,156,256));
+			/*
+			TrackedPiece red = TrackedPiece("Red", Scalar(156,109,175), Scalar(195,156,256));			
 			TrackedPiece green = TrackedPiece("Green", Scalar(67,86,167), Scalar(88,121,256));
 			TrackedPiece blue = TrackedPiece("Blue", Scalar(77,123,230), Scalar(130,214,256));
 			trackTrackedPiece(red, camera_feed, HSV_image, threshold_image);
 			trackTrackedPiece(green, camera_feed, HSV_image, threshold_image);
 			trackTrackedPiece(blue, camera_feed, HSV_image, threshold_image);
+			*/
+			trackTrackedPiece(yellow, camera_feed, HSV_image, threshold_image);
+			imshow(window2, threshold_image);
 		}
 		
 		imshow(window1, camera_feed);
