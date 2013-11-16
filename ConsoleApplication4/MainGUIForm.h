@@ -165,7 +165,7 @@ private: System::Void runGameButton_Click(System::Object^  sender, System::Event
 			 if (puzzleType->Equals("KnobPuzzle")) {
 				 KnobPuzzle^ puzzle = gcnew KnobPuzzle(CodeString);
 				 MessageBox::Show(Flags.JunkLine);
-				 initializeOpenCV( Vars.returnHandle(), Flags.returnHandle());
+				 initializeOpenCV( Vars.returnHandle(), Flags.returnHandle(), puzzle);
 			 }
 			 else if (puzzleType->Equals("BlockPuzzle")) {
 				 //BlockPuzzle^ puzzle = gcnew BlockPuzzle(CodeString);
@@ -176,6 +176,7 @@ private: System::Void runGameButton_Click(System::Object^  sender, System::Event
 
 		 // NOTE ALSO NEED A PAUSE BUTTON
 private: System::Void stopGameButton_Click(System::Object^  sender, System::EventArgs^  e) {
+			 // add a STOP command to flags
 			 this->gameRunning = false;
 			 this->runGameButton->Visible = true;
 			 this->stopGameButton->Visible = false;

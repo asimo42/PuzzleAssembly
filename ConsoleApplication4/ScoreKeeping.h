@@ -32,8 +32,8 @@ ref class GamePlayed
 public:
 	GamePlayed();
 	~GamePlayed();
-	GamePlayed(KnobPuzzle^ KnobPuzzle);
-	void setGame(KnobPuzzle^ KnobPuzzle);
+	GamePlayed(KnobPuzzle^ Puzzle);
+	void setGame(KnobPuzzle^ Puzzle);
 	void addNewTimeandPiece(int newTime, System::String^ puzzlePiece);
 	void setTimeForCompletion(int newTime);
 	void CalcAvgTimeBetweenPieces();

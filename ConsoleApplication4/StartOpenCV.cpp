@@ -9,12 +9,14 @@
 
 using namespace System::Collections::Generic;
 
-int initializeOpenCV(HandleVariables^ %handleVars, HandleFlags^ %Flags)
+int initializeOpenCV(HandleVariables^ %handleVars, HandleFlags^ %Flags, KnobPuzzle^ %Game)
 {
 	// Initialize OpenCV running class
    RunOpenCV* newOpenCV = new RunOpenCV();
    newOpenCV->Flags = Flags;
    newOpenCV->Vars = handleVars;
+   newOpenCV->setGame(Game);
+   newOpenCV->gameName = systemStringToStdString(Game->GetName());
    newOpenCV->Start();
 
   // set flag that visualization has exited

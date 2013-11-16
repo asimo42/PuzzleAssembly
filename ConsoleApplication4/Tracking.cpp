@@ -23,38 +23,21 @@
 #include "TrackedPiece.h"
 #include "HandleFlags.h"
 #include "HandleVariables.h"
+#include "RunOpenCV.h"
 
 
 
 using namespace cv;
 using namespace std;
 
-const std::string window1 = "Original Capture";
-const std::string trackbar_window = "Trackbar Window";
-const std::string window2 = "Filtered Image";
 
-//default capture width and height
-const int FRAME_WIDTH = 640;
-const int FRAME_HEIGHT = 480;
-//max number of objects to be detected in frame
-const int MAX_NUM_OBJECTS=3;
-//minimum and maximum object area
-const int MIN_OBJECT_AREA = 20*20;
-const int MAX_OBJECT_AREA = FRAME_HEIGHT*FRAME_WIDTH/1.5;
-
-int H_min = 0;
-int H_max = 256;
-int S_min = 0;
-int S_max = 256;
-int V_min = 0;
-int V_max = 256;
 
 void on_trackbar( int, void* )
 {//This function gets called whenever a
 	// trackbar position is changed
 }
 
-void createTrackbarWindow()
+void RunOpenCV::createTrackbarWindow()
 {
 	namedWindow(trackbar_window);
 	createTrackbar( "H_MIN", trackbar_window, &H_min, H_max, on_trackbar );
@@ -65,7 +48,7 @@ void createTrackbarWindow()
 	createTrackbar( "V_MAX", trackbar_window, &V_max, V_max, on_trackbar );
 }
 
-void erodeAndDilate(Mat &image)
+void RunOpenCV::erodeAndDilate(Mat &image)
 {
 	//create structuring element that will be used to "dilate" and "erode" image.
 	//the element chosen here is a 3px by 3px rectangle
@@ -82,23 +65,23 @@ void erodeAndDilate(Mat &image)
 	dilate(image,image,dilateElement);
 }
 
-string intToString(int number){
-	std::stringstream ss;
-	ss << number;
-	return ss.str();
-}
+//string RunOpenCV::intToStdString(int number){
+//	std::stringstream ss;
+//	ss << number;
+//	return ss.str();
+//}
 
-void drawObject(vector<TrackedPiece> pieces, Mat &frame){
+void RunOpenCV::drawObject(vector<TrackedPiece> pieces, Mat &frame){
 
 	for(int i =0; i<pieces.size(); i++){
 
 	cv::circle(frame,cv::Point(pieces.at(i).getXPos(),pieces.at(i).getYPos()),10,cv::Scalar(0,0,255));
-	cv::putText(frame,intToString(pieces.at(i).getXPos())+ " , " + intToString(pieces.at(i).getYPos()),cv::Point(pieces.at(i).getXPos(),pieces.at(i).getYPos()+20),1,1,Scalar(0,255,0));
+	cv::putText(frame,intToStdString(pieces.at(i).getXPos())+ " , " + intToStdString(pieces.at(i).getYPos()),cv::Point(pieces.at(i).getXPos(),pieces.at(i).getYPos()+20),1,1,Scalar(0,255,0));
 	cv::putText(frame,pieces.at(i).getName(),cv::Point(pieces.at(i).getXPos(),pieces.at(i).getYPos()-30),1,2,pieces.at(i).getColor());
 	}
 }
 
-void trackFilteredObject(TrackedPiece piece, Mat &cameraFeed, Mat &threshold_image){
+void RunOpenCV::trackFilteredObject(TrackedPiece piece, Mat &cameraFeed, Mat &threshold_image){
 
 	vector <TrackedPiece> pieces;
 
@@ -108,7 +91,9 @@ void trackFilteredObject(TrackedPiece piece, Mat &cameraFeed, Mat &threshold_ima
 	vector< vector<Point> > contours;
 	vector<Vec4i> hierarchy;
 	//find contours of filtered image using openCV findContours function
+#ifdef USEOPENCV
 	findContours(temp,contours,hierarchy,CV_RETR_CCOMP,CV_CHAIN_APPROX_SIMPLE );
+#endif
 	//use moments method to find our filtered object
 	double refArea = 0;
 	bool objectFound = false;
@@ -151,7 +136,7 @@ void trackFilteredObject(TrackedPiece piece, Mat &cameraFeed, Mat &threshold_ima
 	}
 }
 
-void trackTrackedPiece(TrackedPiece &piece, Mat &camera_feed, Mat &HSV_image, Mat &threshold_image)
+void RunOpenCV::trackTrackedPiece(TrackedPiece &piece, Mat &camera_feed, Mat &HSV_image, Mat &threshold_image)
 {
 	//convert to binary image with white = in range specified
 	inRange(HSV_image, piece.getHSVmin(), piece.getHSVmax(), threshold_image);	
@@ -160,10 +145,10 @@ void trackTrackedPiece(TrackedPiece &piece, Mat &camera_feed, Mat &HSV_image, Ma
 
 }
 
-int startTrack()
+int RunOpenCV::startTrack()
 {
 	bool calibrate_mode = true;
-
+	bool STOP = false;
 	VideoCapture capture;
 	capture.open(0);	//Open default video device
 	//set height and width of capture frame
@@ -186,7 +171,7 @@ int startTrack()
 		createTrackbarWindow();
 	}
 
-	while(1)
+	while(!this->STOP)
 	{
 		capture.read(camera_feed);
 
@@ -220,4 +205,7 @@ int startTrack()
 	
 	return 0;
 }
+
+
+
 

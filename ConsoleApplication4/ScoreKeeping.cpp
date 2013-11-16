@@ -21,15 +21,15 @@ GamePlayed::~GamePlayed()
 }
 //----------------------------------------------------------------------------------------------------------
 
-GamePlayed::GamePlayed(KnobPuzzle^ KnobPuzzle) 
+GamePlayed::GamePlayed(KnobPuzzle^ Puzzle) 
 {
-	this->game = KnobPuzzle;
+	this->game = Puzzle;
 }
 //----------------------------------------------------------------------------------------------------------
 
-void GamePlayed::setGame(KnobPuzzle^ KnobPuzzle)
+void GamePlayed::setGame(KnobPuzzle^ Puzzle)
 {
-	this->game = KnobPuzzle;
+	this->game = Puzzle;
 }
 //----------------------------------------------------------------------------------------------------------
 
