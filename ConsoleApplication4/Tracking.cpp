@@ -137,8 +137,8 @@ void trackFilteredObject(TrackedPiece &piece, Mat &cameraFeed, Mat &threshold_im
 					tmp.setName(piece.getName());
 					tmp.setColor(piece.getColor());
 
-					cout << piece.getName() << ": x: " << xPos << " y: " << yPos << endl;
-					cout << "LastPos: x: " << piece.getLastxPos() << " y: " << piece.getLastyPos() << endl;
+					//cout << piece.getName() << ": x: " << xPos << " y: " << yPos << endl;
+					//cout << "LastPos: x: " << piece.getLastxPos() << " y: " << piece.getLastyPos() << endl;
 
 					pieces.push_back(tmp);
 

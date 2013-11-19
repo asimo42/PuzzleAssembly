@@ -123,6 +123,7 @@ namespace PuzzleAssembly {
 			this->textBox1->Name = L"textBox1";
 			this->textBox1->Size = System::Drawing::Size(190, 20);
 			this->textBox1->TabIndex = 6;
+			this->textBox1->Text = L"KNOBPUZZLE";
 			// 
 			// label1
 			// 
@@ -183,5 +184,6 @@ private: System::Void stopGameButton_Click(System::Object^  sender, System::Even
 private: System::Void timer1_Tick(System::Object^  sender, System::EventArgs^  e) {
 
 		 }
+
 };
 }
