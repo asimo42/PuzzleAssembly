@@ -1,7 +1,8 @@
-// Multiple_Object_Tracking.cpp : Defines the entry point for the console application.
-//
+/* This file contains the main functions involved with tracking.  The majority of these functions belong to the "RunTracking" class, though that
+might be changed back in a while (may decide to go more library style)
 
-// This project has been modified from the original version written by Kyle Hounslow:
+The functions used for tracking are primarily based in standard C++
+*/
 
 //-------------------------------------------------------------------------------------------------------------------------
 //Written by  Kyle Hounslow 2013
@@ -21,15 +22,14 @@
 #include <vector>
 #include <opencv2\opencv.hpp>	//includes all OpenCV headers
 #include "TrackedPiece.h"
-#include "HandleFlags.h"
 #include "HandleVariables.h"
-#include "RunOpenCV.h"
-
-
+#include "RunTracking.h"
 
 using namespace cv;
 using namespace std;
 
+
+#define USEOPENCV
 
 
 void on_trackbar( int, void* )
@@ -37,7 +37,7 @@ void on_trackbar( int, void* )
 	// trackbar position is changed
 }
 
-void RunOpenCV::createTrackbarWindow()
+void RunTracking::createTrackbarWindow()
 {
 	namedWindow(trackbar_window);
 	createTrackbar( "H_MIN", trackbar_window, &H_min, H_max, on_trackbar );
@@ -48,7 +48,7 @@ void RunOpenCV::createTrackbarWindow()
 	createTrackbar( "V_MAX", trackbar_window, &V_max, V_max, on_trackbar );
 }
 
-void RunOpenCV::erodeAndDilate(Mat &image)
+void RunTracking::erodeAndDilate(Mat &image)
 {
 	//create structuring element that will be used to "dilate" and "erode" image.
 	//the element chosen here is a 3px by 3px rectangle
@@ -65,13 +65,7 @@ void RunOpenCV::erodeAndDilate(Mat &image)
 	dilate(image,image,dilateElement);
 }
 
-//string RunOpenCV::intToStdString(int number){
-//	std::stringstream ss;
-//	ss << number;
-//	return ss.str();
-//}
-
-void RunOpenCV::drawObject(vector<TrackedPiece> pieces, Mat &frame){
+void RunTracking::drawObject(vector<TrackedPiece> pieces, Mat &frame){
 
 	for(int i =0; i<pieces.size(); i++){
 
@@ -81,7 +75,7 @@ void RunOpenCV::drawObject(vector<TrackedPiece> pieces, Mat &frame){
 	}
 }
 
-void RunOpenCV::trackFilteredObject(TrackedPiece piece, Mat &cameraFeed, Mat &threshold_image){
+void RunTracking::trackFilteredObject(TrackedPiece piece, Mat &cameraFeed, Mat &threshold_image){
 
 	vector <TrackedPiece> pieces;
 
@@ -136,16 +130,15 @@ void RunOpenCV::trackFilteredObject(TrackedPiece piece, Mat &cameraFeed, Mat &th
 	}
 }
 
-void RunOpenCV::trackTrackedPiece(TrackedPiece &piece, Mat &camera_feed, Mat &HSV_image, Mat &threshold_image)
+void RunTracking::trackTrackedPiece(TrackedPiece &piece, Mat &camera_feed, Mat &HSV_image, Mat &threshold_image)
 {
 	//convert to binary image with white = in range specified
 	inRange(HSV_image, piece.getHSVmin(), piece.getHSVmax(), threshold_image);	
 	erodeAndDilate(threshold_image);
 	trackFilteredObject(piece, camera_feed, threshold_image);
-
 }
 
-int RunOpenCV::startTrack()
+int RunTracking::startTrack()
 {
 	bool calibrate_mode = true;
 	bool STOP = false;
@@ -202,7 +195,7 @@ int RunOpenCV::startTrack()
 
 		waitKey(30);
 	}
-	
+	endTrack();
 	return 0;
 }
 

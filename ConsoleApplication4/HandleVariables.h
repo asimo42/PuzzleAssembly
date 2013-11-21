@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <Windows.h>
 #using <System.dll>
+#include "GameBoard.h"
 
 #ifndef FILE_J
 #define FILE_J
@@ -21,64 +22,29 @@ of the program are using the same thing if handled properly.
 */
 ref class HandleVariables
 {
-
+public: 
 	// some variables:
 	// need for audio or visual hint (maybe should trigger a callback when this is hit)
+	bool PAUSE_GAME;
+	bool START_GAME;
+	bool END_GAME;
+	bool GAME_OVER;
+	System::String^ PIECE_PLACED;
+	void InitializeFlags();
 
-	HANDLE myMutex;
-	int NumNodes;
-	int UnitMeasurement;
-	int NumElements;
-	int Exponent;
-	int MaxNodeAssociations;
-	int *NodeArray;
-	double *XArray;
-	double *YArray;
-	double *ZArray;
-	double OldX;
-	double OldY;
-	double OldZ;
-	List<List<int>^>^ ElementList;
-	
-public: 
-
-	System::String^ FileType;
-	// initializing the variables
-	void InitializeClass();
-	void InitializeNodeArrays(int NumberNodes, int Unit);
-	List<List<int>^>^ InitializeElementArray(int NumberElements);
-	void SetElementList(List<List<int>^>^ list);
-	void SetMaxNodeAssociations(int num);
-	void SetNode(int index, int Node, double X, double Y, double Z);
-	void SetFileType(System::String^ filetype);
-	void ScaleNodes(double Scale, System::String^ dimension);
+	System::String^ JunkLine;
+	void setVTKNodeChanged(int index);
+	void setPiecePlaced(System::String^ pieceName);
+	void setPiecePlaced(std::string pieceName);
+	void setGameOver();
+	void resetGameOver();
 
 	// retrieving/ viewing the variables
 	HandleVariables^ returnHandle() {return this;}
-	List<List<int>^>^ GetElementList();
-	int GetNumNodes();
-	int GetNumElements();
-	int GetMaxNodeAssociations();
-	System::String^ GetMeasurement();
-	int GetNodeFromNodeArray(int index);
-	int GetElementFromElementList(int index); 
-	List<int>^ GetElement(int element);
-	double GetXFromNode(int Node);
-	double GetYFromNode(int Node);
-	double GetZFromNode(int Node);
-	double * RetrieveXYZFromNode(int Node);
-	int FindIndexOfNode(int Node);
-
-	// changing the variables
-	void RemoveSingleNode(int Node);
-	void AddSingleNode();
-	int ChangeNode(int Node, double newX, double newY, double newZ);
-	List<int>^ RemoveSingleElement(int element);
-	List<int>^ RemoveElementsUsingNode(int node);
-	void AddElement(array<System::String^>^ associations);
 
 private:
-	void RemoveElements(List<int>^ indices);
+	PuzzlePiece^ puzzleClass;
+	HANDLE myMutex;
 
 };
 
