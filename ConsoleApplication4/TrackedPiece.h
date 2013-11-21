@@ -18,6 +18,7 @@ private:
 	HANDLE myMutex;
 	std::string name;
 	int x_pos, y_pos;
+	int lastxPos, lastyPos;
 	Scalar HSV_min, HSV_max;
 	Scalar color;
 
@@ -39,6 +40,12 @@ public:
 
 	int setPos(int x, int y) { x_pos = x; y_pos = y; }
 
+	int getLastxPos() {return lastxPos;}
+	void setLastxPos(int pos) {lastxPos = pos;}
+
+	int getLastyPos() {return lastyPos;}
+	void setLastyPos(int pos) {lastyPos = pos;}
+
 	Scalar getHSVmin() {return HSV_min;}
 	void setHSVmin(Scalar min) {HSV_min = min;}
 
@@ -57,6 +64,6 @@ void createTrackbarWindow();
 void erodeAndDilate(Mat &image);
 string intToStdString(int number);
 void drawObject(vector<TrackedPiece> pieces, Mat &frame);
-void trackFilteredObject(TrackedPiece piece, Mat &cameraFeed, Mat &threshold_image);
+void trackFilteredObject(TrackedPiece &piece, Mat &cameraFeed, Mat &threshold_image);
 void trackTrackedPiece(TrackedPiece &piece, Mat &camera_feed, Mat &HSV_image, Mat &threshold_image);
 int startTrack();
