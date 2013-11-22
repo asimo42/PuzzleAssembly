@@ -50,6 +50,6 @@ void RunTracking::endTrack() {
 
 //----------------------------------------------------------------------------------------------------------
 
-gcroot<GamePlayed^> returnScore() {
+gcroot<GamePlayed^> RunTracking::returnScore() {
 	return this->ScoreKeep;
 }

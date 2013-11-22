@@ -33,7 +33,7 @@ namespace PuzzleAssembly {
 		{
 			InitializeComponent();
 			this->gameRunning = false;
-			this->Vars.InitializeFlags();
+			//this->Vars.InitializeClass();
 			//
 			//TODO: Add the constructor code here
 			//
@@ -62,9 +62,8 @@ namespace PuzzleAssembly {
 	private: System::Windows::Forms::Label^  label1;
 	private: System::Windows::Forms::Timer^  timer1;
 	private: System::ComponentModel::IContainer^  components;
-	private: System::Windows::Forms::Button^  statsButton;
-
 	private: HandleVariables Vars;
+
 
 	protected: 
 
@@ -89,7 +88,6 @@ namespace PuzzleAssembly {
 			this->textBox1 = (gcnew System::Windows::Forms::TextBox());
 			this->label1 = (gcnew System::Windows::Forms::Label());
 			this->timer1 = (gcnew System::Windows::Forms::Timer(this->components));
-			this->statsButton = (gcnew System::Windows::Forms::Button());
 			this->SuspendLayout();
 			// 
 			// runGameButton
@@ -138,31 +136,17 @@ namespace PuzzleAssembly {
 			// 
 			this->timer1->Tick += gcnew System::EventHandler(this, &MainGUIForm::timer1_Tick);
 			// 
-			// statsButton
-			// 
-			this->statsButton->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Left));
-			this->statsButton->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 16.25F));
-			this->statsButton->Location = System::Drawing::Point(23, 243);
-			this->statsButton->Name = L"statsButton";
-			this->statsButton->Size = System::Drawing::Size(212, 61);
-			this->statsButton->TabIndex = 8;
-			this->statsButton->Text = L"Stats";
-			this->statsButton->UseVisualStyleBackColor = true;
-			this->statsButton->Click += gcnew System::EventHandler(this, &MainGUIForm::statsButton_Click);
-			// 
 			// MainGUIForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(568, 308);
-			this->Controls->Add(this->statsButton);
 			this->Controls->Add(this->label1);
 			this->Controls->Add(this->textBox1);
 			this->Controls->Add(this->stopGameButton);
 			this->Controls->Add(this->runGameButton);
 			this->Name = L"MainGUIForm";
 			this->Text = L"Puzzle Assembly Assistant";
-			this->Load += gcnew System::EventHandler(this, &MainGUIForm::MainGUIForm_Load);
 			this->ResumeLayout(false);
 			this->PerformLayout();
 
@@ -179,7 +163,6 @@ private: System::Void runGameButton_Click(System::Object^  sender, System::Event
 			 //GameBaseClass^ puzzle = gcnew GameBaseClass();
 			 if (puzzleType->Equals("KnobPuzzle")) {
 				 KnobPuzzle^ puzzle = gcnew KnobPuzzle(CodeString);
-				 MessageBox::Show(Vars.JunkLine);
 				 initializeOpenCV( Vars.returnHandle(), puzzle);
 			 }
 			 else if (puzzleType->Equals("BlockPuzzle")) {
@@ -191,7 +174,6 @@ private: System::Void runGameButton_Click(System::Object^  sender, System::Event
 
 		 // NOTE ALSO NEED A PAUSE BUTTON
 private: System::Void stopGameButton_Click(System::Object^  sender, System::EventArgs^  e) {
-			 // add a STOP command to flags
 			 this->gameRunning = false;
 			 this->runGameButton->Visible = true;
 			 this->stopGameButton->Visible = false;
@@ -199,12 +181,6 @@ private: System::Void stopGameButton_Click(System::Object^  sender, System::Even
 private: System::Void timer1_Tick(System::Object^  sender, System::EventArgs^  e) {
 
 		 }
-<<<<<<< HEAD
-private: System::Void statsButton_Click(System::Object^  sender, System::EventArgs^  e) {
-
-		 }
-=======
->>>>>>> 56d23b3cf02446d3a88ff8898c41a2c6ef176327
 
 };
 }

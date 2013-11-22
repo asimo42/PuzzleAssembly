@@ -42,10 +42,11 @@ protected:
 	virtual int startTrack();
 	virtual void endTrack();
 	virtual void trackTrackedPiece(TrackedPiece &piece, Mat &camera_feed, Mat &HSV_image, Mat &threshold_image);
-	virtual void trackFilteredObject(TrackedPiece piece, Mat &cameraFeed, Mat &threshold_image);
+	virtual void trackFilteredObject(TrackedPiece &piece, Mat &cameraFeed, Mat &threshold_image);
 	void createTrackbarWindow();
 	void erodeAndDilate(Mat &image);
 	void drawObject(vector<TrackedPiece> pieces, Mat &frame);
+
 
 private:
 

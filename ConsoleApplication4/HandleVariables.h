@@ -25,6 +25,7 @@ ref class HandleVariables
 public: 
 	// some variables:
 	// need for audio or visual hint (maybe should trigger a callback when this is hit)
+	HandleVariables() {}
 	bool PAUSE_GAME;
 	bool START_GAME;
 	bool END_GAME;
