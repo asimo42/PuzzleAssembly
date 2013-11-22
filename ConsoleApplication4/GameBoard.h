@@ -16,9 +16,9 @@ using namespace System;
 //using namespace cv;
 using namespace System::Collections::Generic;
 
-ref class GameBaseClass {
+ref class GameBase {
 public:
-	GameBaseClass() { int x = 0; } // holder
+	GameBase() { puzzleName = ""; } // holder
 	virtual void SetName(System::String^ Name) { this->puzzleName = Name; }
 	System::String^ GetName() { return puzzleName; }
 	System::String^ GetType() { return puzzleType; }
@@ -49,7 +49,7 @@ protected:
 
 
 // this class should create the puzzle piece classes
-ref class KnobPuzzle : public GameBaseClass
+ref class KnobPuzzle : public GameBase
 {
 
 public:

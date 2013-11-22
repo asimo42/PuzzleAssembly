@@ -85,6 +85,9 @@ System::String^ stdStringToSystemString(std::string str) {
 // convert System::String^ to std::string
 std::string systemStringToStdString(System::String^ str)
 {
+	if (str->Equals("")) {
+		return "";
+	}
      using System::Runtime::InteropServices::Marshal;
      System::IntPtr pointer = Marshal::StringToHGlobalAnsi(str);
      char* charPointer = reinterpret_cast<char*>(pointer.ToPointer());

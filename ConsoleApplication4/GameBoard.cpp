@@ -23,6 +23,9 @@ KnobPuzzle::KnobPuzzle(void)
 //----------------------------------------------------------------------------------------------------------
 KnobPuzzle::KnobPuzzle(System::String^ code) 
 {
+	this->Started = false; this->Completed = false; this->Cancelled = false;
+	this->puzzleName = gcnew System::String("KNOBPUZZLE 1");
+	this->puzzleType = gcnew System::String("KNOBPUZZLE");
 	LookUpGame(code);
 	if (this->Error) {
 		return;

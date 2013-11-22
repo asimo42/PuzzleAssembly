@@ -10,7 +10,6 @@
 #include "PuzzlePiece.h"
 #include "TrackedPiece.h"
 #include "HandleVariables.h"
-#include "HandleFlags.h"
 #include "Functions.h"
 
 #pragma once
@@ -34,8 +33,7 @@ namespace PuzzleAssembly {
 		{
 			InitializeComponent();
 			this->gameRunning = false;
-			this->Vars.InitializeClass();
-			this->Flags.InitializeFlags();
+			//this->Vars.InitializeClass();
 			//
 			//TODO: Add the constructor code here
 			//
@@ -65,7 +63,7 @@ namespace PuzzleAssembly {
 	private: System::Windows::Forms::Timer^  timer1;
 	private: System::ComponentModel::IContainer^  components;
 	private: HandleVariables Vars;
-	private: HandleFlags Flags;
+
 
 	protected: 
 
@@ -165,8 +163,7 @@ private: System::Void runGameButton_Click(System::Object^  sender, System::Event
 			 //GameBaseClass^ puzzle = gcnew GameBaseClass();
 			 if (puzzleType->Equals("KnobPuzzle")) {
 				 KnobPuzzle^ puzzle = gcnew KnobPuzzle(CodeString);
-				 MessageBox::Show(Flags.JunkLine);
-				 initializeOpenCV( Vars.returnHandle(), Flags.returnHandle());
+				 initializeOpenCV( Vars.returnHandle(), puzzle);
 			 }
 			 else if (puzzleType->Equals("BlockPuzzle")) {
 				 //BlockPuzzle^ puzzle = gcnew BlockPuzzle(CodeString);

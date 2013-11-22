@@ -21,10 +21,9 @@
 #include <vector>
 #include <opencv2\opencv.hpp>	//includes all OpenCV headers
 #include "TrackedPiece.h"
-#include "HandleFlags.h"
 #include "HandleVariables.h"
-
-
+#include "RunTracking.h"
+#include "Functions.h"
 
 using namespace cv;
 using namespace std;
@@ -54,7 +53,7 @@ void on_trackbar( int, void* )
 	// trackbar position is changed
 }
 
-void createTrackbarWindow()
+void RunTracking::createTrackbarWindow()
 {
 	namedWindow(trackbar_window);
 	createTrackbar( "H_MIN", trackbar_window, &H_min, H_max, on_trackbar );
@@ -65,7 +64,7 @@ void createTrackbarWindow()
 	createTrackbar( "V_MAX", trackbar_window, &V_max, V_max, on_trackbar );
 }
 
-void erodeAndDilate(Mat &image)
+void RunTracking::erodeAndDilate(Mat &image)
 {
 	//create structuring element that will be used to "dilate" and "erode" image.
 	//the element chosen here is a 3px by 3px rectangle
@@ -82,23 +81,23 @@ void erodeAndDilate(Mat &image)
 	dilate(image,image,dilateElement);
 }
 
-string intToString(int number){
-	std::stringstream ss;
-	ss << number;
-	return ss.str();
-}
+//string intToStdString(int number){
+//	std::stringstream ss;
+//	ss << number;
+//	return ss.str();
+//}
 
-void drawObject(vector<TrackedPiece> pieces, Mat &frame){
+void RunTracking::drawObject(vector<TrackedPiece> pieces, Mat &frame){
 
 	for(int i =0; i<pieces.size(); i++){
 
 	cv::circle(frame,cv::Point(pieces.at(i).getXPos(),pieces.at(i).getYPos()),10,cv::Scalar(0,0,255));
-	cv::putText(frame,intToString(pieces.at(i).getXPos())+ " , " + intToString(pieces.at(i).getYPos()),cv::Point(pieces.at(i).getXPos(),pieces.at(i).getYPos()+20),1,1,Scalar(0,255,0));
+	cv::putText(frame,intToStdString(pieces.at(i).getXPos())+ " , " + intToStdString(pieces.at(i).getYPos()),cv::Point(pieces.at(i).getXPos(),pieces.at(i).getYPos()+20),1,1,Scalar(0,255,0));
 	cv::putText(frame,pieces.at(i).getName(),cv::Point(pieces.at(i).getXPos(),pieces.at(i).getYPos()-30),1,2,pieces.at(i).getColor());
 	}
 }
 
-void trackFilteredObject(TrackedPiece &piece, Mat &cameraFeed, Mat &threshold_image){
+void RunTracking::trackFilteredObject(TrackedPiece &piece, Mat &cameraFeed, Mat &threshold_image){
 
 	vector <TrackedPiece> pieces;
 
@@ -169,7 +168,7 @@ void trackFilteredObject(TrackedPiece &piece, Mat &cameraFeed, Mat &threshold_im
 	}
 }
 
-void trackTrackedPiece(TrackedPiece &piece, Mat &camera_feed, Mat &HSV_image, Mat &threshold_image)
+void RunTracking::trackTrackedPiece(TrackedPiece &piece, Mat &camera_feed, Mat &HSV_image, Mat &threshold_image)
 {
 	//convert to binary image with white = in range specified
 	inRange(HSV_image, piece.getHSVmin(), piece.getHSVmax(), threshold_image);	
@@ -178,7 +177,7 @@ void trackTrackedPiece(TrackedPiece &piece, Mat &camera_feed, Mat &HSV_image, Ma
 
 }
 
-int startTrack()
+int RunTracking::startTrack()
 {
 	bool calibrate_mode = false;
 
