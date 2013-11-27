@@ -181,10 +181,10 @@ void RunTracking::trackTrackedPiece(TrackedPiece &piece, Mat &camera_feed, Mat &
 
 int RunTracking::startTrack()
 {
-	bool calibrate_mode = false;
+	bool calibrate_mode = true;
 
 	VideoCapture capture;
-	capture.open(0);	//Open default video device
+	capture.open(1);	//Open default video device
 	//set height and width of capture frame
 	capture.set(CV_CAP_PROP_FRAME_WIDTH,FRAME_WIDTH);
 	capture.set(CV_CAP_PROP_FRAME_HEIGHT,FRAME_HEIGHT);
@@ -214,7 +214,14 @@ int RunTracking::startTrack()
 //	cvSetWindowProperty(puzzle_window.c_str(), CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);	// Makes full screen
 	Shape shapes(&puzzle);
 	shapes.Clear_To_Black();	// Must clear to black first, otherwise get exception
-	shapes.Draw_Circle(Point(200, 200), 50, -1);
+	shapes.setColor(Scalar(0, 0, 255));
+	shapes.Draw_Circle(Point(383, 244), 125, -1);
+	shapes.setColor(Scalar(255, 0, 0));
+	shapes.Draw_Square(Point(748, 128), 238, -1);
+	shapes.setColor(Scalar(255, 0, 255));
+	shapes.Draw_Triangle(Point(220, 600), 266, -1);
+	shapes.setColor(Scalar(0, 255, 0));
+	shapes.Draw_Rectangle(Point(483, 634), 287, 175, -1);
 	imshow(puzzle_window, puzzle);
 
 

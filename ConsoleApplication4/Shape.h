@@ -47,6 +47,7 @@ public:
 	void Draw_Arrow(Point begin, Point end, int thickness = 1, int lineType = 8);
 
 	//-----Other Methods------
+	void setColor(Scalar BGR_val) {color = BGR_val;}
 
 
 private:

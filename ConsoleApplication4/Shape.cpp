@@ -67,6 +67,7 @@ void Shape::Draw_Square(Point corner, int wid, int thickness, int lineType)
 }
 
 //Triangle
+// length is length of one side of equilateral triangle
 void Shape::Draw_Triangle(Point top, int length, int thickness, int lineType)
 {
 	type=Triangle;
