@@ -24,6 +24,7 @@
 #include "HandleVariables.h"
 #include "RunTracking.h"
 #include "Functions.h"
+#include "Shape.h"
 
 using namespace cv;
 using namespace std;
@@ -31,6 +32,7 @@ using namespace std;
 const std::string window1 = "Original Capture";
 const std::string trackbar_window = "Trackbar Window";
 const std::string window2 = "Filtered Image";
+const std::string puzzle_window = "Puzzle Board Window";
 
 //default capture width and height
 const int FRAME_WIDTH = 640;
@@ -197,6 +199,7 @@ int RunTracking::startTrack()
 	Mat camera_feed;		//raw camera image
 	Mat HSV_image;			//camera image converted to HSV
 	Mat threshold_image;	//image after HSV is filtered and processed
+	
 
 	if (calibrate_mode)
 	{
@@ -204,6 +207,16 @@ int RunTracking::startTrack()
 	}
 
 	TrackedPiece yellow = TrackedPiece("Tennis Ball", Scalar(25,44,160), Scalar(77,95,256));
+
+	Mat puzzle;				//Puzzle board image for drawing shapes on
+	namedWindow(puzzle_window);
+//	namedWindow(puzzle_window, CV_WINDOW_NORMAL);
+//	cvSetWindowProperty(puzzle_window.c_str(), CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);	// Makes full screen
+	Shape shapes(&puzzle);
+	shapes.Clear_To_Black();	// Must clear to black first, otherwise get exception
+	shapes.Draw_Circle(Point(200, 200), 50, -1);
+	imshow(puzzle_window, puzzle);
+
 
 	while(1)
 	{

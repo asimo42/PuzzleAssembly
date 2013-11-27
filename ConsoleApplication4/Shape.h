@@ -1,18 +1,20 @@
 #ifndef SHAPE_H
 #define SHAPE_H
 
-#include "Shape.h"
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
+
+#define SCREEN_WIDTH 1280
+#define SCREEN_HEIGHT 1024
 
 using namespace cv;
 using namespace std;
 
-enum Type{	Circle,
+enum shapeType{	Circle,
 			Square,
 			Triangle,
 			Pentagon,
-			Rectangle,
+			Rectangular,	//"Rectangle" was previously defined in some Windows file...
 			Arrow,
 			Star};
 
@@ -34,7 +36,7 @@ public:
 
 	//-----Mutators-----
 	//THIS IS NOT DELETE SHAPE; it delets all images and leaves image black 
-	inline void Clear_To_Black() {*image = Mat::zeros(480, 640, CV_8UC3);}
+	inline void Clear_To_Black() {*image = Mat::zeros(SCREEN_HEIGHT, SCREEN_WIDTH, CV_8UC3);}
 
 	//-----Drawing Functions------
 	void Draw_Circle(Point middle, int radius, int thickness = 1, int lineType = 8);
@@ -56,7 +58,7 @@ private:
 	int width;
 	int line_thickness;
 	Scalar color;
-	Type type;
+	shapeType type;
 
 
 };

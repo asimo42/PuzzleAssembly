@@ -43,7 +43,7 @@ void Shape::Draw_Circle(Point middle, int radius, int thickness, int lineType)
 //Rectangle
 void Shape::Draw_Rectangle(Point corner, int wid, int heig, int thickness, int lineType)
 {
-	type = Rectangle;
+	type = Rectangular;
 	startingPoint = corner;
 	width = wid;
 	height = heig;
