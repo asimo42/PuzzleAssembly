@@ -13,13 +13,14 @@ void RunTracking::Initialize() {
 	this->window1 = "Original Capture";
 	this->trackbar_window = "Trackbar Window";
 	this->window2 = "Filtered Image";
+	this->puzzle_window = "Puzzle Board Window";
 	//default capture width and height
 	this->FRAME_WIDTH = 640;
 	this->FRAME_HEIGHT = 480;
 	//max number of objects to be detected in frame
-	this->MAX_NUM_OBJECTS=3;
+	this->MAX_NUM_OBJECTS=20;
 	//minimum and maximum object area
-	this->MIN_OBJECT_AREA = 20*20;
+	this->MIN_OBJECT_AREA = 2500;
 	this->MAX_OBJECT_AREA = FRAME_HEIGHT*FRAME_WIDTH/1.5;
 	this->H_min = 0;
 	this->H_max = 256;

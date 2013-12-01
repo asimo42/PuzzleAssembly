@@ -28,7 +28,9 @@
 
 using namespace cv;
 using namespace std;
-
+/*
+ * These are now defined in RunTracking.cpp
+ *
 const std::string window1 = "Original Capture";
 const std::string trackbar_window = "Trackbar Window";
 const std::string window2 = "Filtered Image";
@@ -38,9 +40,9 @@ const std::string puzzle_window = "Puzzle Board Window";
 const int FRAME_WIDTH = 640;
 const int FRAME_HEIGHT = 480;
 //max number of objects to be detected in frame
-const int MAX_NUM_OBJECTS=3;
+const int MAX_NUM_OBJECTS=10;
 //minimum and maximum object area
-const int MIN_OBJECT_AREA = 20*20;
+const int MIN_OBJECT_AREA = 2500;
 const int MAX_OBJECT_AREA = FRAME_HEIGHT*FRAME_WIDTH/1.5;
 
 int H_min = 0;
@@ -49,7 +51,7 @@ int S_min = 0;
 int S_max = 256;
 int V_min = 0;
 int V_max = 256;
-
+*/
 void on_trackbar( int, void* )
 {//This function gets called whenever a
 	// trackbar position is changed
@@ -93,9 +95,9 @@ void RunTracking::drawObject(vector<TrackedPiece> pieces, Mat &frame){
 
 	for(int i =0; i<pieces.size(); i++){
 
-	cv::circle(frame,cv::Point(pieces.at(i).getXPos(),pieces.at(i).getYPos()),10,cv::Scalar(0,0,255));
-	cv::putText(frame,intToStdString(pieces.at(i).getXPos())+ " , " + intToStdString(pieces.at(i).getYPos()),cv::Point(pieces.at(i).getXPos(),pieces.at(i).getYPos()+20),1,1,Scalar(0,255,0));
-	cv::putText(frame,pieces.at(i).getName(),cv::Point(pieces.at(i).getXPos(),pieces.at(i).getYPos()-30),1,2,pieces.at(i).getColor());
+		cv::circle(frame,cv::Point(pieces.at(i).getXPos(),pieces.at(i).getYPos()),10,cv::Scalar(0,0,255));
+		cv::putText(frame,intToStdString(pieces.at(i).getXPos())+ " , " + intToStdString(pieces.at(i).getYPos()),cv::Point(pieces.at(i).getXPos(),pieces.at(i).getYPos()+20),1,1,Scalar(0,255,0));
+		cv::putText(frame,pieces.at(i).getName(),cv::Point(pieces.at(i).getXPos(),pieces.at(i).getYPos()-30),1,2,pieces.at(i).getColor());
 	}
 }
 
@@ -111,23 +113,31 @@ void RunTracking::trackFilteredObject(TrackedPiece &piece, Mat &cameraFeed, Mat 
 	//find contours of filtered image using openCV findContours function
 	findContours(temp,contours,hierarchy,CV_RETR_CCOMP,CV_CHAIN_APPROX_SIMPLE );
 	//use moments method to find our filtered object
-	double refArea = 0;
 	bool objectFound = false;
 	if (hierarchy.size() > 0) {
 		int numObjects = hierarchy.size();
+//		cout << "Num objects: " << numObjects << endl;
+//		cout << "Max Num objects: " << MAX_NUM_OBJECTS << endl;
+		// threshholed to calculate movement
 		const int thresh = 20;
+		//saves max area of each contour detected so only the largest one will be tracked
+		double maxArea = 0;
 		//if number of objects greater than MAX_NUM_OBJECTS we have a noisy filter
-		if(numObjects<MAX_NUM_OBJECTS){
+		if(numObjects < MAX_NUM_OBJECTS){
+			// for each object (contour) detected
 			for (int index = 0; index >= 0; index = hierarchy[index][0]) {
 
+				// get the moment of the contour
 				Moments moment = moments((cv::Mat)contours[index]);
+				// get the area from the moment
 				double area = moment.m00;
-
-				//if the area is less than 20 px by 20px then it is probably just noise
-				//if the area is the same as the 3/2 of the image size, probably just a bad filter
-				//we only want the object with the largest area so we safe a reference area each
-				//iteration and compare it to the area in the next iteration.
-				if(area>MIN_OBJECT_AREA){
+//				cout << "Area " << index << " is: " << area << endl;
+				
+				// if the area is less than MIN_OBJECT_AREA then it is probably just noise
+				// it must also be large than the max area found so far since we only want the largest area.
+				if(area > MIN_OBJECT_AREA && area > maxArea){
+					// set new max area
+					maxArea = area;
 
 					TrackedPiece tmp;
 					int xPos = moment.m10/area;
@@ -149,12 +159,12 @@ void RunTracking::trackFilteredObject(TrackedPiece &piece, Mat &cameraFeed, Mat 
 					if(xPos > (piece.getLastxPos() + thresh) || xPos < (piece.getLastxPos() - thresh))
 					{
 						piece.setLastxPos(xPos);
-						cout << "X movement." << endl;
+//						cout << "X movement." << endl;
 					}
 					if(yPos > (piece.getLastyPos() + thresh) || yPos < (piece.getLastyPos() - thresh))
 					{
 						piece.setLastyPos(yPos);
-						cout << "Y movement." << endl;
+//						cout << "Y movement." << endl;
 					}
 
 				}else objectFound = false;

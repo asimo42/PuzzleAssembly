@@ -53,6 +53,7 @@ private:
 	std::string window1;
 	std::string trackbar_window;
 	std::string window2;
+	std::string puzzle_window;
 
 	//default capture width and height
 	int FRAME_WIDTH;
