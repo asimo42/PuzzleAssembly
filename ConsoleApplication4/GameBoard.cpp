@@ -1,9 +1,6 @@
 #include "stdafx.h"
 #include <Windows.h>
 #include <string>
-#include <stack>
-#include <process.h>
-#using <System.dll>
 #include <stdio.h>
 #include "GameBoard.h"
 #include "PuzzlePiece.h"
