@@ -119,7 +119,7 @@ void RunTracking::trackFilteredObject(TrackedPiece &piece, Mat &cameraFeed, Mat 
 //		cout << "Num objects: " << numObjects << endl;
 //		cout << "Max Num objects: " << MAX_NUM_OBJECTS << endl;
 		// threshholed to calculate movement
-		const int thresh = 20;
+		const int thresh = 40;
 		//saves max area of each contour detected so only the largest one will be tracked
 		double maxArea = 0;
 		//if number of objects greater than MAX_NUM_OBJECTS we have a noisy filter
@@ -159,12 +159,12 @@ void RunTracking::trackFilteredObject(TrackedPiece &piece, Mat &cameraFeed, Mat 
 					if(xPos > (piece.getLastxPos() + thresh) || xPos < (piece.getLastxPos() - thresh))
 					{
 						piece.setLastxPos(xPos);
-//						cout << "X movement." << endl;
+						cout << piece.getName() << ": X movement" << endl;
 					}
 					if(yPos > (piece.getLastyPos() + thresh) || yPos < (piece.getLastyPos() - thresh))
 					{
 						piece.setLastyPos(yPos);
-//						cout << "Y movement." << endl;
+						cout << piece.getName() << "Y movement." << endl;
 					}
 
 				}else objectFound = false;
@@ -189,9 +189,24 @@ void RunTracking::trackTrackedPiece(TrackedPiece &piece, Mat &camera_feed, Mat &
 
 }
 
+void RunTracking::drawPuzzleBoard(Mat &image)
+{
+	Shape shapes(&image);
+	shapes.Clear_To_Black();	// Must clear to black first, otherwise get exception
+	// Magic numbers below are coordinates from trail and error on 1280x1024 screen
+	shapes.setColor(Scalar(0, 0, 255));
+	shapes.Draw_Circle(Point(383, 244), 125, -1);
+	shapes.setColor(Scalar(255, 0, 0));
+	shapes.Draw_Square(Point(748, 128), 238, -1);
+	shapes.setColor(Scalar(255, 0, 255));
+	shapes.Draw_Triangle(Point(220, 600), 266, -1);
+	shapes.setColor(Scalar(0, 255, 0));
+	shapes.Draw_Rectangle(Point(483, 634), 287, 175, -1);
+}
+
 int RunTracking::startTrack()
 {
-	bool calibrate_mode = true;
+	bool calibrate_mode = false;
 
 	VideoCapture capture;
 	capture.open(1);	//Open default video device
@@ -216,22 +231,17 @@ int RunTracking::startTrack()
 		createTrackbarWindow();
 	}
 
-	TrackedPiece yellow = TrackedPiece("Tennis Ball", Scalar(25,44,160), Scalar(77,95,256));
+//	TrackedPiece yellow = TrackedPiece("Tennis Ball", Scalar(25,44,160), Scalar(77,95,256));
+	TrackedPiece red_circle = TrackedPiece("Circle", Scalar(165, 107, 25), Scalar(185, 233, 256));
+	TrackedPiece green_rectangle = TrackedPiece("Rectangle", Scalar(74, 75, 50), Scalar(88, 214, 256));
+	TrackedPiece yellow_pentagon = TrackedPiece("Pentagon", Scalar(16, 47, 47), Scalar(32, 200, 256));
+	TrackedPiece white_square = TrackedPiece("Square", Scalar(77, 0, 168), Scalar(158, 63, 256));
 
 	Mat puzzle;				//Puzzle board image for drawing shapes on
 	namedWindow(puzzle_window);
 //	namedWindow(puzzle_window, CV_WINDOW_NORMAL);
 //	cvSetWindowProperty(puzzle_window.c_str(), CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);	// Makes full screen
-	Shape shapes(&puzzle);
-	shapes.Clear_To_Black();	// Must clear to black first, otherwise get exception
-	shapes.setColor(Scalar(0, 0, 255));
-	shapes.Draw_Circle(Point(383, 244), 125, -1);
-	shapes.setColor(Scalar(255, 0, 0));
-	shapes.Draw_Square(Point(748, 128), 238, -1);
-	shapes.setColor(Scalar(255, 0, 255));
-	shapes.Draw_Triangle(Point(220, 600), 266, -1);
-	shapes.setColor(Scalar(0, 255, 0));
-	shapes.Draw_Rectangle(Point(483, 634), 287, 175, -1);
+	drawPuzzleBoard(puzzle);
 	imshow(puzzle_window, puzzle);
 
 
@@ -254,15 +264,11 @@ int RunTracking::startTrack()
 		}
 		else
 		{
-			/*
-			TrackedPiece red = TrackedPiece("Red", Scalar(156,109,175), Scalar(195,156,256));			
-			TrackedPiece green = TrackedPiece("Green", Scalar(67,86,167), Scalar(88,121,256));
-			TrackedPiece blue = TrackedPiece("Blue", Scalar(77,123,230), Scalar(130,214,256));
-			trackTrackedPiece(red, camera_feed, HSV_image, threshold_image);
-			trackTrackedPiece(green, camera_feed, HSV_image, threshold_image);
-			trackTrackedPiece(blue, camera_feed, HSV_image, threshold_image);
-			*/
-			trackTrackedPiece(yellow, camera_feed, HSV_image, threshold_image);
+//			trackTrackedPiece(yellow, camera_feed, HSV_image, threshold_image);
+			trackTrackedPiece(red_circle, camera_feed, HSV_image, threshold_image);
+			trackTrackedPiece(green_rectangle, camera_feed, HSV_image, threshold_image);
+			trackTrackedPiece(yellow_pentagon, camera_feed, HSV_image, threshold_image);
+			trackTrackedPiece(white_square, camera_feed, HSV_image, threshold_image);
 			imshow(window2, threshold_image);
 		}
 		

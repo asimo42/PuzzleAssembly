@@ -46,6 +46,7 @@ protected:
 	void createTrackbarWindow();
 	void erodeAndDilate(Mat &image);
 	void drawObject(vector<TrackedPiece> pieces, Mat &frame);
+	void drawPuzzleBoard(Mat &image);
 
 
 private:
