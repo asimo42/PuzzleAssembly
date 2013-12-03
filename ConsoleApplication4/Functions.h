@@ -3,7 +3,7 @@
 #include "HandleVariables.h"
 #include "TrackedPiece.h"
 #include "PuzzlePiece.h"
-//#include "Shape.h"
+#include "Shape.h"
 #include "GameBoard.h"
 #include "ScoreKeeping.h"
 #include "TrackedPiece.h"

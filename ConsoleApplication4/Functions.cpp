@@ -3,7 +3,6 @@
 #include <iostream>
 #include <sstream>
 #include <string>
-//#include <opencv2\opencv.hpp>	
 #include "Functions.h"
 
 #define CODEFILE "C:/Users/Owner/Documents/401- Senior Design/TestInputForKnobPuzzle.txt";
