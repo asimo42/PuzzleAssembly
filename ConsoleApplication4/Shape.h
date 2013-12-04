@@ -37,6 +37,7 @@ public:
         //-----Mutators-----
         //THIS IS NOT DELETE SHAPE; it delets all images and leaves image black 
         inline void Clear_To_Black() {*image = Mat::zeros(SCREEN_HEIGHT, SCREEN_WIDTH, CV_8UC3);}
+        inline void set_color(Scalar new_color) {color = new_color;}
 
         //-----Drawing Functions------
         void Draw_Circle(Point middle, int radius, int thickness = 1, int lineType = 8);
@@ -44,7 +45,9 @@ public:
         void Draw_Square(Point corner, int wid, int thickness = 1, int lineType = 8);
         void Draw_Triangle(Point top, int length, int thickness = 1, int lineType = 8);
         void Draw_Pentagon(Point top, int length, int thickness = 1, int lineType = 8);
+        void Draw_Star(Point top, int length, int thickness = 1, int lineType = 8);
         void Draw_Arrow(Point begin, Point end, int thickness = 1, int lineType = 8);
+
 
         //-----Other Methods------
         void setColor(Scalar BGR_val) {color = BGR_val;}
