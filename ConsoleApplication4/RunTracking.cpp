@@ -29,6 +29,13 @@ void RunTracking::Initialize() {
         this->V_min = 0;
         this->V_max = 256;
 
+		this->ScoreKeep = gcnew GamePlayed(this->Game);
+
+		DateTime tim = DateTime::Now;
+		this->StartTime = tim.Ticks; 
+		// SET THIS VARIABLE FOR TEST CASES. 0 = NOT TEST. 1,2,3,4... for different tests. 
+		this->TestCase = 1;
+
 
 }
 //----------------------------------------------------------------------------------------------------------
@@ -37,7 +44,16 @@ void RunTracking::Initialize() {
 void RunTracking::Start() {
         // initialize the class and then start tracking
         Initialize();
-        startTrack();
+		if (this->TestCase != 0) {
+			if (this->TestCase == 1) {
+				Test1();
+			}
+			//else {
+			//	System::String^ errorStr = "Error: Cannot find test case " + this->TestCase;
+			//	System::Windows::Forms::MessageBox::Show(errorStr);
+			//}
+		}
+		else { startTrack(); }
 }
 //----------------------------------------------------------------------------------------------------------
 

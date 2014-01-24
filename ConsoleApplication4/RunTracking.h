@@ -21,7 +21,7 @@ class RunTracking
         std::string gameName;
 
 
-    RunTracking() {};
+		RunTracking() {};
   
         virtual void Initialize();
         virtual void Start();
@@ -45,13 +45,19 @@ protected:
         void drawObject(vector<TrackedPiece> pieces, Mat &frame);
         void drawPuzzleBoard(Mat &image);
 
+		virtual void Test1();
 
 private:
+
+		long StartTime;
 
         std::string window1;
         std::string trackbar_window;
         std::string window2;
         std::string puzzle_window;
+
+		// hard coded test case - Change this variable in the 'initialize' function to do different test cases. 0 if  not test.
+		int TestCase;
 
         //default capture width and height
         int FRAME_WIDTH;

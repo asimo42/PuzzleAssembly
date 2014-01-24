@@ -28,6 +28,9 @@ GamePlayed::GamePlayed(KnobPuzzle^ Puzzle)
 	this->name = Puzzle->GetName();
 	this->timeStarted = gcnew System::DateTime;
 	this->timeStarted = this->timeStarted->Now;
+	this->timesBetweenPieces = gcnew List<int>();
+	this->orderOfPiecesPlayed = gcnew List<System::String^>();
+
 }
 //----------------------------------------------------------------------------------------------------------
 
