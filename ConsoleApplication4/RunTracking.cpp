@@ -34,7 +34,7 @@ void RunTracking::Initialize() {
 		DateTime tim = DateTime::Now;
 		this->StartTime = tim.Ticks; 
 		// SET THIS VARIABLE FOR TEST CASES. 0 = NOT TEST. 1,2,3,4... for different tests. 
-		this->TestCase = 1;
+		this->TestCase = 0;
 
 
 }
