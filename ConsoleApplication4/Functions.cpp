@@ -103,6 +103,13 @@ List<int>^ scalarToList(cv::Scalar scalar) {
 	return myList;
 }
 //----------------------------------------------------------------------------------------------------------
+// get elapsed seconds based on DateTime ticks
+int getElapsedSeconds(long startTime) {
+	DateTime tim = DateTime::Now;
+	long placeTime = tim.Ticks - startTime; // 10,000 ticks in a millisecond, 1000 milliseconds in a second
+	TimeSpan^ elapsed = gcnew TimeSpan(placeTime);
+	return elapsed->TotalSeconds;
+}
 //----------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------

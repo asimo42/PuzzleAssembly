@@ -23,6 +23,8 @@ int getCodeLocation(array<System::String^>^ lines, System::String^ code);
 std::string intToStdString(int number);
 System::String^ stdStringToSystemString(std::string str);
 std::string systemStringToStdString(System::String^ str);
+int getElapsedSeconds(long startTime);
+
 
 // OPENCV <--> MANAGED Conversions
 List<int>^ scalarToList(cv::Scalar scalar);
