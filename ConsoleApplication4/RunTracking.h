@@ -44,14 +44,12 @@ protected:
         void erodeAndDilate(Mat &image);
         void drawObject(vector<TrackedPiece> pieces, Mat &frame);
         void drawPuzzleBoard(Mat &image);
-	void drawPuzzleBoard(Mat &image);
 
 		virtual void Test1();
 
 private:
 
 		long StartTime;
-	std::string puzzle_window;
 
         std::string window1;
         std::string trackbar_window;
