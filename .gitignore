@@ -38,7 +38,7 @@ local.properties
 
 # Solution and project files
 <<<<<<< HEAD
-#*.sln
+*.sln
 #*.vcxproj
 #*.vcxproj.filters
 =======
