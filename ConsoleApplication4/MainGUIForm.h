@@ -6,10 +6,6 @@
 #include <stdlib.h>
 #include  <stdio.h>
 #include <vcclr.h>
-#include "GameBoard.h"
-#include "PuzzlePiece.h"
-#include "TrackedPiece.h"
-#include "HandleVariables.h"
 #include "Functions.h"
 
 #pragma once
@@ -33,7 +29,6 @@ namespace PuzzleAssembly {
 		{
 			InitializeComponent();
 			this->gameRunning = false;
-			//this->Vars.InitializeClass();
 			//
 			//TODO: Add the constructor code here
 			//
@@ -63,9 +58,9 @@ namespace PuzzleAssembly {
 	private: System::Windows::Forms::Timer^  timer1;
 	private: System::ComponentModel::IContainer^  components;
 	private: HandleVariables Vars;
+	private: System::Windows::Forms::Button^  scoresButton;
+	private: ScoreKeeping ScoreKeeper;
 
-
-	protected: 
 
 	protected: 
 
@@ -88,6 +83,7 @@ namespace PuzzleAssembly {
 			this->textBox1 = (gcnew System::Windows::Forms::TextBox());
 			this->label1 = (gcnew System::Windows::Forms::Label());
 			this->timer1 = (gcnew System::Windows::Forms::Timer(this->components));
+			this->scoresButton = (gcnew System::Windows::Forms::Button());
 			this->SuspendLayout();
 			// 
 			// runGameButton
@@ -136,11 +132,25 @@ namespace PuzzleAssembly {
 			// 
 			this->timer1->Tick += gcnew System::EventHandler(this, &MainGUIForm::timer1_Tick);
 			// 
+			// scoresButton
+			// 
+			this->scoresButton->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Left));
+			this->scoresButton->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 12, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, 
+				static_cast<System::Byte>(0)));
+			this->scoresButton->Location = System::Drawing::Point(16, 237);
+			this->scoresButton->Name = L"scoresButton";
+			this->scoresButton->Size = System::Drawing::Size(203, 67);
+			this->scoresButton->TabIndex = 8;
+			this->scoresButton->Text = L"Performance / Progress";
+			this->scoresButton->UseVisualStyleBackColor = true;
+			this->scoresButton->Click += gcnew System::EventHandler(this, &MainGUIForm::scoresButton_Click);
+			// 
 			// MainGUIForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(568, 308);
+			this->Controls->Add(this->scoresButton);
 			this->Controls->Add(this->label1);
 			this->Controls->Add(this->textBox1);
 			this->Controls->Add(this->stopGameButton);
@@ -155,6 +165,7 @@ namespace PuzzleAssembly {
 
 private: System::Void runGameButton_Click(System::Object^  sender, System::EventArgs^  e) {
 
+			 writeToLog("STARTING UP NEW GAME :)");
 			 this->gameRunning = true;
 			 this->runGameButton->Visible = false;
 			 this->stopGameButton->Visible = true;
@@ -163,7 +174,8 @@ private: System::Void runGameButton_Click(System::Object^  sender, System::Event
 			 //GameBaseClass^ puzzle = gcnew GameBaseClass();
 			 if (puzzleType->Equals("KnobPuzzle")) {
 				 KnobPuzzle^ puzzle = gcnew KnobPuzzle(CodeString);
-				 initializeOpenCV( Vars.returnHandle(), puzzle);
+				 initializeTracking( Vars.returnHandle(), puzzle);
+				 //initializeTracking( Vars.returnHandle(), puzzle, ScoreKeeper.returnHandle());
 			 }
 			 else if (puzzleType->Equals("BlockPuzzle")) {
 				 //BlockPuzzle^ puzzle = gcnew BlockPuzzle(CodeString);
@@ -182,5 +194,10 @@ private: System::Void timer1_Tick(System::Object^  sender, System::EventArgs^  e
 
 		 }
 
+private: System::Void scoresButton_Click(System::Object^  sender, System::EventArgs^  e) {
+			 // hmm scores should probably be a tabbed display, e.g. this session's games, Progress to-date
+			 // we'll keep it a simple page for now
+			// System::String^ results = ScoreKeeper.showResults();
+		 }
 };
 }

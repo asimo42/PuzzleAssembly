@@ -18,6 +18,9 @@ using namespace System::Collections::Generic;
 
 ref class GameBase {
 public:
+	System::String^ puzzleName;
+	System::String^ puzzleType;
+
 	GameBase() { puzzleName = ""; } // holder
 	virtual void SetName(System::String^ Name) { this->puzzleName = Name; }
 	System::String^ GetName() { return puzzleName; }
@@ -33,8 +36,7 @@ public:
 	virtual void setCancelled() { this->Cancelled = true; }
 
 protected:
-	System::String^ puzzleName;
-	System::String^ puzzleType;
+
 	int gameID;
 	bool Started;
 	bool Completed;
@@ -63,7 +65,6 @@ public:
 protected:
 	HANDLE myMutex;
 	List<PuzzlePiece^>^ pieceList;
-
 	void LookUpGame(System::String^ code);
 
 };
