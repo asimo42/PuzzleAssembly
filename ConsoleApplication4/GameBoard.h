@@ -60,11 +60,10 @@ public:
 	KnobPuzzle(void);
 	KnobPuzzle(System::String^ code); 
 	~KnobPuzzle(void);
-
+	List<PuzzlePiece^>^ pieceList;
 
 protected:
 	HANDLE myMutex;
-	List<PuzzlePiece^>^ pieceList;
 	void LookUpGame(System::String^ code);
 
 };
