@@ -1,6 +1,6 @@
-#pragma once
-
-#include "Functions.h"
+//#pragma once
+#include "stdafx.h"
+#include "GameBoard.h"
 
 #ifndef FILE_G
 #define FILE_G
@@ -50,6 +50,7 @@ public:
 	List<GamePlayed^>^ individualGamesList;
 	int Improvement;
 
+	ScoreKeeping();
 	ScoreKeeping^ returnHandle() { return this; }
 	void AddNewGame(GamePlayed^ newGame);
 	System::String^ getGameResults(GamePlayed^ game);

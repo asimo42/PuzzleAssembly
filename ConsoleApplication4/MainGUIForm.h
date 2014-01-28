@@ -174,8 +174,8 @@ private: System::Void runGameButton_Click(System::Object^  sender, System::Event
 			 //GameBaseClass^ puzzle = gcnew GameBaseClass();
 			 if (puzzleType->Equals("KnobPuzzle")) {
 				 KnobPuzzle^ puzzle = gcnew KnobPuzzle(CodeString);
-				 initializeTracking( Vars.returnHandle(), puzzle);
-				 //initializeTracking( Vars.returnHandle(), puzzle, ScoreKeeper.returnHandle());
+				 //initializeTracking( Vars.returnHandle(), puzzle);
+				 initializeTracking( Vars.returnHandle(), puzzle, ScoreKeeper.returnHandle());
 			 }
 			 else if (puzzleType->Equals("BlockPuzzle")) {
 				 //BlockPuzzle^ puzzle = gcnew BlockPuzzle(CodeString);

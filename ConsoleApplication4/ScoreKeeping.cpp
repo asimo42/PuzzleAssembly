@@ -58,6 +58,15 @@ void GamePlayed::setTimeForCompletion(int newTime)
 
 void GamePlayed::CalcAvgTimeBetweenPieces()
 {
+	int sum = 0;
+	int newtime = 0;
+	for each (int tim in timesBetweenPieces) {
+		newtime = tim - sum;
+		sum += newtime;
+	}
+	int average = sum/timesBetweenPieces->Count;
+	this->avgTimeBetweenPieces = average;
+	return;
 }
 //----------------------------------------------------------------------------------------------------------
 
@@ -81,6 +90,12 @@ void GamePlayed::setOrder()
 	this->slowestPiece = orderOfPiecesPlayed[indexS];
 	this->fastestPiece = orderOfPiecesPlayed[indexF];
 }
+
+
+//----------------------------------------------------------------------------------------------------------
+ScoreKeeping::ScoreKeeping() {
+	this->individualGamesList = gcnew List<GamePlayed^>();
+}
 //----------------------------------------------------------------------------------------------------------
 // Add a new instance of GamePlayed into the ScoreKeeping class
 void ScoreKeeping::AddNewGame(GamePlayed^ newGame) 
@@ -91,10 +106,22 @@ void ScoreKeeping::AddNewGame(GamePlayed^ newGame)
 //----------------------------------------------------------------------------------------------------------
 System::String^ ScoreKeeping::getGameResults(GamePlayed^ game) 
 {
+	if (game->orderOfPiecesPlayed->Count == 0)
+	{
+		return "game not completed";
+	}
 	System::String^ resultString = "";
 	resultString = "Game : " + game->name + "\n";
 	System::String^ tim = game->timeStarted->ToString("F");
 	resultString = resultString + "Time Started : " + tim + "\n";
+	resultString = resultString + "Time for Completion : " + game->timeForCompletion + "\n";
+	game->CalcAvgTimeBetweenPieces();
+	resultString = resultString + "Average Time Between Pieces: " + game->avgTimeBetweenPieces + "\n";
+	for (int i = 0; i < game->orderOfPiecesPlayed->Count; i++) 
+	{ 
+		resultString = resultString + "Piece : " + game->orderOfPiecesPlayed[i] + 
+			"       Time Placed (sec) : " + game->timesBetweenPieces[i] + "\n";
+	}
 
 	return resultString;
 }

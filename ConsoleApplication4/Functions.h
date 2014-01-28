@@ -14,8 +14,8 @@
 using namespace System::Collections::Generic;
 
 // starting OpenCV
-int initializeTracking(HandleVariables^ %handleVars, KnobPuzzle^ %Game);
-//int initializeTracking(HandleVariables^ %handleVars, KnobPuzzle^ %Game, ScoreKeeping^ %ScoreKeeper);
+//int initializeTracking(HandleVariables^ %handleVars, KnobPuzzle^ %Game);
+int initializeTracking(HandleVariables^ %handleVars, KnobPuzzle^ %Game, ScoreKeeping^ %ScoreKeeper);
 
 System::String^ searchPuzzleType(System::String^ code);
 array<System::String^>^ getCodeStrings(System::String^ code); 

@@ -25,7 +25,7 @@ class RunTracking
   
         virtual void Initialize();
         virtual void Start();
-        virtual void Stop() { STOP = true; }
+        virtual void Stop();
         virtual void setGame(KnobPuzzle^ game) {this->Game = game;}
         gcroot<GamePlayed^> returnScore();
 

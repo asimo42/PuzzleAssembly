@@ -20,7 +20,7 @@ void RunTracking::Test1() {
 	int placeTime;
 	for each (PuzzlePiece^ piece in this->ScoreKeep->game->pieceList)
 	{
-		placeTime = getElapsedSeconds(this->StartTime);
+		placeTime = getElapsedSeconds(this->StartTime)+1;
 		this->ScoreKeep->addNewTimeandPiece(placeTime, piece->getName());
 		Debug::WriteLine("time is " + placeTime);
 		System::Threading::Thread::Sleep(1*1000); // wait for 1 second (1000 ms)

@@ -33,6 +33,7 @@ void RunTracking::Initialize() {
 
 		DateTime tim = DateTime::Now;
 		this->StartTime = tim.Ticks; 
+		this->ScoreKeep->timeStarted = tim;
 		// SET THIS VARIABLE FOR TEST CASES. 0 = NOT TEST. 1,2,3,4... for different tests. 
 		this->TestCase = 0;
 
@@ -69,4 +70,12 @@ void RunTracking::endTrack() {
 
 gcroot<GamePlayed^> RunTracking::returnScore() {
         return this->ScoreKeep;
+}
+
+//----------------------------------------------------------------------------------------------------------
+
+void RunTracking::Stop() {
+	this->STOP = true;
+	this->ScoreKeep->timeForCompletion = getElapsedSeconds(this->StartTime);
+	return;
 }
