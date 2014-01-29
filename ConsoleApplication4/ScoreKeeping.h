@@ -1,4 +1,3 @@
-//#pragma once
 #include "stdafx.h"
 #include "GameBoard.h"
 
@@ -13,16 +12,14 @@ using namespace System::Collections::Generic;
 ref class GamePlayed
 {
 public:
-	System::String^ name;
-	int score;
-	int timeForCompletion;
-	int avgTimeBetweenPieces;
-	DateTime^ timeStarted;
-	List<int>^ timesBetweenPieces;
+
 	System::String^ gameType;
 	KnobPuzzle^ game;
-	System::String^ slowestPiece;
-	System::String^ fastestPiece;
+
+	int timeForCompletion;
+	double avgTimeBetweenPieces;
+	DateTime^ timeStarted;
+	List<int>^ timesOfPlacement;
 	List<System::String^>^ orderOfPiecesPlayed;
 
 	GamePlayed();
@@ -31,40 +28,32 @@ public:
 	System::String^ getType() {return this->gameType;}
 	void setGame(KnobPuzzle^ Puzzle);
 	void setType(System::String^ type) {this->gameType = type;}
-	void addNewTimeandPiece(int newTime, System::String^ puzzlePiece);
-	void setTimeForCompletion(int newTime);
-	void CalcAvgTimeBetweenPieces();
-	void setOrder();
+	void setTimeForCompletion(int newTime) {this->timeForCompletion = newTime; }
+	void compileData();
+	System::String^ printData();
 
+private:
+	void CalcAvgTimeBetweenPieces();
+	void findOrderOfPieces();
+	void findSortedTimes();
 };
 
 
-// Keeps running stats of the whole session (potentially more than one)
+// Keeps running stats of the whole session ( >= 1 game) or possibly over multiple sessions (future addition)
 ref class ScoreKeeping 
 {
 public:
 	HANDLE myMutex;
-	int numberOfGamesPlayed;
-	List<System::String^>^ listOfGamesPlayed;
-	int totalScore;
 	List<GamePlayed^>^ individualGamesList;
-	int Improvement;
 
 	ScoreKeeping();
 	ScoreKeeping^ returnHandle() { return this; }
 	void AddNewGame(GamePlayed^ newGame);
-	System::String^ getGameResults(GamePlayed^ game);
-	System::String^ showResults();    
-
-	//void PrintFinalResults();
-	//void PrintResultsForGame();
+	System::String^ showFinalResults();    
 
 private:
-	GamePlayed^ calculateAveragesByGameType(System::String^ gameType);
+	GamePlayed^ calculateAverageForGame(System::String^ gameName);
 
 };
-
-
-
 
 #endif

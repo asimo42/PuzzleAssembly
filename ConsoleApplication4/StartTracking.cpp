@@ -20,10 +20,11 @@ int initializeTracking(HandleVariables^ %handleVars, KnobPuzzle^ %Game, ScoreKee
    // Pull the game results and add them to the over-arching ScoreKeeper class instance for record-keeping
    MessageBox::Show("Got out of RunOpenCV");
 	GamePlayed^ gameResults = newOpenCV->returnScore();
+	// add game results to main scorekeeper instance. Show game results.
 	ScoreKeeper->AddNewGame(gameResults);
-	//System::String^ results = ScoreKeeper->getGameResults(gameResults);	// set the GAME_OVER flag so that the GUI can fetch it and process everything
-	//MessageBox::Show(results);
-	handleVars->setGameOver();
+	System::String^ results = gameResults->printData();	
+	MessageBox::Show(results);
+	handleVars->setGameOver(); // set the GAME_OVER flag so that the GUI can fetch it and process everything
   return EXIT_SUCCESS;
 }
 

@@ -10,6 +10,9 @@ e.g. initializing, starting, ending.  Tracking functions are located in "Trackin
 
 // initialize all variables upon creation of class 
 void RunTracking::Initialize() {
+
+		// SET THIS VARIABLE FOR TEST CASES. 0 = NOT TEST. 1,2,3,4... for different tests. 
+		this->TestCase = Constants::TESTNUMBER;
         this->window1 = "Original Capture";
         this->trackbar_window = "Trackbar Window";
         this->window2 = "Filtered Image";
@@ -34,8 +37,6 @@ void RunTracking::Initialize() {
 		DateTime tim = DateTime::Now;
 		this->StartTime = tim.Ticks; 
 		this->ScoreKeep->timeStarted = tim;
-		// SET THIS VARIABLE FOR TEST CASES. 0 = NOT TEST. 1,2,3,4... for different tests. 
-		this->TestCase = 0;
 
 
 }
@@ -45,15 +46,22 @@ void RunTracking::Initialize() {
 void RunTracking::Start() {
         // initialize the class and then start tracking
         Initialize();
+		//IF test is selected, go to test
 		if (this->TestCase != 0) {
-			if (this->TestCase == 1) {
-				Test1();
+			switch(this->TestCase) {
+				case 1:  Test1();	break;
+				case 2:  //Test2();	break;
+				case 3: //Test3();	break;
+				case 4: //Test4();	break;
+				case 5: //Test5();	break;
+				case 6: //Test6();	break;
+			    // need to modify this in order to add more tests
+				default: 
+					System::String^ errorStr = "Error: Cannot find test case " + this->TestCase;
+					System::Windows::Forms::MessageBox::Show(errorStr);
 			}
-			//else {
-			//	System::String^ errorStr = "Error: Cannot find test case " + this->TestCase;
-			//	System::Windows::Forms::MessageBox::Show(errorStr);
-			//}
 		}
+		//Otherwise, start tracking
 		else { startTrack(); }
 }
 //----------------------------------------------------------------------------------------------------------
@@ -76,6 +84,8 @@ gcroot<GamePlayed^> RunTracking::returnScore() {
 
 void RunTracking::Stop() {
 	this->STOP = true;
-	this->ScoreKeep->timeForCompletion = getElapsedSeconds(this->StartTime);
+	this->ScoreKeep->setTimeForCompletion(getElapsedSeconds(this->StartTime));
+	this->ScoreKeep->compileData();
+	System::Windows::Forms::MessageBox::Show(this->ScoreKeep->printData());
 	return;
 }

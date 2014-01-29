@@ -190,14 +190,17 @@ private: System::Void stopGameButton_Click(System::Object^  sender, System::Even
 			 this->runGameButton->Visible = true;
 			 this->stopGameButton->Visible = false;
 		 }
+
+//TIMER CURRENTLY NOT IN USE
 private: System::Void timer1_Tick(System::Object^  sender, System::EventArgs^  e) {
 
 		 }
 
 private: System::Void scoresButton_Click(System::Object^  sender, System::EventArgs^  e) {
 			 // hmm scores should probably be a tabbed display, e.g. this session's games, Progress to-date
-			 // we'll keep it a simple page for now
-			// System::String^ results = ScoreKeeper.showResults();
+			 // we'll keep it a simple message box for now - We'll want a scrolling form later
+			System::String^ results = ScoreKeeper.showFinalResults();
+			MessageBox::Show(results);
 		 }
 };
 }

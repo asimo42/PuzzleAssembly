@@ -12,17 +12,19 @@ using namespace System::Collections::Generic;
 
 KnobPuzzle::KnobPuzzle(void) 
 {
-	this->Started = false; this->Completed = false; this->Cancelled = false;
-	this->puzzleName = gcnew System::String("KNOBPUZZLE 1");
+	this->Error = false;
+	this->puzzleName = gcnew System::String("KNOBPUZZLE");
 	this->puzzleType = gcnew System::String("KNOBPUZZLE");
+	List<PuzzlePiece^>^ pieceList = gcnew List<PuzzlePiece^>();
 	this->numPieces = 0;
 }
 //----------------------------------------------------------------------------------------------------------
 KnobPuzzle::KnobPuzzle(System::String^ code) 
 {
-	this->Started = false; this->Completed = false; this->Cancelled = false;
-	this->puzzleName = gcnew System::String("KNOBPUZZLE 1");
+	this->Error = false;
+	this->puzzleName = code;
 	this->puzzleType = gcnew System::String("KNOBPUZZLE");
+	List<PuzzlePiece^>^ pieceList = gcnew List<PuzzlePiece^>();
 	LookUpGame(code);
 	if (this->Error) {
 		return;

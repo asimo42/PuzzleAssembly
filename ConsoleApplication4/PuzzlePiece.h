@@ -15,13 +15,15 @@ ref class PuzzlePiece
 private:
 
 	HANDLE myMutex;
-	System::String^ name;
 	int x_pos, y_pos;
 	double x_dest, y_dest;
 	List<int>^ HSV_min;
 	List<int>^ HSV_max;
 
 public:
+
+	int timePlaced;
+	System::String^ name;
 
 	PuzzlePiece(void);
 
@@ -30,6 +32,7 @@ public:
 
 	~PuzzlePiece(void);
 
+	void setTimePlaced(int tim) {timePlaced = tim;} 
 
 	int getXPos() {return x_pos;}
 	double getXDestX() { return x_dest;}

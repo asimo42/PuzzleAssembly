@@ -85,11 +85,6 @@ void RunTracking::erodeAndDilate(Mat &image)
 	dilate(image,image,dilateElement);
 }
 
-//string intToStdString(int number){
-//	std::stringstream ss;
-//	ss << number;
-//	return ss.str();
-//}
 
 void RunTracking::drawObject(vector<TrackedPiece> pieces, Mat &frame){
 
@@ -111,7 +106,9 @@ void RunTracking::trackFilteredObject(TrackedPiece &piece, Mat &cameraFeed, Mat 
 	vector< vector<Point> > contours;
 	vector<Vec4i> hierarchy;
 	//find contours of filtered image using openCV findContours function
-	findContours(temp,contours,hierarchy,CV_RETR_CCOMP,CV_CHAIN_APPROX_SIMPLE );
+	if (!Constants::LAURA) {
+		findContours(temp,contours,hierarchy,CV_RETR_CCOMP,CV_CHAIN_APPROX_SIMPLE );
+	}
 	//use moments method to find our filtered object
 	bool objectFound = false;
 	if (hierarchy.size() > 0) {

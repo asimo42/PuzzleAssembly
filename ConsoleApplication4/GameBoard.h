@@ -13,7 +13,6 @@
 #define FILE_H
 
 using namespace System;
-//using namespace cv;
 using namespace System::Collections::Generic;
 
 ref class GameBase {
@@ -21,36 +20,22 @@ public:
 	System::String^ puzzleName;
 	System::String^ puzzleType;
 
-	GameBase() { puzzleName = ""; } // holder
+	GameBase() { puzzleName = ""; puzzleType = ""; LevelOfDifficulty = 0;} // holder
 	virtual void SetName(System::String^ Name) { this->puzzleName = Name; }
 	System::String^ GetName() { return puzzleName; }
 	System::String^ GetType() { return puzzleType; }
-	double getTimeTaken() {return this->TimeTaken;}
 	int getLevelOfDifficulty() {return this->LevelOfDifficulty;}
-	virtual bool CheckCompleted() {
-		if (Completed || Cancelled) {return true;}
-		else {return false;}
-	}
-	virtual void setStart() { this->Started = true; }
-	virtual void setCompleted() { this->Completed = true; }
-	virtual void setCancelled() { this->Cancelled = true; }
 
 protected:
 
-	int gameID;
-	bool Started;
-	bool Completed;
-	bool Cancelled;
 	bool Error;
-	double TimeTaken;
 	int LevelOfDifficulty;
 
-	virtual void setTimeTaken( double timeTaken) {this->TimeTaken = timeTaken; }
 	virtual void setLevelOfDifficulty(int level) { this->LevelOfDifficulty = level; }
 };
 
 
-// this class should create the puzzle piece classes
+// Class specific to Knob Puzzle; initializes and manages list of puzzle pieces
 ref class KnobPuzzle : public GameBase
 {
 
@@ -61,6 +46,7 @@ public:
 	KnobPuzzle(System::String^ code); 
 	~KnobPuzzle(void);
 	List<PuzzlePiece^>^ pieceList;
+	//List<PuzzlePiece^>^ orderPlaced;
 
 protected:
 	HANDLE myMutex;

@@ -15,6 +15,7 @@ PuzzlePiece::PuzzlePiece(void)
 	List<int>^ HSVmaxtmp = gcnew List<int>((IEnumerable<int>^) input);
 	setHSVmin(HSVmintmp);
 	setHSVmax(HSVmaxtmp);
+	timePlaced = 0;
 
 }
 

@@ -13,6 +13,17 @@
 
 using namespace System::Collections::Generic;
 
+// define any constants that will be repeated across multiple files/functions
+// or is changeable
+class Constants {
+public:
+
+	static const int TESTNUMBER = 0;	// chose a test number to run
+	static const bool LAURA = false;     // if LAURA == true, 'findcontours' will be skipped in the tracking function
+
+};
+
+
 // starting OpenCV
 //int initializeTracking(HandleVariables^ %handleVars, KnobPuzzle^ %Game);
 int initializeTracking(HandleVariables^ %handleVars, KnobPuzzle^ %Game, ScoreKeeping^ %ScoreKeeper);
@@ -24,7 +35,6 @@ std::string intToStdString(int number);
 System::String^ stdStringToSystemString(std::string str);
 std::string systemStringToStdString(System::String^ str);
 int getElapsedSeconds(long startTime);
-
 
 // OPENCV <--> MANAGED Conversions
 List<int>^ scalarToList(cv::Scalar scalar);
@@ -39,5 +49,8 @@ void on_trackbar( int, void* );
 
 // from logging.cpp
 void writeToLog(System::String^ myMessage);
+
+
+
 
 #endif
