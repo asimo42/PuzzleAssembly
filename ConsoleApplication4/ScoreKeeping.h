@@ -18,24 +18,25 @@ public:
 
 	int timeForCompletion;
 	double avgTimeBetweenPieces;
-	DateTime^ timeStarted;
-	List<int>^ timesOfPlacement;
-	List<System::String^>^ orderOfPiecesPlayed;
+	DateTime^ timeStarted; // datetime object with time that the puzzle was started
+	List<int>^ timesOfPlacement; // must calculate this manually from puzzle
+	List<System::String^>^ orderOfPiecesPlayed; // must calculate this manually
 
 	GamePlayed();
 	~GamePlayed();
 	GamePlayed(KnobPuzzle^ Puzzle);
 	System::String^ getType() {return this->gameType;}
+
 	void setGame(KnobPuzzle^ Puzzle);
 	void setType(System::String^ type) {this->gameType = type;}
 	void setTimeForCompletion(int newTime) {this->timeForCompletion = newTime; }
-	void compileData();
-	System::String^ printData();
+	void compileData(); // pull information from puzzle pieces to fill arrays
+	System::String^ printData(); // create string with results from game
 
 private:
-	void CalcAvgTimeBetweenPieces();
-	void findOrderOfPieces();
-	void findSortedTimes();
+	void CalcAvgTimeBetweenPieces();   // called by compileData
+	void findOrderOfPieces();          // called by compileData
+	void findSortedTimes();            // called by compileData
 };
 
 
@@ -48,7 +49,7 @@ public:
 
 	ScoreKeeping();
 	ScoreKeeping^ returnHandle() { return this; }
-	void AddNewGame(GamePlayed^ newGame);
+	void AddNewGame(GamePlayed^ newGame) { this->individualGamesList->Add(newGame); }
 	System::String^ showFinalResults();    
 
 private:

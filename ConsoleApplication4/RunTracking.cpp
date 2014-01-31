@@ -33,9 +33,11 @@ void RunTracking::Initialize() {
         this->V_max = 256;
 
 		this->ScoreKeep = gcnew GamePlayed(this->Game);
+		this->gameName = systemStringToStdString(this->Game->GetName());
+		this->STOP = false;
 
+		// set up the start time to now. All scores will be measured against this start time
 		DateTime tim = DateTime::Now;
-		this->StartTime = tim.Ticks; 
 		this->ScoreKeep->timeStarted = tim;
 
 
@@ -50,11 +52,11 @@ void RunTracking::Start() {
 		if (this->TestCase != 0) {
 			switch(this->TestCase) {
 				case 1:  Test1();	break;
-				case 2:  //Test2();	break;
-				case 3: //Test3();	break;
-				case 4: //Test4();	break;
-				case 5: //Test5();	break;
-				case 6: //Test6();	break;
+				case 2:  Test2();	break;
+				case 3:  Test3();	break;
+				case 4:  Test4();	break;
+				case 5:  Test5();	break;
+				case 6:  Test6();	break;
 			    // need to modify this in order to add more tests
 				default: 
 					System::String^ errorStr = "Error: Cannot find test case " + this->TestCase;
@@ -69,8 +71,6 @@ void RunTracking::Start() {
 // end tracking, 'clean up' game.  this instance of the class will now end (though that might change in the future)
 void RunTracking::endTrack() {
         // **may want to wait for main GUI to pull all the scorekeeping info first.
-        System::Diagnostics::Debug::WriteLine("Hey, opencv is done");
-        System::Diagnostics::Debug::WriteLine("GAME OVER!!!");
         System::Windows::Forms::MessageBox::Show("GAME OVER!");
 }
 
@@ -84,8 +84,19 @@ gcroot<GamePlayed^> RunTracking::returnScore() {
 
 void RunTracking::Stop() {
 	this->STOP = true;
-	this->ScoreKeep->setTimeForCompletion(getElapsedSeconds(this->StartTime));
+	this->ScoreKeep->setTimeForCompletion(getElapsedSeconds(this->ScoreKeep->timeStarted->Ticks));
 	this->ScoreKeep->compileData();
 	System::Windows::Forms::MessageBox::Show(this->ScoreKeep->printData());
 	return;
+}
+
+//----------------------------------------------------------------------------------------------------------
+// once you've identified which piece was placed, and that it was placed, handle it
+void RunTracking::processPlacementOfPiece(TrackedPiece trackedpiece) 
+{
+	// first, get the current time
+	int placeTime = getElapsedSeconds(this->ScoreKeep->timeStarted->Ticks);
+	// then match the tracked piece to it's corresponding PuzzlePiece
+	// probably by name
+	// then pull the time of placement and give it to the PuzzlePiece
 }

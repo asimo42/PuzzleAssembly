@@ -5,7 +5,6 @@
 #include <string>
 #include "Functions.h"
 
-#define CODEFILE "C:/Users/Owner/Documents/401- Senior Design/TestInputForKnobPuzzle.txt";
 
 using namespace System::Collections::Generic;
 
@@ -30,8 +29,9 @@ System::String^ searchPuzzleType(System::String^ code)
 
 array<System::String^>^ getCodeStrings(System::String^ code) {
 
-	// THIS FILE LOCATION SHOULD BE DEFINED SOMEWHERE
-	System::String^ inputFile = CODEFILE;
+
+	//System::String^ inputFile = "C:/Users/Owner/Documents/401- Senior Design/PuzzleAssembly/PuzzleAssembly/ConsoleApplication4/TestInputForKnobPuzzle.txt";
+	System::String^ inputFile = "C:/Users/Owner/Documents/401- Senior Design/TestInputForKnobPuzzle.txt";
 	array<System::String^>^ lines;
 	// Read in all lines of code file into an array 'lines'
 	try {
@@ -39,11 +39,26 @@ array<System::String^>^ getCodeStrings(System::String^ code) {
 	}
 	// return error if there's a problem
 	catch (System::Exception^ e) {
-		System::Diagnostics::Debug::WriteLine(e);
-		lines = gcnew array<System::String^>(1);
-		System::Windows::Forms::MessageBox::Show("Error - can't read file");
-		lines[0] = gcnew System::String("ERROR");
-		return lines;
+		//System::Diagnostics::Debug::WriteLine(e);
+		//lines = gcnew array<System::String^>(1);
+		//System::Windows::Forms::MessageBox::Show("Error - can't read file");
+		//lines[0] = gcnew System::String("ERROR");
+
+		// for now, we will hardcode it so you guys don't get screwed over. CHANGE THIS LATER
+		List<System::String^>^ tmpList = gcnew List<System::String^>();
+		tmpList->Add( "KNOBPUZZLE1\n");
+		tmpList->Add( "NO.PIECES 5\n"); 
+		tmpList->Add( "LOC 1 1 COLOR 100 100 150 200 200 200 Square\n" );
+		tmpList->Add( "LOC 2 2 COLOR 65 23 200 200 200 255 Rectangle\n" );
+		tmpList->Add( "LOC 3 4 COLOR 10 10 10 100 100 100 Circle\n" );
+		tmpList->Add( "LOC 5 3 COLOR 90 55 100 100 100 150 Star\n" );
+		tmpList->Add( "LOC 6 7 COLOR 100 299 100 150 150 150 Pentagon\n" );
+		tmpList->Add( "\n");
+		tmpList->Add( "----------------------------------------------------------------\n");
+		tmpList->Add( "\n" );
+		tmpList->Add( "** note: LOC xloc yloc COLOR Hmin Smin Vmin Hmax Smax Vmax name");
+		System::Windows::Forms::MessageBox::Show(System::String::Join("",tmpList));
+		return tmpList->ToArray(); // oops not the right version of toarrya
 	}
 	return lines;
 }

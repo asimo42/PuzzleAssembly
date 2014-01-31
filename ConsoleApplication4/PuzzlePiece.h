@@ -33,6 +33,7 @@ public:
 	~PuzzlePiece(void);
 
 	void setTimePlaced(int tim) {timePlaced = tim;} 
+	int getTimePlaced() { return timePlaced; }
 
 	int getXPos() {return x_pos;}
 	double getXDestX() { return x_dest;}

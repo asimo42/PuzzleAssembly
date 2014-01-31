@@ -119,13 +119,7 @@ System::String^ GamePlayed::printData()
 ScoreKeeping::ScoreKeeping() {
 	this->individualGamesList = gcnew List<GamePlayed^>();
 }
-//----------------------------------------------------------------------------------------------------------
-// Add a new instance of GamePlayed into the ScoreKeeping class
-void ScoreKeeping::AddNewGame(GamePlayed^ newGame) 
-{
-	this->individualGamesList->Add(newGame); 
-}
-//----------------------------------------------------------------------------------------------------------
+
 //----------------------------------------------------------------------------------------------------------
 // return a string for printing out all results, to be displayed from the GUI.  
 // will calculate and all stats for individual games, the session, and through history (future addition)

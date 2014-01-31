@@ -45,11 +45,20 @@ protected:
         void drawObject(vector<TrackedPiece> pieces, Mat &frame);
         void drawPuzzleBoard(Mat &image);
 
+		//handling placement of pieces
+		void processPlacementOfPiece(TrackedPiece trackedpiece);
+
+
+
+		// test cases
 		virtual void Test1();
+		virtual void Test2();
+		virtual void Test3();
+		virtual void Test4();
+		virtual void Test5();
+		virtual void Test6();
 
 private:
-
-		long StartTime;
 
         std::string window1;
         std::string trackbar_window;

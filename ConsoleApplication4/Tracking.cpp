@@ -52,7 +52,7 @@ int S_max = 256;
 int V_min = 0;
 int V_max = 256;
 */
-void on_trackbar( int, void* )
+void on_trackbar( int, void* )    // this function won't compile as part of RunTracking - no idea why
 {//This function gets called whenever a
 	// trackbar position is changed
 }
@@ -106,7 +106,7 @@ void RunTracking::trackFilteredObject(TrackedPiece &piece, Mat &cameraFeed, Mat 
 	vector< vector<Point> > contours;
 	vector<Vec4i> hierarchy;
 	//find contours of filtered image using openCV findContours function
-	if (!Constants::LAURA) {
+	if (!Constants::LAURA) {                // * If laura, skip findCountours. This variable defined in Functions.h
 		findContours(temp,contours,hierarchy,CV_RETR_CCOMP,CV_CHAIN_APPROX_SIMPLE );
 	}
 	//use moments method to find our filtered object
@@ -229,6 +229,7 @@ int RunTracking::startTrack()
 	}
 
 //	TrackedPiece yellow = TrackedPiece("Tennis Ball", Scalar(25,44,160), Scalar(77,95,256));
+	//Note to self* need to create these dynamically by converting PuzzlePiece^ to TrackedPiece^
 	TrackedPiece red_circle = TrackedPiece("Circle", Scalar(165, 107, 25), Scalar(185, 233, 256));
 	TrackedPiece green_rectangle = TrackedPiece("Rectangle", Scalar(74, 75, 50), Scalar(88, 214, 256));
 	TrackedPiece yellow_pentagon = TrackedPiece("Pentagon", Scalar(16, 47, 47), Scalar(32, 200, 256));

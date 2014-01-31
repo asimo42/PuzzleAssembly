@@ -21,6 +21,10 @@ public:
 	static const int TESTNUMBER = 0;	// chose a test number to run
 	static const bool LAURA = false;     // if LAURA == true, 'findcontours' will be skipped in the tracking function
 
+	// location of Laura's codefile (feel free to comment out and add your own if you ever use it)
+	//static const std::string CODEFILE = 
+	//	"C:/Users/Owner/Documents/401- Senior Design/PuzzleAssembly/PuzzleAssembly/ConsoleApplication4/TestInputForKnobPuzzle.txt";
+	// crap this isn't compiling for some reason
 };
 
 
@@ -40,12 +44,8 @@ int getElapsedSeconds(long startTime);
 List<int>^ scalarToList(cv::Scalar scalar);
 
 // from Tracking.cpp
-void on_trackbar( int, void* );
-//void createTrackbarWindow();
-//void erodeAndDilate(Mat &image);
-//void drawObject(vector<TrackedPiece> pieces, Mat &frame);
-//void  trackFilteredObject(TrackedPiece piece, Mat &cameraFeed, Mat &threshold_image);
-//void  trackTrackedPiece(TrackedPiece &piece, Mat &camera_feed, Mat &HSV_image, Mat &threshold_image);
+void on_trackbar( int, void* );  // this one won't compile as part of RunTracking - no idea why
+
 
 // from logging.cpp
 void writeToLog(System::String^ myMessage);
