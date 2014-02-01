@@ -127,7 +127,7 @@ System::String^ ScoreKeeping::showFinalResults()
 {
 	// Lock thread
 	myMutex = CreateMutex(NULL, FALSE, (LPCWSTR) "compiling results");
-	System::String^ finalString = "		Performance and Progress\n";
+	System::String^ finalString = "Performance and Progress\n\n";
 
 	// start off by getting the results for each individual game
 	List<System::String^>^ individualGameStrings = gcnew List<System::String^>();  // to hold each game's result string
@@ -156,10 +156,10 @@ System::String^ ScoreKeeping::showFinalResults()
 //----------------------------------------------------------------------------------------------------------
 // find all of certain game in game list and average the scores
 // return in a faux GamePlayed^ instance
+// technically we don't need matching yet, since we will always be playing the same game
 GamePlayed^ ScoreKeeping::calculateAverageForGame(System::String^ gameName)
 {
 	List<GamePlayed^>^ matchingGames = gcnew List<GamePlayed^>();
-	// hmm should actually be for game board, not type, if I want to be able to find info about pieces
 	//for each (GamePlayed^ game in this->individualGamesList) {
 		//System::String^ listedName = game->game->puzzleName();
 		//if (listedName->Equals(gameName)) {
