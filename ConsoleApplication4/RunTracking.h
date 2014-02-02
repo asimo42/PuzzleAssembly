@@ -1,11 +1,11 @@
-/* This class controls the operation of OpenCV.  It starts OpenCV running, monitors/controls tracking, gathers time data, and shuts
-OpenCV down once the game is completed or stopped.  An instance of this class is created in "StartOpenCV.cpp" when the user hits
-the Run button on the GUI
+/* This class controls the operation of OpenCV tracking.  It starts, monitors & controls tracking, gathers time data, and shuts
+tracking down once the game is completed or stopped.  An instance of this class is created in initializeTracking() when the user hits
+the Run button on the GUI, and it lasts the duration of a single game
 */
 
 #include "stdafx.h"
 #include <vcclr.h>
-#include <opencv2\opencv.hpp>        //includes all OpenCV headers
+#include <opencv2\opencv.hpp>
 #include "Functions.h"
 
 class RunTracking
@@ -18,11 +18,7 @@ class RunTracking
         gcroot<HandleVariables^> Vars;
         gcroot<KnobPuzzle^> Game;
 
-        std::string gameName;
-
-
-		RunTracking() {};
-  
+		RunTracking() { };
         virtual void Initialize();
         virtual void Start();
         virtual void Stop();
@@ -45,10 +41,8 @@ protected:
         void drawObject(vector<TrackedPiece> pieces, Mat &frame);
         void drawPuzzleBoard(Mat &image);
 
-		//handling placement of pieces
+		//handling placement of pieces (in progress)
 		void processPlacementOfPiece(TrackedPiece trackedpiece);
-
-
 
 		// test cases
 		virtual void Test1();

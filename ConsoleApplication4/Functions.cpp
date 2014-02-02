@@ -4,10 +4,37 @@
 #include <sstream>
 #include <string>
 #include "Functions.h"
+#include "RunTracking.h"
 
 
 using namespace System::Collections::Generic;
+using namespace System::Windows::Forms;
 
+//----------------------------------------------------------------------------------------------------------
+
+// Start tracking via a RunTracking instance. Currently only designed for a KnobPuzzle game
+void initializeTracking(HandleVariables^ %handleVars, KnobPuzzle^ %Game, ScoreKeeping^ %ScoreKeeper)
+{
+	// Initialize OpenCV running class (RunTracking) and load with handlevars class and puzzle
+    RunTracking* newOpenCV = new RunTracking();
+    newOpenCV->Vars = handleVars;
+    newOpenCV->setGame(Game);
+    newOpenCV->Start();
+
+    // Once game is over, pull the game results and add them to the over-arching ScoreKeeper class instance for record-keeping
+    MessageBox::Show("Got out of RunTracking");
+	GamePlayed^ gameResults = newOpenCV->returnScore();
+
+	// add game results to main scorekeeper instance. Show game results.
+	ScoreKeeper->AddNewGame(gameResults);
+	System::String^ results = gameResults->printData();	
+	MessageBox::Show(results);
+
+	return;
+}
+//----------------------------------------------------------------------------------------------------------
+
+// match the game code to the type (as a string). Simple matching; game code should always have game type in it
 System::String^ searchPuzzleType(System::String^ code)
 {
 	System::String^ type = "";
@@ -25,14 +52,14 @@ System::String^ searchPuzzleType(System::String^ code)
 }
 //----------------------------------------------------------------------------------------------------------
 
+// Pull all strings from the games file into an array of System::Strings^
+array<System::String^>^ getGameFileStrings(System::String^ code) {
 
-
-array<System::String^>^ getCodeStrings(System::String^ code) {
-
-	// path temporarily hardcoded here. Aren't using it currently; see below
+	// game file path hardcoded here. Aren't using it currently; see below **Will need to change
 	System::String^ inputFile = "C:/Users/Owner/Documents/401- Senior Design/PuzzleAssembly/PuzzleAssembly/ConsoleApplication4/TestInputForKnobPuzzle.txt";
-	array<System::String^>^ lines;
+
 	// Read in all lines of code file into an array 'lines'
+	array<System::String^>^ lines;
 	try {
 		lines = System::IO::File::ReadAllLines(inputFile);
 	}
@@ -43,7 +70,8 @@ array<System::String^>^ getCodeStrings(System::String^ code) {
 		//System::Windows::Forms::MessageBox::Show("Error - can't read file");
 		//lines[0] = gcnew System::String("ERROR");
 
-		// for now, we will hardcode it so we don't get screwed over. CHANGE THIS LATER
+		// for now, we will just hardcode a fake file so we don't get screwed over. CHANGE THIS LATER
+		// we aren't actually technically using these values yet anyway
 		List<System::String^>^ tmpList = gcnew List<System::String^>();
 		tmpList->Add( "KNOBPUZZLE1");
 		tmpList->Add( "NO.PIECES 5"); 
@@ -64,7 +92,8 @@ array<System::String^>^ getCodeStrings(System::String^ code) {
 }
 //----------------------------------------------------------------------------------------------------------
 
-
+// find the index of the start of the actual puzzle info in the game file strings
+// by searching for the code string; this is always at the start of the puzzle info.
 int getCodeLocation(array<System::String^>^ lines, System::String^ code)
 {
 	int index = -1;
@@ -78,11 +107,12 @@ int getCodeLocation(array<System::String^>^ lines, System::String^ code)
 	// if never found, return error.
 	if (index == -1) {
 		System::Windows::Forms::MessageBox::Show("Error - cannot find puzzle");
-		return -1;
 	}
+	return -1;
+
 }
 //----------------------------------------------------------------------------------------------------------
-
+// convert an integer into a std::string
 std::string intToStdString(int number){
 	std::stringstream ss;
 	ss << number;
@@ -112,13 +142,16 @@ std::string systemStringToStdString(System::String^ str)
 }
 
 //----------------------------------------------------------------------------------------------------------
+
+// convert a cv::scalar into a list of 3 ints (for use in managed code)
 List<int>^ scalarToList(cv::Scalar scalar) {
 	List<int>^ myList = gcnew List<int>(0);
 	myList->Add(scalar[0]); myList->Add(scalar[1]); myList->Add(scalar[2]);
 	return myList;
 }
 //----------------------------------------------------------------------------------------------------------
-// get elapsed seconds based on DateTime ticks
+
+// get elapsed seconds from a start time based on number of DateTime ticks
 int getElapsedSeconds(long startTime) {
 	DateTime tim = DateTime::Now;
 	long placeTime = tim.Ticks - startTime; // 10,000 ticks in a millisecond, 1000 milliseconds in a second

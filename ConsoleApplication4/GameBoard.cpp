@@ -39,7 +39,7 @@ KnobPuzzle::~KnobPuzzle(void)
 void KnobPuzzle::LookUpGame(System::String^ code) 
 {
 	// get all strings from the code file
-	array<System::String^>^ stringArray = getCodeStrings(code);
+	array<System::String^>^ stringArray = getGameFileStrings(code);
 	if (stringArray[0]->Equals("ERROR")) {
 		System::Windows::Forms::MessageBox::Show("Could not load game file");
 		this->Error = true;

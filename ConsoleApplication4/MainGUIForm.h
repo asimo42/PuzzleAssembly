@@ -29,9 +29,6 @@ namespace PuzzleAssembly {
 		{
 			InitializeComponent();
 			this->gameRunning = false;
-			//
-			//TODO: Add the constructor code here
-			//
 		}
 
 	protected:
@@ -47,15 +44,11 @@ namespace PuzzleAssembly {
 		}
 	private: System::Windows::Forms::Button^  runGameButton;
 
-
-
-
-	private: System::Windows::Forms::Button^  stopGameButton;
+	//private: System::Windows::Forms::Button^  stopGameButton;
 	public: bool gameRunning;
 	private: System::Windows::Forms::TextBox^  textBox1;
 	public: 
 	private: System::Windows::Forms::Label^  label1;
-	private: System::Windows::Forms::Timer^  timer1;
 	private: System::ComponentModel::IContainer^  components;
 	private: HandleVariables Vars;
 	private: System::Windows::Forms::Button^  scoresButton;
@@ -79,10 +72,9 @@ namespace PuzzleAssembly {
 		{
 			this->components = (gcnew System::ComponentModel::Container());
 			this->runGameButton = (gcnew System::Windows::Forms::Button());
-			this->stopGameButton = (gcnew System::Windows::Forms::Button());
+			//this->stopGameButton = (gcnew System::Windows::Forms::Button());
 			this->textBox1 = (gcnew System::Windows::Forms::TextBox());
 			this->label1 = (gcnew System::Windows::Forms::Label());
-			this->timer1 = (gcnew System::Windows::Forms::Timer(this->components));
 			this->scoresButton = (gcnew System::Windows::Forms::Button());
 			this->SuspendLayout();
 			// 
@@ -100,16 +92,16 @@ namespace PuzzleAssembly {
 			// 
 			// stopGameButton
 			// 
-			this->stopGameButton->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 15.75F, System::Drawing::FontStyle::Italic, System::Drawing::GraphicsUnit::Point, 
-				static_cast<System::Byte>(0)));
-			this->stopGameButton->Location = System::Drawing::Point(370, 140);
-			this->stopGameButton->Name = L"stopGameButton";
-			this->stopGameButton->Size = System::Drawing::Size(194, 69);
-			this->stopGameButton->TabIndex = 5;
-			this->stopGameButton->Text = L"Stop Game";
-			this->stopGameButton->UseVisualStyleBackColor = true;
-			this->stopGameButton->Visible = false;
-			this->stopGameButton->Click += gcnew System::EventHandler(this, &MainGUIForm::stopGameButton_Click);
+			//this->stopGameButton->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 15.75F, System::Drawing::FontStyle::Italic, System::Drawing::GraphicsUnit::Point, 
+			//	static_cast<System::Byte>(0)));
+			//this->stopGameButton->Location = System::Drawing::Point(370, 140);
+			//this->stopGameButton->Name = L"stopGameButton";
+			//this->stopGameButton->Size = System::Drawing::Size(194, 69);
+			//this->stopGameButton->TabIndex = 5;
+			//this->stopGameButton->Text = L"Stop Game";
+			//this->stopGameButton->UseVisualStyleBackColor = true;
+			//this->stopGameButton->Visible = false;
+			//this->stopGameButton->Click += gcnew System::EventHandler(this, &MainGUIForm::stopGameButton_Click);
 			// 
 			// textBox1
 			// 
@@ -127,10 +119,6 @@ namespace PuzzleAssembly {
 			this->label1->Size = System::Drawing::Size(63, 13);
 			this->label1->TabIndex = 7;
 			this->label1->Text = L"Game Code";
-			// 
-			// timer1
-			// 
-			this->timer1->Tick += gcnew System::EventHandler(this, &MainGUIForm::timer1_Tick);
 			// 
 			// scoresButton
 			// 
@@ -153,7 +141,7 @@ namespace PuzzleAssembly {
 			this->Controls->Add(this->scoresButton);
 			this->Controls->Add(this->label1);
 			this->Controls->Add(this->textBox1);
-			this->Controls->Add(this->stopGameButton);
+			//this->Controls->Add(this->stopGameButton);
 			this->Controls->Add(this->runGameButton);
 			this->Name = L"MainGUIForm";
 			this->Text = L"Puzzle Assembly Assistant";
@@ -165,39 +153,36 @@ namespace PuzzleAssembly {
 
 private: System::Void runGameButton_Click(System::Object^  sender, System::EventArgs^  e) {
 
-			 writeToLog("STARTING UP NEW GAME :)");
 			 this->gameRunning = true;
 			 this->runGameButton->Visible = false;
-			 this->stopGameButton->Visible = true;
+			 //this->stopGameButton->Visible = true;
 			 System::String^ CodeString = this->textBox1->Text;
 			 System::String^ puzzleType = searchPuzzleType(CodeString);
-			 //GameBaseClass^ puzzle = gcnew GameBaseClass();
-			 if (puzzleType->Equals("KnobPuzzle")) {
+			 //KNOB PUZZLE IS STILL HARDCODED - WILL NEED TO MAKE CHANGES TO RELEVANT CLASSES
+
+			 // load up puzzle class and start tracking
+			 if (puzzleType->Equals("KnobPuzzle")) {   
 				 KnobPuzzle^ puzzle = gcnew KnobPuzzle(CodeString);
-				 //initializeTracking( Vars.returnHandle(), puzzle);
 				 initializeTracking( Vars.returnHandle(), puzzle, ScoreKeeper.returnHandle());
 			 }
 			 else if (puzzleType->Equals("BlockPuzzle")) {
-				 //BlockPuzzle^ puzzle = gcnew BlockPuzzle(CodeString);
 				 //etc...
 			 }
+
+			 this->runGameButton->Visible = true;
 		 }
 
 
 		 // NOTE ALSO NEED A PAUSE BUTTON
-private: System::Void stopGameButton_Click(System::Object^  sender, System::EventArgs^  e) {
-			 this->gameRunning = false;
-			 this->runGameButton->Visible = true;
-			 this->stopGameButton->Visible = false;
-		 }
+//private: System::Void stopGameButton_Click(System::Object^  sender, System::EventArgs^  e) {
+//			 this->gameRunning = false;
+//			 this->runGameButton->Visible = true;
+//			 this->stopGameButton->Visible = false;
+//		 }
 
-//TIMER CURRENTLY NOT IN USE
-private: System::Void timer1_Tick(System::Object^  sender, System::EventArgs^  e) {
-
-		 }
 
 private: System::Void scoresButton_Click(System::Object^  sender, System::EventArgs^  e) {
-			 // hmm scores should probably be a tabbed display, e.g. this session's games, Progress to-date
+			 // scores should probably be a tabbed display, e.g. this session's games, Progress to-date
 			 // we'll keep it a simple message box for now - We'll want a scrolling form later
 			System::String^ results = ScoreKeeper.showFinalResults();
 			MessageBox::Show(results);

@@ -105,10 +105,13 @@ void RunTracking::trackFilteredObject(TrackedPiece &piece, Mat &cameraFeed, Mat 
 	//these two vectors needed for output of findContours
 	vector< vector<Point> > contours;
 	vector<Vec4i> hierarchy;
+
 	//find contours of filtered image using openCV findContours function
-	if (!Constants::LAURA) {                // * If laura, skip findCountours. This variable defined in Functions.h
-		findContours(temp,contours,hierarchy,CV_RETR_CCOMP,CV_CHAIN_APPROX_SIMPLE );
-	}
+	// *If laura's computer, skip findCountours.
+#ifndef LAURA
+	findContours(temp,contours,hierarchy,CV_RETR_CCOMP,CV_CHAIN_APPROX_SIMPLE );
+#endif
+
 	//use moments method to find our filtered object
 	bool objectFound = false;
 	if (hierarchy.size() > 0) {
