@@ -55,8 +55,8 @@ System::String^ searchPuzzleType(System::String^ code)
 // Pull all strings from the games file into an array of System::Strings^
 array<System::String^>^ getGameFileStrings(System::String^ code) {
 
-	// game file path hardcoded here. Aren't using it currently; see below **Will need to change
-	System::String^ inputFile = "C:/Users/Owner/Documents/401- Senior Design/PuzzleAssembly/PuzzleAssembly/ConsoleApplication4/TestInputForKnobPuzzle.txt";
+	// game file path hardcoded in Functions.h. Aren't using it currently; see below **Will need to change
+	System::String^ inputFile = Constants::GAME_INPUT_FILE;
 
 	// Read in all lines of code file into an array 'lines'
 	array<System::String^>^ lines;
@@ -152,7 +152,7 @@ List<int>^ scalarToList(cv::Scalar scalar) {
 //----------------------------------------------------------------------------------------------------------
 
 // get elapsed seconds from a start time based on number of DateTime ticks
-int getElapsedSeconds(long startTime) {
+double getElapsedSeconds(long startTime) {
 	DateTime tim = DateTime::Now;
 	long placeTime = tim.Ticks - startTime; // 10,000 ticks in a millisecond, 1000 milliseconds in a second
 	TimeSpan^ elapsed = gcnew TimeSpan(placeTime);

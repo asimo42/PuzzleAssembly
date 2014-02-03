@@ -23,7 +23,7 @@ using namespace System::Diagnostics;
 void RunTracking::Test1() {
 	MessageBox::Show("RUNNING TEST 1: 1 second between each piece placement.");
 	int placeTime;
-	for each (PuzzlePiece^ piece in this->ScoreKeep->game->pieceList)
+	for each (PuzzlePiece^ piece in this->ScoreKeep->getGame()->getPieceList())
 	{
 		placeTime = getElapsedSeconds(this->ScoreKeep->timeStarted->Ticks);
 		piece->setTimePlaced(placeTime);
@@ -46,7 +46,7 @@ void RunTracking::Test2() {
 
 	// fill in all the times with junk
 	int placeTime;
-	for each (PuzzlePiece^ piece in this->ScoreKeep->game->pieceList)
+	for each (PuzzlePiece^ piece in this->ScoreKeep->getGame()->getPieceList())
 	{
 		placeTime = getElapsedSeconds(this->ScoreKeep->timeStarted->Ticks);
 		piece->setTimePlaced(placeTime);
@@ -54,7 +54,7 @@ void RunTracking::Test2() {
 		System::Threading::Thread::Sleep(1); // wait for 1 ms
 	}
 
-	for each (PuzzlePiece^ piece in this->ScoreKeep->game->pieceList) {
+	for each (PuzzlePiece^ piece in this->ScoreKeep->getGame()->getPieceList()) {
 		if (piece->getName()->Equals(stdStringToSystemString(yellow_pentagon.getName()))) {
 			piece->setTimePlaced(600);
 			Debug::WriteLine("Pentagon placed at 600 s ");

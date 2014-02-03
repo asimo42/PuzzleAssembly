@@ -60,7 +60,7 @@ void GamePlayed::CalcAvgTimeBetweenPieces()
 void GamePlayed::findSortedTimes() {
 
 	List<int>^ sortedList = gcnew List<int>();
-	for each (PuzzlePiece^ piece in this->game->pieceList) {
+	for each (PuzzlePiece^ piece in this->game->getPieceList()) {
 		sortedList->Add(piece->timePlaced);
 	}
 	sortedList->Sort();
@@ -71,7 +71,7 @@ void GamePlayed::findSortedTimes() {
 void GamePlayed::findOrderOfPieces() {
 	List<System::String^>^ orderedList = gcnew List<System::String^>();
 	for (int i = 0; i < this->timesOfPlacement->Count; i++) {
-		for each (PuzzlePiece^ piece in this->game->pieceList) {
+		for each (PuzzlePiece^ piece in this->game->getPieceList()) {
 			if (piece->timePlaced == this->timesOfPlacement[i] && !orderedList->Contains(piece->getName())) { 
 				orderedList->Add(piece->getName()); 
 			}
@@ -99,12 +99,12 @@ System::String^ GamePlayed::printData()
 		if (this->orderOfPiecesPlayed->Count == 0) { return "game not completed"; }
 	}
 	System::String^ resultString = "";
-	resultString = "Game : " + game->puzzleName + "\n";
+	resultString = "Game : " + game->getName() + "\n";
 	System::String^ tim = this->timeStarted->ToString("F");
 	resultString = resultString + "Time Started : " + tim + "\n";
 	resultString = resultString + "Time for Completion : " + this->timeForCompletion + "\n";
 	resultString = resultString + "Average Time Between Pieces: " + this->avgTimeBetweenPieces + "\n";
-	for (int i = 0; i < this->game->pieceList->Count; i++) 
+	for (int i = 0; i < this->game->getPieceList()->Count; i++) 
 	{ 
 		resultString = resultString + "Piece : " + this->orderOfPiecesPlayed[i] + 
 			"       Time Placed (sec) : " + this->timesOfPlacement[i] + "\n";

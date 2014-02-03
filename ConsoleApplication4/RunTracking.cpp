@@ -101,7 +101,7 @@ void RunTracking::Stop() {
 void RunTracking::processPlacementOfPiece(TrackedPiece trackedpiece) 
 {
 	// first, get the current time
-	int placeTime = getElapsedSeconds(this->ScoreKeep->timeStarted->Ticks);
+	double placeTime = getElapsedSeconds(this->ScoreKeep->timeStarted->Ticks);
 	// then match the tracked piece to it's corresponding PuzzlePiece
 	// probably by name
 	// then pull the time of placement and give it to the PuzzlePiece

@@ -9,7 +9,8 @@
 using namespace System;
 using namespace System::Collections::Generic;
 
-
+//----------------------------------------------------------------------------------------------------------
+// initialize an empty knobpuzzle
 KnobPuzzle::KnobPuzzle(void) 
 {
 	this->Error = false;
@@ -18,24 +19,29 @@ KnobPuzzle::KnobPuzzle(void)
 	List<PuzzlePiece^>^ pieceList = gcnew List<PuzzlePiece^>();
 	this->numPieces = 0;
 }
+
 //----------------------------------------------------------------------------------------------------------
+// initialize a knob puzzle to a code. It will look into the game file for the matching code
 KnobPuzzle::KnobPuzzle(System::String^ code) 
 {
 	this->Error = false;
 	this->puzzleName = code;
 	this->puzzleType = gcnew System::String("KNOBPUZZLE");
 	List<PuzzlePiece^>^ pieceList = gcnew List<PuzzlePiece^>();
-	LookUpGame(code);
+	LookUpGame(code); // this will fill up the knobpuzzle^ class properties
 	if (this->Error) {
+		System::Windows::Forms::MessageBox::Show("Couldn't initialize game. Check code and/or game file.");
 		return;
 	}
 }
 //----------------------------------------------------------------------------------------------------------
+// I should really learn how to use destructors. I have no idea what this does.
 KnobPuzzle::~KnobPuzzle(void) 
 {
 }
 //----------------------------------------------------------------------------------------------------------
-
+// Look in game input file for knob puzzle matching given code. Pull all game information from file.
+//*** CHANGES to input file must be dealt with there ******
 void KnobPuzzle::LookUpGame(System::String^ code) 
 {
 	// get all strings from the code file
@@ -45,6 +51,7 @@ void KnobPuzzle::LookUpGame(System::String^ code)
 		this->Error = true;
 		return;
 	}
+
 	// get location of our code
 	int index = getCodeLocation(stringArray, code);
 	if (index < 0 || index > stringArray->Length) {
@@ -53,6 +60,7 @@ void KnobPuzzle::LookUpGame(System::String^ code)
 		return;
 	}
 
+	// parse information and fill PuzzlePieces^. **THIS IS HARDCODED - changes to input file must be dealt with there
 	List<PuzzlePiece^>^ PieceList = gcnew List<PuzzlePiece^>(0);
 	System::String^ line = stringArray[index];
 	array<System::String^>^ tokens;
@@ -61,12 +69,15 @@ void KnobPuzzle::LookUpGame(System::String^ code)
 	int hmin, smin, vmin, hmax, smax, vmax;
 	List<Int32>^ HSVmin;
 	List<Int32>^ HSVmax;
-	// start processing our code lines
+
+	// go through each line in our section of input file. 
 	while(!line->Contains("----") && index < stringArray->Length) {
 		line = stringArray[index++];
 		System::Diagnostics::Debug::WriteLine(line);
-		if (line->Length == 0) {continue;}
+		if (line->Length == 0) {continue;} // if line empty, continue
 		tokens = line->Split();
+
+		// Pull # of pieces
 		if (tokens[0]->Equals("NO.PIECES") && tokens->Length == 2) {
 			if (!Int32::TryParse(tokens[1], no_pieces)) {
 				System::Windows::Forms::MessageBox::Show("Error, NO.PIECES incorrectly formatted");
@@ -74,6 +85,8 @@ void KnobPuzzle::LookUpGame(System::String^ code)
 				return;
 			}
 		}
+
+		// Pull PuzzlePiece^ information
 		if (tokens[0]->Equals("LOC") && tokens[3]->Equals("COLOR") && tokens->Length == 11 ) {
 			//Sample Format:::    LOC 1 1 COLOR 100 100 150 200 200 200 SQUARE
 			Double::TryParse(tokens[1], x);
@@ -85,14 +98,14 @@ void KnobPuzzle::LookUpGame(System::String^ code)
 			Int32::TryParse(tokens[8], smax);
 			Int32::TryParse(tokens[9], vmax);
 			HSVmin = gcnew List<Int32>(3);
+			HSVmin->Add(hmin); HSVmin->Add(smin); HSVmin->Add(vmin);
 			HSVmax = gcnew List<Int32>(3);
+			HSVmax->Add(hmax); HSVmax->Add(smax); HSVmax->Add(vmax);
 			PuzzlePiece^ newPiece = gcnew PuzzlePiece(tokens[10], HSVmin, HSVmax);
 			newPiece->setDestPos(x,y);
 			PieceList->Add(newPiece);
 		}
 	}
-	System::String^ testOutput = "Loaded file " + code + PieceList[3]->getYDest();
-	System::Windows::Forms::MessageBox::Show(testOutput);
 
 	// load piece data into mother class
 	this->pieceList = PieceList;

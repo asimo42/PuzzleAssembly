@@ -1,13 +1,9 @@
 #pragma once
-#include <string>
-#include <stack>
-#include <process.h>
+
 #using <System.dll>
-#include <stdio.h>
 #include <Windows.h>
 
 using namespace System;
-//using namespace cv;
 using namespace System::Collections::Generic;
 
 ref class PuzzlePiece
@@ -26,9 +22,8 @@ public:
 	System::String^ name;
 
 	PuzzlePiece(void);
-
-	PuzzlePiece(System::String^);
-	PuzzlePiece(System::String^, List<int>^, List<int>^ Scalar);
+	PuzzlePiece(System::String^ piece_name);
+	PuzzlePiece(System::String^ piece_name, List<int>^ HSVmin, List<int>^ HSVmax);
 
 	~PuzzlePiece(void);
 

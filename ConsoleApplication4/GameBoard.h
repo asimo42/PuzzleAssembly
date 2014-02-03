@@ -17,22 +17,28 @@ using namespace System::Collections::Generic;
 
 ref class GameBase {
 public:
-	System::String^ puzzleName;
-	System::String^ puzzleType;
-
-	GameBase() { puzzleName = ""; puzzleType = ""; LevelOfDifficulty = 0;} // holder
-	virtual void SetName(System::String^ Name) { this->puzzleName = Name; }
-	System::String^ GetName() { return puzzleName; }
-	System::String^ GetType() { return puzzleType; }
-	int getLevelOfDifficulty() {return this->LevelOfDifficulty;}
+	GameBase()									   { puzzleName = ""; puzzleType = ""; LevelOfDifficulty = 0;} // holder
+	virtual void setName(System::String^ Name)     { this->puzzleName = Name; }
+	System::String^ getName()				   { return puzzleName; }
+	void setType(System::String^ type) { this->puzzleType = type; }
+	System::String^ getType()				   { return puzzleType; }
+	void setLevelOfDifficulty(int level)	       {this->LevelOfDifficulty = level; }
+	int getLevelOfDifficulty()					   {return this->LevelOfDifficulty;}
 
 protected:
 
 	bool Error;
-	int LevelOfDifficulty;
+	System::String^ puzzleName;
+	System::String^ puzzleType;
+	int LevelOfDifficulty; // level of difficulty not currently in use
 
-	virtual void setLevelOfDifficulty(int level) { this->LevelOfDifficulty = level; }
+	//virtual void setLevelOfDifficulty(int level) { this->LevelOfDifficulty = level; }
 };
+
+
+//------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 
 // Class specific to Knob Puzzle; initializes and manages list of puzzle pieces
@@ -40,18 +46,20 @@ ref class KnobPuzzle : public GameBase
 {
 
 public:
-	int numPieces;
 
 	KnobPuzzle(void);
 	KnobPuzzle(System::String^ code); 
 	~KnobPuzzle(void);
-	List<PuzzlePiece^>^ pieceList;
-	//List<PuzzlePiece^>^ orderPlaced;
+	int getNumPieces()		   { return this->numPieces; }
+	void setNumPieces(int num) { this->numPieces = num; }
+	List<PuzzlePiece^>^ getPieceList()        { return this->pieceList; }
 
 protected:
 	HANDLE myMutex;
+	int numPieces;
 	void LookUpGame(System::String^ code);
-
+	List<PuzzlePiece^>^ pieceList;
+	//List<PuzzlePiece^>^ orderPlaced;
 };
 
 #endif
