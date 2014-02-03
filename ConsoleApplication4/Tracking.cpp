@@ -25,33 +25,11 @@
 #include "RunTracking.h"
 #include "Functions.h"
 #include "Shape.h"
+#include <Windows.h>	// for timer
 
 using namespace cv;
 using namespace std;
-/*
- * These are now defined in RunTracking.cpp
- *
-const std::string window1 = "Original Capture";
-const std::string trackbar_window = "Trackbar Window";
-const std::string window2 = "Filtered Image";
-const std::string puzzle_window = "Puzzle Board Window";
 
-//default capture width and height
-const int FRAME_WIDTH = 640;
-const int FRAME_HEIGHT = 480;
-//max number of objects to be detected in frame
-const int MAX_NUM_OBJECTS=10;
-//minimum and maximum object area
-const int MIN_OBJECT_AREA = 2500;
-const int MAX_OBJECT_AREA = FRAME_HEIGHT*FRAME_WIDTH/1.5;
-
-int H_min = 0;
-int H_max = 256;
-int S_min = 0;
-int S_max = 256;
-int V_min = 0;
-int V_max = 256;
-*/
 void on_trackbar( int, void* )
 {//This function gets called whenever a
 	// trackbar position is changed
@@ -159,10 +137,7 @@ void RunTracking::trackFilteredObject(TrackedPiece &piece, Mat &cameraFeed, Mat 
 
 					objectFound = true;
 				}
-
-
 			}
-
 
 			//let user know you found an object and check for movement
 			if(objectFound ==true){
@@ -212,8 +187,17 @@ void RunTracking::drawPuzzleBoard(Mat &image)
 	shapes.Draw_Pentagon(Point(1056, 585), 173, -1);
 }
 
+VOID CALLBACK timerTick(  _In_  HWND hwnd, _In_  UINT uMsg, _In_  UINT_PTR idEvent, _In_  DWORD dwTime)
+{
+	cout << "Timer tick." << endl;
+}
+
 int RunTracking::startTrack()
 {
+	// set timer to periodically check piece movement
+	UINT timer_ms = 500;
+	SetTimer(NULL, 1, timer_ms, timerTick);
+
 	bool calibrate_mode = false;
 
 	VideoCapture capture;
