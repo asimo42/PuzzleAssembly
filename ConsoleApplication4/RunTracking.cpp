@@ -10,6 +10,16 @@ e.g. initializing, starting, ending.  Tracking functions are located in "Trackin
 
 // initialize all variables upon creation of class 
 void RunTracking::Initialize() {
+		//red_circle = TrackedPiece("Circle", Scalar(165, 107, 25), Scalar(185, 233, 256));
+		//green_rectangle = TrackedPiece("Rectangle", Scalar(74, 75, 50), Scalar(88, 214, 256));
+		//yellow_pentagon = TrackedPiece("Pentagon", Scalar(16, 47, 47), Scalar(32, 200, 256));
+
+		/*
+		 * doing this in Tracking.cpp for now
+		 */
+		//pieces.push_back(TrackedPiece("Circle", Scalar(165, 107, 25), Scalar(185, 233, 256)));
+		//pieces.push_back(TrackedPiece("Rectangle", Scalar(74, 75, 50), Scalar(88, 214, 256)));
+		//pieces.push_back(TrackedPiece("Pentagon", Scalar(16, 47, 47), Scalar(32, 200, 256)));
         this->window1 = "Original Capture";
         this->trackbar_window = "Trackbar Window";
         this->window2 = "Filtered Image";

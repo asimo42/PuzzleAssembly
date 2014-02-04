@@ -22,6 +22,10 @@ private:
 	Scalar HSV_min, HSV_max;
 	Scalar color;
 
+	// Set to true when piece has consistently moved recently. 
+	// i.e. the user has picked up and is trying to place the piece.
+	bool isMoving;
+
 public:
 
 	TrackedPiece(void);
