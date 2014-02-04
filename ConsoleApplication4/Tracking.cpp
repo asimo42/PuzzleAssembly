@@ -207,16 +207,22 @@ VOID CALLBACK timerTick(  _In_  HWND hwnd, _In_  UINT uMsg, _In_  UINT_PTR idEve
 		if(pieces[i].getXPos() > (pieces[i].getLastxPos() + thresh) || pieces[i].getXPos() < (pieces[i].getLastxPos() - thresh))
 		{
 			pieces[i].setLastxPos(pieces[i].getXPos());
-			cout << pieces[i].getName() << ": X movement" << endl;
-		}
-		if(pieces[i].getYPos() > (pieces[i].getLastyPos() + thresh) || pieces[i].getYPos() < (pieces[i].getLastyPos() - thresh))
+			pieces[i].checkForMovement(true);
+			//cout << pieces[i].getName() << ": X movement" << endl;
+		}	
+
+		else if(pieces[i].getYPos() > (pieces[i].getLastyPos() + thresh) || pieces[i].getYPos() < (pieces[i].getLastyPos() - thresh))
 		{
 			pieces[i].setLastyPos(pieces[i].getYPos());
-			cout << pieces[i].getName() << ": Y movement." << endl;
+			pieces[i].checkForMovement(true);
+			//cout << pieces[i].getName() << ": Y movement." << endl;
 		}
+
+		else 
+			pieces[i].checkForMovement(false);
 	}
 
-	cout << "Timer tick." << endl;
+	//cout << "Timer tick." << endl;
 }
 /*
  * Can't get callback to work as a member function, so making pieces global for now
