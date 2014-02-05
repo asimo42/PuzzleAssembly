@@ -1,11 +1,8 @@
 #include "stdafx.h"
-#include "PuzzlePiece.h"
-#include <string>
-#include <stack>
-#include <process.h>
-#using <System.dll>
-#include <stdio.h>
+
 #include <Windows.h>
+#include "PuzzlePiece.h"
+
 
 PuzzlePiece::PuzzlePiece(void)
 {
@@ -15,6 +12,7 @@ PuzzlePiece::PuzzlePiece(void)
 	List<int>^ HSVmaxtmp = gcnew List<int>((IEnumerable<int>^) input);
 	setHSVmin(HSVmintmp);
 	setHSVmax(HSVmaxtmp);
+	timePlaced = 0;
 
 }
 

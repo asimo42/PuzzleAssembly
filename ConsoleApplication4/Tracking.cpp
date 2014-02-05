@@ -29,11 +29,39 @@
 
 using namespace cv;
 using namespace std;
+<<<<<<< HEAD
 
 // Global for now, should not be though
 vector<TrackedPiece> pieces;
 
 void on_trackbar( int, void* )
+=======
+/*
+ * These are now defined in RunTracking.cpp
+ *
+const std::string window1 = "Original Capture";
+const std::string trackbar_window = "Trackbar Window";
+const std::string window2 = "Filtered Image";
+const std::string puzzle_window = "Puzzle Board Window";
+
+//default capture width and height
+const int FRAME_WIDTH = 640;
+const int FRAME_HEIGHT = 480;
+//max number of objects to be detected in frame
+const int MAX_NUM_OBJECTS=10;
+//minimum and maximum object area
+const int MIN_OBJECT_AREA = 2500;
+const int MAX_OBJECT_AREA = FRAME_HEIGHT*FRAME_WIDTH/1.5;
+
+int H_min = 0;
+int H_max = 256;
+int S_min = 0;
+int S_max = 256;
+int V_min = 0;
+int V_max = 256;
+*/
+void on_trackbar( int, void* )    // this function won't compile as part of RunTracking - no idea why
+>>>>>>> e3d06e0dfbcfbf94346be9a34fa6b116d515c1f1
 {//This function gets called whenever a
 	// trackbar position is changed
 }
@@ -66,11 +94,6 @@ void RunTracking::erodeAndDilate(Mat &image)
 	dilate(image,image,dilateElement);
 }
 
-//string intToStdString(int number){
-//	std::stringstream ss;
-//	ss << number;
-//	return ss.str();
-//}
 
 void RunTracking::drawObject(vector<TrackedPiece> pieces, Mat &frame){
 
@@ -91,8 +114,13 @@ void RunTracking::trackFilteredObject(TrackedPiece &piece, Mat &cameraFeed, Mat 
 	//these two vectors needed for output of findContours
 	vector< vector<Point> > contours;
 	vector<Vec4i> hierarchy;
+
 	//find contours of filtered image using openCV findContours function
+	// *If laura's computer, skip findCountours.
+#ifndef LAURA
 	findContours(temp,contours,hierarchy,CV_RETR_CCOMP,CV_CHAIN_APPROX_SIMPLE );
+#endif
+
 	//use moments method to find our filtered object
 	bool objectFound = false;
 	if (hierarchy.size() > 0) {
@@ -273,10 +301,18 @@ int RunTracking::startTrack()
 
 	// Moved to member variables of RunTracking class
 //	TrackedPiece yellow = TrackedPiece("Tennis Ball", Scalar(25,44,160), Scalar(77,95,256));
+<<<<<<< HEAD
 //	TrackedPiece red_circle = TrackedPiece("Circle", Scalar(165, 107, 25), Scalar(185, 233, 256));
 //	TrackedPiece green_rectangle = TrackedPiece("Rectangle", Scalar(74, 75, 50), Scalar(88, 214, 256));
 //	TrackedPiece yellow_pentagon = TrackedPiece("Pentagon", Scalar(16, 47, 47), Scalar(32, 200, 256));
 //	TrackedPiece white_square = TrackedPiece("Square", Scalar(77, 0, 168), Scalar(158, 63, 256));
+=======
+	//Note to self* need to create these dynamically by converting PuzzlePiece^ to TrackedPiece^
+	TrackedPiece red_circle = TrackedPiece("Circle", Scalar(165, 107, 25), Scalar(185, 233, 256));
+	TrackedPiece green_rectangle = TrackedPiece("Rectangle", Scalar(74, 75, 50), Scalar(88, 214, 256));
+	TrackedPiece yellow_pentagon = TrackedPiece("Pentagon", Scalar(16, 47, 47), Scalar(32, 200, 256));
+	TrackedPiece white_square = TrackedPiece("Square", Scalar(77, 0, 168), Scalar(158, 63, 256));
+>>>>>>> e3d06e0dfbcfbf94346be9a34fa6b116d515c1f1
 
 	Mat puzzle;				//Puzzle board image for drawing shapes on
 	namedWindow(puzzle_window);

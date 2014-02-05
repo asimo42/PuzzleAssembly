@@ -13,59 +13,53 @@
 #define FILE_H
 
 using namespace System;
-//using namespace cv;
 using namespace System::Collections::Generic;
 
 ref class GameBase {
 public:
-	System::String^ puzzleName;
-	System::String^ puzzleType;
-
-	GameBase() { puzzleName = ""; } // holder
-	virtual void SetName(System::String^ Name) { this->puzzleName = Name; }
-	System::String^ GetName() { return puzzleName; }
-	System::String^ GetType() { return puzzleType; }
-	double getTimeTaken() {return this->TimeTaken;}
-	int getLevelOfDifficulty() {return this->LevelOfDifficulty;}
-	virtual bool CheckCompleted() {
-		if (Completed || Cancelled) {return true;}
-		else {return false;}
-	}
-	virtual void setStart() { this->Started = true; }
-	virtual void setCompleted() { this->Completed = true; }
-	virtual void setCancelled() { this->Cancelled = true; }
+	GameBase()									   { puzzleName = ""; puzzleType = ""; LevelOfDifficulty = 0;} // holder
+	virtual void setName(System::String^ Name)     { this->puzzleName = Name; }
+	System::String^ getName()				   { return puzzleName; }
+	void setType(System::String^ type) { this->puzzleType = type; }
+	System::String^ getType()				   { return puzzleType; }
+	void setLevelOfDifficulty(int level)	       {this->LevelOfDifficulty = level; }
+	int getLevelOfDifficulty()					   {return this->LevelOfDifficulty;}
 
 protected:
 
-	int gameID;
-	bool Started;
-	bool Completed;
-	bool Cancelled;
 	bool Error;
-	double TimeTaken;
-	int LevelOfDifficulty;
+	System::String^ puzzleName;
+	System::String^ puzzleType;
+	int LevelOfDifficulty; // level of difficulty not currently in use
 
-	virtual void setTimeTaken( double timeTaken) {this->TimeTaken = timeTaken; }
-	virtual void setLevelOfDifficulty(int level) { this->LevelOfDifficulty = level; }
+	//virtual void setLevelOfDifficulty(int level) { this->LevelOfDifficulty = level; }
 };
 
 
-// this class should create the puzzle piece classes
+//------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+
+// Class specific to Knob Puzzle; initializes and manages list of puzzle pieces
 ref class KnobPuzzle : public GameBase
 {
 
 public:
-	int numPieces;
 
 	KnobPuzzle(void);
 	KnobPuzzle(System::String^ code); 
 	~KnobPuzzle(void);
-	List<PuzzlePiece^>^ pieceList;
+	int getNumPieces()		   { return this->numPieces; }
+	void setNumPieces(int num) { this->numPieces = num; }
+	List<PuzzlePiece^>^ getPieceList()        { return this->pieceList; }
 
 protected:
 	HANDLE myMutex;
+	int numPieces;
 	void LookUpGame(System::String^ code);
-
+	List<PuzzlePiece^>^ pieceList;
+	//List<PuzzlePiece^>^ orderPlaced;
 };
 
 #endif

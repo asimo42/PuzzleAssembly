@@ -77,11 +77,14 @@ public:
 	void setColor(Scalar c) {color = c;}
 };
 
-void on_trackbar( int, void* );
-void createTrackbarWindow();
-void erodeAndDilate(Mat &image);
-string intToStdString(int number);
-void drawObject(vector<TrackedPiece> pieces, Mat &frame);
-void trackFilteredObject(TrackedPiece &piece, Mat &cameraFeed, Mat &threshold_image);
-void trackTrackedPiece(TrackedPiece &piece, Mat &camera_feed, Mat &HSV_image, Mat &threshold_image);
-int startTrack();
+
+// most of following functions contained within RunTracking
+
+//void on_trackbar( int, void* );
+//void createTrackbarWindow();
+//void erodeAndDilate(Mat &image);
+//string intToStdString(int number);
+//void drawObject(vector<TrackedPiece> pieces, Mat &frame);
+//void trackFilteredObject(TrackedPiece &piece, Mat &cameraFeed, Mat &threshold_image);
+//void trackTrackedPiece(TrackedPiece &piece, Mat &camera_feed, Mat &HSV_image, Mat &threshold_image);
+//int startTrack();

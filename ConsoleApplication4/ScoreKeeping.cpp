@@ -25,12 +25,11 @@ GamePlayed::GamePlayed(KnobPuzzle^ Puzzle)
 {
 	this->game = Puzzle;
 	this->gameType = "KnobPuzzle";
-	this->name = Puzzle->GetName();
 	this->timeStarted = gcnew System::DateTime;
 	this->timeStarted = this->timeStarted->Now;
-	this->timesBetweenPieces = gcnew List<int>();
+	//this->timesBetweenPieces = gcnew List<int>();
+	this->timesOfPlacement = gcnew List<int>();
 	this->orderOfPiecesPlayed = gcnew List<System::String^>();
-
 }
 //----------------------------------------------------------------------------------------------------------
 
@@ -38,113 +37,174 @@ void GamePlayed::setGame(KnobPuzzle^ Puzzle)
 {
 	this->game = Puzzle;
 	this->gameType = "KnobPuzzle";
-	this->name = Puzzle->GetName();
 	this->timeStarted = gcnew System::DateTime;
 	this->timeStarted = this->timeStarted->Now;
 }
 //----------------------------------------------------------------------------------------------------------
 
-void GamePlayed::addNewTimeandPiece(int newTime, System::String^ puzzlePiece)
-{
-	this->timesBetweenPieces->Add(newTime);
-	this->orderOfPiecesPlayed->Add(puzzlePiece);
-}
-//----------------------------------------------------------------------------------------------------------
-
-void GamePlayed::setTimeForCompletion(int newTime)
-{
-}
-//----------------------------------------------------------------------------------------------------------
-
 void GamePlayed::CalcAvgTimeBetweenPieces()
 {
+	int sum = 0;
+	int newtime = 0;
+
+	// calculate the average
+	for (int i = 0; i < this->timesOfPlacement->Count; i++) {
+		newtime = this->timesOfPlacement[i] - sum;
+		sum += newtime;
+	}
+	double average = sum/this->timesOfPlacement->Count;
+	this->avgTimeBetweenPieces = average;
+	return;
+}
+//----------------------------------------------------------------------------------------------------------
+void GamePlayed::findSortedTimes() {
+
+	List<int>^ sortedList = gcnew List<int>();
+	for each (PuzzlePiece^ piece in this->game->getPieceList()) {
+		sortedList->Add(piece->timePlaced);
+	}
+	sortedList->Sort();
+	this->timesOfPlacement = sortedList;
+
+}
+//----------------------------------------------------------------------------------------------------------
+void GamePlayed::findOrderOfPieces() {
+	List<System::String^>^ orderedList = gcnew List<System::String^>();
+	for (int i = 0; i < this->timesOfPlacement->Count; i++) {
+		for each (PuzzlePiece^ piece in this->game->getPieceList()) {
+			if (piece->timePlaced == this->timesOfPlacement[i] && !orderedList->Contains(piece->getName())) { 
+				orderedList->Add(piece->getName()); 
+			}
+		}
+	}
+	this->orderOfPiecesPlayed = orderedList;
 }
 //----------------------------------------------------------------------------------------------------------
 
 // changing this to make it the order of completion
-void GamePlayed::setOrder()
+void GamePlayed::compileData()
 {
-	int fastest = 0;
-	int slowest = 999999999;
-	int indexS = 0; int indexF = 0;
-	// if no pieces were played (or failed to record) return "N/A"
-	if (this->timesBetweenPieces->Count == 0) {
-		this->slowestPiece = gcnew System::String("N/A");
-		this->fastestPiece = gcnew System::String("N/A");
-		return;
-	}
-	// otherwise, scroll through times, pick fastest and slowest
-	for each (int tim in timesBetweenPieces) {
-		if (tim < fastest) { fastest = tim; indexF = timesBetweenPieces->IndexOf(tim); }
-		if (tim > slowest) { slowest = tim; indexS = timesBetweenPieces->IndexOf(tim); }
-	}
-	this->slowestPiece = orderOfPiecesPlayed[indexS];
-	this->fastestPiece = orderOfPiecesPlayed[indexF];
+	findSortedTimes();
+	CalcAvgTimeBetweenPieces();
+	findOrderOfPieces();
+	return;
 }
 //----------------------------------------------------------------------------------------------------------
-// Add a new instance of GamePlayed into the ScoreKeeping class
-void ScoreKeeping::AddNewGame(GamePlayed^ newGame) 
+
+System::String^ GamePlayed::printData()
 {
-	this->numberOfGamesPlayed = this->numberOfGamesPlayed + 1;
-	this->individualGamesList->Add(newGame); 
-}
-//----------------------------------------------------------------------------------------------------------
-System::String^ ScoreKeeping::getGameResults(GamePlayed^ game) 
-{
+	if (this->orderOfPiecesPlayed->Count == 0)
+	{
+		compileData();
+		if (this->orderOfPiecesPlayed->Count == 0) { return "game not completed"; }
+	}
 	System::String^ resultString = "";
-	resultString = "Game : " + game->name + "\n";
-	System::String^ tim = game->timeStarted->ToString("F");
+	resultString = "Game : " + game->getName() + "\n";
+	System::String^ tim = this->timeStarted->ToString("F");
 	resultString = resultString + "Time Started : " + tim + "\n";
+	resultString = resultString + "Time for Completion : " + this->timeForCompletion + "\n";
+	resultString = resultString + "Average Time Between Pieces: " + this->avgTimeBetweenPieces + "\n";
+	for (int i = 0; i < this->game->getPieceList()->Count; i++) 
+	{ 
+		resultString = resultString + "Piece : " + this->orderOfPiecesPlayed[i] + 
+			"       Time Placed (sec) : " + this->timesOfPlacement[i] + "\n";
+	}
 
 	return resultString;
+}
+
+
+
+
+// GAMEPLAYED
+
+//-------------------------------------//-------------------------------------//-------------------------------------//-------------------------------------//-------------------------------------
+
+// SCOREKEEPING
+
+
+
+
+
+// Initialize a blank scorekeeper
+//----------------------------------------------------------------------------------------------------------
+ScoreKeeping::ScoreKeeping() {
+	this->individualGamesList = gcnew List<GamePlayed^>();
 }
 
 //----------------------------------------------------------------------------------------------------------
 // return a string for printing out all results, to be displayed from the GUI.  
 // will calculate and all stats for individual games, the session, and through history (future addition)
-System::String^ ScoreKeeping::showResults() 
+System::String^ ScoreKeeping::showFinalResults() 
 {
-	// this might take a while, so lock this thread down
+	// Lock thread
 	myMutex = CreateMutex(NULL, FALSE, (LPCWSTR) "compiling results");
-	System::String^ finalString = "		Performance and Progress\n";
-// will need to add in historical data here, but for now we'll keep it simple and just do one session
+	System::String^ finalString = "Performance and Progress\n\n";
+
 	// start off by getting the results for each individual game
 	List<System::String^>^ individualGameStrings = gcnew List<System::String^>();  // to hold each game's result string
 	System::String^ individualResult = "";
+
+	// print the results for each game and then tack them all together
 	for each (GamePlayed^ game in this->individualGamesList)
 	{
-		// will return a string of game results, and tac it into the string list
-		individualResult = getGameResults(game);
+		individualResult = game->printData();
 		individualGameStrings->Add(individualResult);
 	}
-
+	finalString = finalString + System::String::Join("\n", individualGameStrings);
 
 	// then average stuff out for the whole session, using individualGamesList
 
-	// then pull in historical data and average out some more (FOR NEXT SEMESTER)
+
+	// then pull in historical data and average out some more
 
 	// then cat all the strings together in the desired order, and send back!
 	// string results have been held in different arrays so they can be rearranged as desired at the end here.  
 
+	// unlock thread and return final string
 	ReleaseMutex(myMutex);
 	return finalString;
 }
 //----------------------------------------------------------------------------------------------------------
-
-// find all games of given type in game list and average the scores
+// find all of certain game in game list and average the scores
 // return in a faux GamePlayed^ instance
-GamePlayed^ ScoreKeeping::calculateAveragesByGameType(System::String^ gameType)
+// technically we don't need matching yet, since we will always be playing the same game
+GamePlayed^ ScoreKeeping::calculateAverageForGame(System::String^ gameName)
 {
-	// hmm should actually be for game board, not type, if I want to be able to find info about pieces
-	for each (GamePlayed^ game in this->individualGamesList) {
-		System::String^ listedType = game->getType();
-		if (listedType->Equals(gameType)) {
-			// here we go off and average the scores
-		}
-	}
-	GamePlayed^ result = gcnew GamePlayed(); //tmp
+	List<GamePlayed^>^ matchingGames = gcnew List<GamePlayed^>();
+	//for each (GamePlayed^ game in this->individualGamesList) {
+		//System::String^ listedName = game->game->puzzleName();
+		//if (listedName->Equals(gameName)) {
+		//	matchingGames->Add(game);
+		//}
+	//}
+	// if num games is 0 or 1, take the easy route
+	GamePlayed^ result = gcnew GamePlayed(); 
+	//if (matchingGames->Count == 0) {
+	//	return result;
+	//}
+	//if (matchingGames->Count == 1) {
+	//	return matchingGames[0];
+	//}
+
+	//System::String^ pieceName = "";
+ //   Dictionary<System::String^, List<int>^>^ dict = gcnew Dictionary<System::String^, List<int>^>();
+	//// otherwise, start averaging via dictionary
+	//for each (GamePlayed^ game in matchingGames) {
+	//	for (int i = 0; i < game->orderOfPiecesPlayed->Count; i++) {
+	//		pieceName = game->orderOfPiecesPlayed[i];
+	//		if (!dict->ContainsKey(pieceName)) { 
+	//			dict[pieceName] = gcnew List<int>();
+	//			dict[pieceName][0] = game->timesBetweenPieces
+
+
+	//	}
+	//}
+
 	return result;
 }
+
+
 //----------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------

@@ -26,27 +26,27 @@ public:
 	// some variables:
 	// need for audio or visual hint (maybe should trigger a callback when this is hit)
 	HandleVariables() {}
-	bool PAUSE_GAME;
-	bool START_GAME;
-	bool END_GAME;
-	bool GAME_OVER;
-	System::String^ PIECE_PLACED;
-	void InitializeFlags();
-
-	System::String^ JunkLine;
-	void setVTKNodeChanged(int index);
-	void setPiecePlaced(System::String^ pieceName);
-	void setPiecePlaced(std::string pieceName);
-	void setGameOver();
-	void resetGameOver();
-
-	// retrieving/ viewing the variables
+//	bool PAUSE_GAME;
+//	bool START_GAME;
+//	bool END_GAME;
+//	bool GAME_OVER;
+//	System::String^ PIECE_PLACED;
+//	void InitializeFlags();
+//
+//	System::String^ JunkLine;
+//	void setVTKNodeChanged(int index);
+//	void setPiecePlaced(System::String^ pieceName);
+//	void setPiecePlaced(std::string pieceName);
+//	void setGameOver();
+//	void resetGameOver();
+//
+//	// retrieving/ viewing the variables
 	HandleVariables^ returnHandle() {return this;}
-
-private:
-	PuzzlePiece^ puzzleClass;
-	HANDLE myMutex;
-
+//
+//private:
+//	PuzzlePiece^ puzzleClass;
+//	HANDLE myMutex;
+//
 };
 
 #endif

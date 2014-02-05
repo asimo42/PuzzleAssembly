@@ -1,13 +1,9 @@
 #pragma once
-#include <string>
-#include <stack>
-#include <process.h>
+
 #using <System.dll>
-#include <stdio.h>
 #include <Windows.h>
 
 using namespace System;
-//using namespace cv;
 using namespace System::Collections::Generic;
 
 ref class PuzzlePiece
@@ -15,7 +11,6 @@ ref class PuzzlePiece
 private:
 
 	HANDLE myMutex;
-	System::String^ name;
 	int x_pos, y_pos;
 	double x_dest, y_dest;
 	List<int>^ HSV_min;
@@ -23,13 +18,17 @@ private:
 
 public:
 
-	PuzzlePiece(void);
+	int timePlaced;
+	System::String^ name;
 
-	PuzzlePiece(System::String^);
-	PuzzlePiece(System::String^, List<int>^, List<int>^ Scalar);
+	PuzzlePiece(void);
+	PuzzlePiece(System::String^ piece_name);
+	PuzzlePiece(System::String^ piece_name, List<int>^ HSVmin, List<int>^ HSVmax);
 
 	~PuzzlePiece(void);
 
+	void setTimePlaced(int tim) {timePlaced = tim;} 
+	int getTimePlaced() { return timePlaced; }
 
 	int getXPos() {return x_pos;}
 	double getXDestX() { return x_dest;}

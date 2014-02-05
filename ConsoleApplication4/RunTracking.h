@@ -1,11 +1,11 @@
-/* This class controls the operation of OpenCV.  It starts OpenCV running, monitors/controls tracking, gathers time data, and shuts
-OpenCV down once the game is completed or stopped.  An instance of this class is created in "StartOpenCV.cpp" when the user hits
-the Run button on the GUI
+/* This class controls the operation of OpenCV tracking.  It starts, monitors & controls tracking, gathers time data, and shuts
+tracking down once the game is completed or stopped.  An instance of this class is created in initializeTracking() when the user hits
+the Run button on the GUI, and it lasts the duration of a single game
 */
 
 #include "stdafx.h"
 #include <vcclr.h>
-#include <opencv2\opencv.hpp>        //includes all OpenCV headers
+#include <opencv2\opencv.hpp>
 #include "Functions.h"
 
 class RunTracking
@@ -18,14 +18,10 @@ class RunTracking
         gcroot<HandleVariables^> Vars;
         gcroot<KnobPuzzle^> Game;
 
-        std::string gameName;
-
-
-		RunTracking() {};
-  
+		RunTracking() { };
         virtual void Initialize();
         virtual void Start();
-        virtual void Stop() { STOP = true; }
+        virtual void Stop();
         virtual void setGame(KnobPuzzle^ game) {this->Game = game;}
         gcroot<GamePlayed^> returnScore();
 
@@ -45,9 +41,19 @@ protected:
         void drawObject(vector<TrackedPiece> pieces, Mat &frame);
         void drawPuzzleBoard(Mat &image);
 
+		//handling placement of pieces (in progress)
+		void processPlacementOfPiece(TrackedPiece trackedpiece);
+
+		// test cases
 		virtual void Test1();
+		virtual void Test2();
+		virtual void Test3();
+		virtual void Test4();
+		virtual void Test5();
+		virtual void Test6();
 
 private:
+<<<<<<< HEAD
 		// Puzzle pieces (these should probably live in the KnobPuzzle class)
 		//TrackedPiece red_circle;
 		//TrackedPiece green_rectangle;
@@ -57,6 +63,8 @@ private:
 //		vector<TrackedPiece> pieces;
 		
 		long StartTime;
+=======
+>>>>>>> e3d06e0dfbcfbf94346be9a34fa6b116d515c1f1
 
         std::string window1;
         std::string trackbar_window;

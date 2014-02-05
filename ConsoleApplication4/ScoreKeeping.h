@@ -1,6 +1,5 @@
-#pragma once
-
-#include "Functions.h"
+#include "stdafx.h"
+#include "GameBoard.h"
 
 #ifndef FILE_G
 #define FILE_G
@@ -13,57 +12,50 @@ using namespace System::Collections::Generic;
 ref class GamePlayed
 {
 public:
-	System::String^ name;
-	int score;
+
 	int timeForCompletion;
-	int avgTimeBetweenPieces;
-	DateTime^ timeStarted;
-	List<int>^ timesBetweenPieces;
-	System::String^ gameType;
-	KnobPuzzle^ game;
-	System::String^ slowestPiece;
-	System::String^ fastestPiece;
-	List<System::String^>^ orderOfPiecesPlayed;
+	double avgTimeBetweenPieces;
+	DateTime^ timeStarted; // datetime object with time that the puzzle was started
+	List<int>^ timesOfPlacement; // must calculate this manually from puzzle
+	List<System::String^>^ orderOfPiecesPlayed; // must calculate this manually
 
 	GamePlayed();
 	~GamePlayed();
 	GamePlayed(KnobPuzzle^ Puzzle);
-	System::String^ getType() {return this->gameType;}
-	void setGame(KnobPuzzle^ Puzzle);
-	void setType(System::String^ type) {this->gameType = type;}
-	void addNewTimeandPiece(int newTime, System::String^ puzzlePiece);
-	void setTimeForCompletion(int newTime);
-	void CalcAvgTimeBetweenPieces();
-	void setOrder();
 
+	void setGame(KnobPuzzle^ Puzzle);
+	KnobPuzzle^ getGame() { return this->game; }
+	void setType(System::String^ type) {this->gameType = type;}
+	System::String^ getType() { return this->gameType; }
+	void setTimeForCompletion(int newTime) {this->timeForCompletion = newTime; }
+	void compileData(); // pull information from puzzle pieces to fill arrays
+	System::String^ printData(); // create string with results from game
+
+private:
+	System::String^ gameType;
+	KnobPuzzle^ game;
+
+	void CalcAvgTimeBetweenPieces();   // called by compileData
+	void findOrderOfPieces();          // called by compileData
+	void findSortedTimes();            // called by compileData
 };
 
 
-// Keeps running stats of the whole session (potentially more than one)
+// Keeps running stats of the whole session ( >= 1 game) or possibly over multiple sessions (future addition)
 ref class ScoreKeeping 
 {
 public:
 	HANDLE myMutex;
-	int numberOfGamesPlayed;
-	List<System::String^>^ listOfGamesPlayed;
-	int totalScore;
 	List<GamePlayed^>^ individualGamesList;
-	int Improvement;
 
+	ScoreKeeping();
 	ScoreKeeping^ returnHandle() { return this; }
-	void AddNewGame(GamePlayed^ newGame);
-	System::String^ getGameResults(GamePlayed^ game);
-	System::String^ showResults();    
-
-	//void PrintFinalResults();
-	//void PrintResultsForGame();
+	void AddNewGame(GamePlayed^ newGame) { this->individualGamesList->Add(newGame); }
+	System::String^ showFinalResults();    
 
 private:
-	GamePlayed^ calculateAveragesByGameType(System::String^ gameType);
+	GamePlayed^ calculateAverageForGame(System::String^ gameName);
 
 };
-
-
-
 
 #endif

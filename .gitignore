@@ -39,9 +39,15 @@ local.properties
 logfile.txt
 
 # Solution and project files
+<<<<<<< HEAD
+*.sln
+#*.vcxproj
+#*.vcxproj.filters
+=======
 
 # Property sheets
 *.props
+>>>>>>> 93d8b47f7d49c1f616c73b185496b69dfb5727fe
 
 # Resource script
 *.rc
