@@ -118,4 +118,9 @@
       <Filter>Resource Files</Filter>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\..\Desktop\WinDirStat.lnk">
+      <Filter>Header Files</Filter>
+    </None>
+  </ItemGroup>
 </Project>
