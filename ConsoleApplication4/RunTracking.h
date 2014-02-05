@@ -1,11 +1,11 @@
-/* This class controls the operation of OpenCV tracking.  It starts, monitors & controls tracking, gathers time data, and shuts
-tracking down once the game is completed or stopped.  An instance of this class is created in initializeTracking() when the user hits
-the Run button on the GUI, and it lasts the duration of a single game
+/* This class controls the operation of OpenCV.  It starts OpenCV running, monitors/controls tracking, gathers time data, and shuts
+OpenCV down once the game is completed or stopped.  An instance of this class is created in "StartOpenCV.cpp" when the user hits
+the Run button on the GUI
 */
 
 #include "stdafx.h"
 #include <vcclr.h>
-#include <opencv2\opencv.hpp>
+#include <opencv2\opencv.hpp>        //includes all OpenCV headers
 #include "Functions.h"
 
 class RunTracking
@@ -18,10 +18,14 @@ class RunTracking
         gcroot<HandleVariables^> Vars;
         gcroot<KnobPuzzle^> Game;
 
-		RunTracking() { };
+        std::string gameName;
+
+
+		RunTracking() {};
+  
         virtual void Initialize();
         virtual void Start();
-        virtual void Stop();
+        virtual void Stop() { STOP = true; }
         virtual void setGame(KnobPuzzle^ game) {this->Game = game;}
         gcroot<GamePlayed^> returnScore();
 
@@ -41,18 +45,18 @@ protected:
         void drawObject(vector<TrackedPiece> pieces, Mat &frame);
         void drawPuzzleBoard(Mat &image);
 
-		//handling placement of pieces (in progress)
-		void processPlacementOfPiece(TrackedPiece trackedpiece);
-
-		// test cases
 		virtual void Test1();
-		virtual void Test2();
-		virtual void Test3();
-		virtual void Test4();
-		virtual void Test5();
-		virtual void Test6();
 
 private:
+		// Puzzle pieces (these should probably live in the KnobPuzzle class)
+		//TrackedPiece red_circle;
+		//TrackedPiece green_rectangle;
+		//TrackedPiece yellow_pentagon;
+
+	// Making global for now, since can't get the timer callback function to work as a member function
+//		vector<TrackedPiece> pieces;
+		
+		long StartTime;
 
         std::string window1;
         std::string trackbar_window;
@@ -77,6 +81,10 @@ private:
         int S_max;
         int V_min;
         int V_max;
+
+		// Could not get to work as member variables
+//		static VOID CALLBACK RunTracking::static_timerTick(  _In_  HWND hwnd, _In_  UINT uMsg, _In_  UINT_PTR idEvent, _In_  DWORD dwTime);
+//		VOID CALLBACK RunTracking::timerTick(  _In_  HWND hwnd, _In_  UINT uMsg, _In_  UINT_PTR idEvent, _In_  DWORD dwTime);
 
         RunTracking(const RunTracking&);  // Not implemented.
         void operator=(const RunTracking&);  // Not implemented.

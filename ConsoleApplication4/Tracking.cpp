@@ -25,34 +25,16 @@
 #include "RunTracking.h"
 #include "Functions.h"
 #include "Shape.h"
+#include <Windows.h>	// for timer
 
 using namespace cv;
 using namespace std;
-/*
- * These are now defined in RunTracking.cpp
- *
-const std::string window1 = "Original Capture";
-const std::string trackbar_window = "Trackbar Window";
-const std::string window2 = "Filtered Image";
-const std::string puzzle_window = "Puzzle Board Window";
 
-//default capture width and height
-const int FRAME_WIDTH = 640;
-const int FRAME_HEIGHT = 480;
-//max number of objects to be detected in frame
-const int MAX_NUM_OBJECTS=10;
-//minimum and maximum object area
-const int MIN_OBJECT_AREA = 2500;
-const int MAX_OBJECT_AREA = FRAME_HEIGHT*FRAME_WIDTH/1.5;
+//
+// Global for now, should not be though
+vector<TrackedPiece> pieces;
 
-int H_min = 0;
-int H_max = 256;
-int S_min = 0;
-int S_max = 256;
-int V_min = 0;
-int V_max = 256;
-*/
-void on_trackbar( int, void* )    // this function won't compile as part of RunTracking - no idea why
+void on_trackbar( int, void* )
 {//This function gets called whenever a
 	// trackbar position is changed
 }
@@ -85,6 +67,11 @@ void RunTracking::erodeAndDilate(Mat &image)
 	dilate(image,image,dilateElement);
 }
 
+//string intToStdString(int number){
+//	std::stringstream ss;
+//	ss << number;
+//	return ss.str();
+//}
 
 void RunTracking::drawObject(vector<TrackedPiece> pieces, Mat &frame){
 
@@ -105,13 +92,8 @@ void RunTracking::trackFilteredObject(TrackedPiece &piece, Mat &cameraFeed, Mat 
 	//these two vectors needed for output of findContours
 	vector< vector<Point> > contours;
 	vector<Vec4i> hierarchy;
-
 	//find contours of filtered image using openCV findContours function
-	// *If laura's computer, skip findCountours.
-#ifndef LAURA
 	findContours(temp,contours,hierarchy,CV_RETR_CCOMP,CV_CHAIN_APPROX_SIMPLE );
-#endif
-
 	//use moments method to find our filtered object
 	bool objectFound = false;
 	if (hierarchy.size() > 0) {
@@ -122,6 +104,9 @@ void RunTracking::trackFilteredObject(TrackedPiece &piece, Mat &cameraFeed, Mat 
 		const int thresh = 40;
 		//saves max area of each contour detected so only the largest one will be tracked
 		double maxArea = 0;
+		// temporary piece for contours found
+		TrackedPiece tmp;
+
 		//if number of objects greater than MAX_NUM_OBJECTS we have a noisy filter
 		if(numObjects < MAX_NUM_OBJECTS){
 			// for each object (contour) detected
@@ -138,8 +123,9 @@ void RunTracking::trackFilteredObject(TrackedPiece &piece, Mat &cameraFeed, Mat 
 				if(area > MIN_OBJECT_AREA && area > maxArea){
 					// set new max area
 					maxArea = area;
+					// Clear previous objects found so only one (the biggest) is detected
+					pieces.clear();
 
-					TrackedPiece tmp;
 					int xPos = moment.m10/area;
 					int yPos = moment.m01/area;
 					
@@ -154,25 +140,32 @@ void RunTracking::trackFilteredObject(TrackedPiece &piece, Mat &cameraFeed, Mat 
 					pieces.push_back(tmp);
 
 					objectFound = true;
-
-					// Check for movement
-					if(xPos > (piece.getLastxPos() + thresh) || xPos < (piece.getLastxPos() - thresh))
-					{
-						piece.setLastxPos(xPos);
-						cout << piece.getName() << ": X movement" << endl;
-					}
-					if(yPos > (piece.getLastyPos() + thresh) || yPos < (piece.getLastyPos() - thresh))
-					{
-						piece.setLastyPos(yPos);
-						cout << piece.getName() << "Y movement." << endl;
-					}
-
-				}else objectFound = false;
-
-
+				}
 			}
-			//let user know you found an object
+
+			//let user know you found an object and check for movement
 			if(objectFound ==true){
+
+				// Update piece location (tmp piece should now be biggest contour found)
+				piece.setXPos(tmp.getXPos());
+				piece.setYPos(tmp.getYPos());
+
+				/*
+				 * Movement checking moved to timerTick
+				 *
+				// Check for movement (tmp piece should now be biggest contour found)
+				if(tmp.getXPos() > (piece.getLastxPos() + thresh) || tmp.getXPos() < (piece.getLastxPos() - thresh))
+				{
+					piece.setLastxPos(tmp.getXPos());
+					cout << piece.getName() << ": X movement" << endl;
+				}
+				if(tmp.getYPos() > (piece.getLastyPos() + thresh) || tmp.getYPos() < (piece.getLastyPos() - thresh))
+				{
+					piece.setLastyPos(tmp.getYPos());
+					cout << piece.getName() << ": Y movement." << endl;
+				}
+				*/
+
 				//draw object location on screen
 				drawObject(pieces,cameraFeed);}
 
@@ -202,22 +195,70 @@ void RunTracking::drawPuzzleBoard(Mat &image)
 	shapes.Draw_Triangle(Point(220, 600), 266, -1);
 	shapes.setColor(Scalar(0, 255, 0));
 	shapes.Draw_Rectangle(Point(483, 634), 287, 175, -1);
+	shapes.setColor(Scalar(0, 255, 255));
+	shapes.Draw_Pentagon(Point(1056, 585), 173, -1);
 }
+
+VOID CALLBACK timerTick(  _In_  HWND hwnd, _In_  UINT uMsg, _In_  UINT_PTR idEvent, _In_  DWORD dwTime)
+{
+	int thresh = 40;
+
+	for(int i = 0; i < pieces.size(); ++i)
+	{	
+		if(pieces[i].getXPos() > (pieces[i].getLastxPos() + thresh) || pieces[i].getXPos() < (pieces[i].getLastxPos() - thresh))
+		{
+			pieces[i].setLastxPos(pieces[i].getXPos());
+			pieces[i].checkForMovement(true);
+			//cout << pieces[i].getName() << ": X movement" << endl;
+		}	
+
+		else if(pieces[i].getYPos() > (pieces[i].getLastyPos() + thresh) || pieces[i].getYPos() < (pieces[i].getLastyPos() - thresh))
+		{
+			pieces[i].setLastyPos(pieces[i].getYPos());
+			pieces[i].checkForMovement(true);
+			//cout << pieces[i].getName() << ": Y movement." << endl;
+		}
+
+		else 
+			pieces[i].checkForMovement(false);
+	}
+
+	//cout << "Timer tick." << endl;
+}
+/*
+ * Can't get callback to work as a member function, so making pieces global for now
+ *
+void* ptr;
+
+VOID CALLBACK RunTracking::static_timerTick(  _In_  HWND hwnd, _In_  UINT uMsg, _In_  UINT_PTR idEvent, _In_  DWORD dwTime)
+{
+	RunTracking* pThis = reinterpret_cast<RunTracking*>(ptr);
+	pThis->timerTick(hwnd, uMsg, idEvent, dwTime);
+}
+*/
 
 int RunTracking::startTrack()
 {
+	// set timer to periodically check piece movement
+	UINT timer_ms = 500;
+	SetTimer(NULL, 1, timer_ms, timerTick);
+
+	pieces.push_back(TrackedPiece("Circle", Scalar(165, 107, 25), Scalar(185, 233, 256)));
+	pieces.push_back(TrackedPiece("Rectangle", Scalar(74, 75, 50), Scalar(88, 214, 256)));
+	pieces.push_back(TrackedPiece("Pentagon", Scalar(16, 47, 47), Scalar(32, 200, 256)));
+
 	bool calibrate_mode = false;
 
 	VideoCapture capture;
-	capture.open(1);	//Open default video device
+	capture.open(1);	//0 is default video device, 1 is other/USB camera
 	//set height and width of capture frame
 	capture.set(CV_CAP_PROP_FRAME_WIDTH,FRAME_WIDTH);
 	capture.set(CV_CAP_PROP_FRAME_HEIGHT,FRAME_HEIGHT);
 	
 	if (!capture.isOpened())
 	{
-		cout << "Cannot open default camera." << endl;
-		return -1;
+		cout << "Cannot open camera." << endl;
+		return 1;
 	}
 	cout << "Camera opened" << endl;
 
@@ -231,12 +272,12 @@ int RunTracking::startTrack()
 		createTrackbarWindow();
 	}
 
+	// Moved to member variables of RunTracking class
 //	TrackedPiece yellow = TrackedPiece("Tennis Ball", Scalar(25,44,160), Scalar(77,95,256));
-	//Note to self* need to create these dynamically by converting PuzzlePiece^ to TrackedPiece^
-	TrackedPiece red_circle = TrackedPiece("Circle", Scalar(165, 107, 25), Scalar(185, 233, 256));
-	TrackedPiece green_rectangle = TrackedPiece("Rectangle", Scalar(74, 75, 50), Scalar(88, 214, 256));
-	TrackedPiece yellow_pentagon = TrackedPiece("Pentagon", Scalar(16, 47, 47), Scalar(32, 200, 256));
-	TrackedPiece white_square = TrackedPiece("Square", Scalar(77, 0, 168), Scalar(158, 63, 256));
+//	TrackedPiece red_circle = TrackedPiece("Circle", Scalar(165, 107, 25), Scalar(185, 233, 256));
+//	TrackedPiece green_rectangle = TrackedPiece("Rectangle", Scalar(74, 75, 50), Scalar(88, 214, 256));
+//	TrackedPiece yellow_pentagon = TrackedPiece("Pentagon", Scalar(16, 47, 47), Scalar(32, 200, 256));
+//	TrackedPiece white_square = TrackedPiece("Square", Scalar(77, 0, 168), Scalar(158, 63, 256));
 
 	Mat puzzle;				//Puzzle board image for drawing shapes on
 	namedWindow(puzzle_window);
@@ -266,10 +307,11 @@ int RunTracking::startTrack()
 		else
 		{
 //			trackTrackedPiece(yellow, camera_feed, HSV_image, threshold_image);
-			trackTrackedPiece(red_circle, camera_feed, HSV_image, threshold_image);
-			trackTrackedPiece(green_rectangle, camera_feed, HSV_image, threshold_image);
-			trackTrackedPiece(yellow_pentagon, camera_feed, HSV_image, threshold_image);
-			trackTrackedPiece(white_square, camera_feed, HSV_image, threshold_image);
+			for (int i = 0; i < pieces.size(); ++i)
+			{
+				trackTrackedPiece(pieces[i], camera_feed, HSV_image, threshold_image);
+			}
+//			trackTrackedPiece(white_square, camera_feed, HSV_image, threshold_image);
 			imshow(window2, threshold_image);
 		}
 		
