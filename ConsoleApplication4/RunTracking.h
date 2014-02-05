@@ -53,18 +53,6 @@ protected:
 		virtual void Test6();
 
 private:
-<<<<<<< HEAD
-		// Puzzle pieces (these should probably live in the KnobPuzzle class)
-		//TrackedPiece red_circle;
-		//TrackedPiece green_rectangle;
-		//TrackedPiece yellow_pentagon;
-
-	// Making global for now, since can't get the timer callback function to work as a member function
-//		vector<TrackedPiece> pieces;
-		
-		long StartTime;
-=======
->>>>>>> e3d06e0dfbcfbf94346be9a34fa6b116d515c1f1
 
         std::string window1;
         std::string trackbar_window;
@@ -89,10 +77,6 @@ private:
         int S_max;
         int V_min;
         int V_max;
-
-		// Could not get to work as member variables
-//		static VOID CALLBACK RunTracking::static_timerTick(  _In_  HWND hwnd, _In_  UINT uMsg, _In_  UINT_PTR idEvent, _In_  DWORD dwTime);
-//		VOID CALLBACK RunTracking::timerTick(  _In_  HWND hwnd, _In_  UINT uMsg, _In_  UINT_PTR idEvent, _In_  DWORD dwTime);
 
         RunTracking(const RunTracking&);  // Not implemented.
         void operator=(const RunTracking&);  // Not implemented.
