@@ -89,6 +89,7 @@
     <ClInclude Include="Functions.h" />
     <ClInclude Include="GameBoard.h" />
     <ClInclude Include="HandleVariables.h" />
+    <ClInclude Include="Hints.h" />
     <ClInclude Include="MainGUIForm.h">
       <FileType>CppForm</FileType>
     </ClInclude>
@@ -105,6 +106,7 @@
     <ClCompile Include="Functions.cpp" />
     <ClCompile Include="GameBoard.cpp" />
     <ClCompile Include="HandleVariables.cpp" />
+    <ClCompile Include="Hints.cpp" />
     <ClCompile Include="Logging.cpp" />
     <ClCompile Include="MainGUIForm.cpp" />
     <ClCompile Include="RunTracking.cpp" />
