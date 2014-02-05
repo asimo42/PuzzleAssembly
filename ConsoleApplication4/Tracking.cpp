@@ -29,13 +29,12 @@
 
 using namespace cv;
 using namespace std;
-<<<<<<< HEAD
+
 
 // Global for now, should not be though
 vector<TrackedPiece> pieces;
 
-void on_trackbar( int, void* )
-=======
+void on_trackbar( int, void* ) {}
 /*
  * These are now defined in RunTracking.cpp
  *
@@ -61,7 +60,7 @@ int V_min = 0;
 int V_max = 256;
 */
 void on_trackbar( int, void* )    // this function won't compile as part of RunTracking - no idea why
->>>>>>> e3d06e0dfbcfbf94346be9a34fa6b116d515c1f1
+
 {//This function gets called whenever a
 	// trackbar position is changed
 }
@@ -301,18 +300,17 @@ int RunTracking::startTrack()
 
 	// Moved to member variables of RunTracking class
 //	TrackedPiece yellow = TrackedPiece("Tennis Ball", Scalar(25,44,160), Scalar(77,95,256));
-<<<<<<< HEAD
+
 //	TrackedPiece red_circle = TrackedPiece("Circle", Scalar(165, 107, 25), Scalar(185, 233, 256));
 //	TrackedPiece green_rectangle = TrackedPiece("Rectangle", Scalar(74, 75, 50), Scalar(88, 214, 256));
 //	TrackedPiece yellow_pentagon = TrackedPiece("Pentagon", Scalar(16, 47, 47), Scalar(32, 200, 256));
 //	TrackedPiece white_square = TrackedPiece("Square", Scalar(77, 0, 168), Scalar(158, 63, 256));
-=======
+
 	//Note to self* need to create these dynamically by converting PuzzlePiece^ to TrackedPiece^
 	TrackedPiece red_circle = TrackedPiece("Circle", Scalar(165, 107, 25), Scalar(185, 233, 256));
 	TrackedPiece green_rectangle = TrackedPiece("Rectangle", Scalar(74, 75, 50), Scalar(88, 214, 256));
 	TrackedPiece yellow_pentagon = TrackedPiece("Pentagon", Scalar(16, 47, 47), Scalar(32, 200, 256));
 	TrackedPiece white_square = TrackedPiece("Square", Scalar(77, 0, 168), Scalar(158, 63, 256));
->>>>>>> e3d06e0dfbcfbf94346be9a34fa6b116d515c1f1
 
 	Mat puzzle;				//Puzzle board image for drawing shapes on
 	namedWindow(puzzle_window);
