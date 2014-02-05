@@ -53,6 +53,7 @@ protected:
 		virtual void Test6();
 
 private:
+<<<<<<< HEAD
 		// Puzzle pieces (these should probably live in the KnobPuzzle class)
 		//TrackedPiece red_circle;
 		//TrackedPiece green_rectangle;
@@ -62,6 +63,8 @@ private:
 //		vector<TrackedPiece> pieces;
 		
 		long StartTime;
+=======
+>>>>>>> e3d06e0dfbcfbf94346be9a34fa6b116d515c1f1
 
         std::string window1;
         std::string trackbar_window;
