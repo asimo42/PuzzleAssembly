@@ -27,14 +27,25 @@ private:
 	// i.e. the user has picked up and is trying to place the piece.
 	bool isMoving;
 
+	// Set to true when piece should be flashing on screen
+	bool flashing;
+
+
+
 	// max number of values allowed in movementHistory deque
-	static const unsigned int MAX_DEQUE_SIZE = 10;
+	static const unsigned int MAX_DEQUE_SIZE = 8;
 
 	// Holds movement history of pieces each time the timer checks for movement.
 	// Holds a max of MAX_DEQUE_SIZE elements
 	deque<bool> movementHistory;
 
 public:
+	// position of shape on screen
+	int xScreenPos;
+	int yScreenPos;
+
+	// True when piece is drawn on screen, false when it is not (for flashing shape)
+	bool on;
 
 	TrackedPiece(void);
 
@@ -49,6 +60,12 @@ public:
 	// and is trying to place it.
 	// returns false if there has not been consistent recent movement.
 	bool checkForMovement(bool justMoved);
+
+	void toggle(Mat &image);
+
+	bool isFlashing() {return flashing;}
+
+	bool isOn() {return on;}
 
 	int getXPos() {return x_pos;}
 	void setXPos(int x) {x_pos = x;}
