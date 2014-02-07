@@ -34,6 +34,8 @@ using namespace std;
 // Global for now, should not be though
 vector<TrackedPiece> pieces;
 
+Mat puzzle;				//Puzzle board image for drawing shapes on
+
 void on_trackbar( int, void* )
 {//This function gets called whenever a
 	// trackbar position is changed
@@ -225,6 +227,17 @@ VOID CALLBACK timerTick(  _In_  HWND hwnd, _In_  UINT uMsg, _In_  UINT_PTR idEve
 
 	//cout << "Timer tick." << endl;
 }
+
+VOID CALLBACK timerFlash(  _In_  HWND hwnd, _In_  UINT uMsg, _In_  UINT_PTR idEvent, _In_  DWORD dwTime)
+{
+	for(int i = 0; i < pieces.size(); ++i)
+	{
+		if (pieces[i].isFlashing() || !pieces[i].isOn())
+		{
+			pieces[i].toggle(puzzle);
+		}
+	}
+}
 /*
  * Can't get callback to work as a member function, so making pieces global for now
  *
@@ -243,9 +256,13 @@ int RunTracking::startTrack()
 	UINT timer_ms = 500;
 	SetTimer(NULL, 1, timer_ms, timerTick);
 
-	pieces.push_back(TrackedPiece("Circle", Scalar(165, 107, 25), Scalar(185, 233, 256)));
-	pieces.push_back(TrackedPiece("Rectangle", Scalar(74, 75, 50), Scalar(88, 214, 256)));
-	pieces.push_back(TrackedPiece("Pentagon", Scalar(16, 47, 47), Scalar(32, 200, 256)));
+	// set timer to flash shapes
+	UINT timer_flash = 600;
+	SetTimer(NULL, 1, timer_flash, timerFlash);
+
+	pieces.push_back(TrackedPiece("Circle", Scalar(0, 130, 0), Scalar(5, 256, 256)));
+	pieces.push_back(TrackedPiece("Rectangle", Scalar(65, 130, 0), Scalar(82, 256, 256)));
+	pieces.push_back(TrackedPiece("Pentagon", Scalar(18, 130, 75), Scalar(30, 256, 256)));
 
 	bool calibrate_mode = false;
 
@@ -279,7 +296,7 @@ int RunTracking::startTrack()
 //	TrackedPiece yellow_pentagon = TrackedPiece("Pentagon", Scalar(16, 47, 47), Scalar(32, 200, 256));
 //	TrackedPiece white_square = TrackedPiece("Square", Scalar(77, 0, 168), Scalar(158, 63, 256));
 
-	Mat puzzle;				//Puzzle board image for drawing shapes on
+//	Mat puzzle;				//Puzzle board image for drawing shapes on
 	namedWindow(puzzle_window);
 //	namedWindow(puzzle_window, CV_WINDOW_NORMAL);
 //	cvSetWindowProperty(puzzle_window.c_str(), CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);	// Makes full screen

@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <Windows.h>
 #include <algorithm>
+#include "Shape.h"
 
 TrackedPiece::TrackedPiece(void)
 {
@@ -45,12 +46,62 @@ bool TrackedPiece::checkForMovement(bool justMoved)
 	int numTrues = count(movementHistory.begin(), movementHistory.end(), true);
 	//cout << "Num trues " << name << ": " << numTrues << endl;
 
-	if(numTrues >= 6 )
+	if(numTrues >= 4 )
 	{
 		cout << name << " piece being placed." << endl;
+		flashing = true;	// starts flashing
 		return true;
 	}
 	else
+	{
+		flashing = false;	// stops flashing
 		return false;
+	}
 
+}
+
+void TrackedPiece::toggle(Mat &image)
+{
+	Shape shapes(&image);
+	if(isOn())
+	{
+		//turn off
+		if(name == "Circle")
+		{
+			shapes.setColor(Scalar(0, 0, 0));
+			shapes.Draw_Circle(Point(383, 244), 125, -1);
+		} 
+		else if(name == "Rectangle")
+		{
+			shapes.setColor(Scalar(0, 0, 0));
+			shapes.Draw_Rectangle(Point(483, 634), 287, 175, -1);
+		}
+		else if (name == "Pentagon")
+		{
+			shapes.setColor(Scalar(0, 0, 0));
+			shapes.Draw_Pentagon(Point(1056, 585), 173, -1);
+		}
+		on = false;
+	}
+	else
+	{
+		// turn on
+		if(name == "Circle")
+		{
+			shapes.setColor(Scalar(0, 0, 255));
+			shapes.Draw_Circle(Point(383, 244), 125, -1);
+		} 
+		else if(name == "Rectangle")
+		{
+			shapes.setColor(Scalar(0, 255, 0));
+			shapes.Draw_Rectangle(Point(483, 634), 287, 175, -1);
+		}
+		else if (name == "Pentagon")
+		{
+			shapes.setColor(Scalar(0, 255, 255));
+			shapes.Draw_Pentagon(Point(1056, 585), 173, -1);
+		}
+		on = true;
+	}
+	imshow("Puzzle Board Window", image);
 }
