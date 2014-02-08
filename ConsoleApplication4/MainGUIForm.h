@@ -7,6 +7,7 @@
 #include  <stdio.h>
 #include <vcclr.h>
 #include "Functions.h"
+#include "CalibrationMainPrompt.h"
 
 #pragma once
 
@@ -52,6 +53,9 @@ namespace PuzzleAssembly {
 	private: System::ComponentModel::IContainer^  components;
 	private: HandleVariables Vars;
 	private: System::Windows::Forms::Button^  scoresButton;
+	private: System::Windows::Forms::Button^  calibrateButton;
+	private: System::Windows::Forms::Button^  loadButton;
+
 	private: ScoreKeeping ScoreKeeper;
 
 
@@ -70,12 +74,12 @@ namespace PuzzleAssembly {
 		/// </summary>
 		void InitializeComponent(void)
 		{
-			this->components = (gcnew System::ComponentModel::Container());
 			this->runGameButton = (gcnew System::Windows::Forms::Button());
-			//this->stopGameButton = (gcnew System::Windows::Forms::Button());
 			this->textBox1 = (gcnew System::Windows::Forms::TextBox());
 			this->label1 = (gcnew System::Windows::Forms::Label());
 			this->scoresButton = (gcnew System::Windows::Forms::Button());
+			this->calibrateButton = (gcnew System::Windows::Forms::Button());
+			this->loadButton = (gcnew System::Windows::Forms::Button());
 			this->SuspendLayout();
 			// 
 			// runGameButton
@@ -90,19 +94,6 @@ namespace PuzzleAssembly {
 			this->runGameButton->UseVisualStyleBackColor = true;
 			this->runGameButton->Click += gcnew System::EventHandler(this, &MainGUIForm::runGameButton_Click);
 			// 
-			// stopGameButton
-			// 
-			//this->stopGameButton->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 15.75F, System::Drawing::FontStyle::Italic, System::Drawing::GraphicsUnit::Point, 
-			//	static_cast<System::Byte>(0)));
-			//this->stopGameButton->Location = System::Drawing::Point(370, 140);
-			//this->stopGameButton->Name = L"stopGameButton";
-			//this->stopGameButton->Size = System::Drawing::Size(194, 69);
-			//this->stopGameButton->TabIndex = 5;
-			//this->stopGameButton->Text = L"Stop Game";
-			//this->stopGameButton->UseVisualStyleBackColor = true;
-			//this->stopGameButton->Visible = false;
-			//this->stopGameButton->Click += gcnew System::EventHandler(this, &MainGUIForm::stopGameButton_Click);
-			// 
 			// textBox1
 			// 
 			this->textBox1->Location = System::Drawing::Point(30, 72);
@@ -110,6 +101,7 @@ namespace PuzzleAssembly {
 			this->textBox1->Size = System::Drawing::Size(190, 20);
 			this->textBox1->TabIndex = 6;
 			this->textBox1->Text = L"KNOBPUZZLE";
+			this->textBox1->TextChanged += gcnew System::EventHandler(this, &MainGUIForm::textBox1_TextChanged);
 			// 
 			// label1
 			// 
@@ -133,15 +125,38 @@ namespace PuzzleAssembly {
 			this->scoresButton->UseVisualStyleBackColor = true;
 			this->scoresButton->Click += gcnew System::EventHandler(this, &MainGUIForm::scoresButton_Click);
 			// 
+			// calibrateButton
+			// 
+			this->calibrateButton->Enabled = false;
+			this->calibrateButton->Location = System::Drawing::Point(237, 237);
+			this->calibrateButton->Name = L"calibrateButton";
+			this->calibrateButton->Size = System::Drawing::Size(75, 23);
+			this->calibrateButton->TabIndex = 9;
+			this->calibrateButton->Text = L"Calibrate";
+			this->calibrateButton->UseVisualStyleBackColor = true;
+			this->calibrateButton->Click += gcnew System::EventHandler(this, &MainGUIForm::calibrateButton_Click);
+			// 
+			// loadButton
+			// 
+			this->loadButton->Enabled = false;
+			this->loadButton->Location = System::Drawing::Point(218, 72);
+			this->loadButton->Name = L"loadButton";
+			this->loadButton->Size = System::Drawing::Size(75, 23);
+			this->loadButton->TabIndex = 10;
+			this->loadButton->Text = L"Load";
+			this->loadButton->UseVisualStyleBackColor = true;
+			this->loadButton->Click += gcnew System::EventHandler(this, &MainGUIForm::loadButton_Click);
+			// 
 			// MainGUIForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(568, 308);
+			this->Controls->Add(this->loadButton);
+			this->Controls->Add(this->calibrateButton);
 			this->Controls->Add(this->scoresButton);
 			this->Controls->Add(this->label1);
 			this->Controls->Add(this->textBox1);
-			//this->Controls->Add(this->stopGameButton);
 			this->Controls->Add(this->runGameButton);
 			this->Name = L"MainGUIForm";
 			this->Text = L"Puzzle Assembly Assistant";
@@ -186,6 +201,33 @@ private: System::Void scoresButton_Click(System::Object^  sender, System::EventA
 			 // we'll keep it a simple message box for now - We'll want a scrolling form later
 			System::String^ results = ScoreKeeper.showFinalResults();
 			MessageBox::Show(results);
+		 }
+private: System::Void calibrateButton_Click(System::Object^  sender, System::EventArgs^  e) {
+			 // this should go in loadButton_Click eventually
+			 System::String^ CodeString = this->textBox1->Text;
+			 System::String^ puzzleType = searchPuzzleType(CodeString);
+			 // load up puzzle class and start tracking
+			KnobPuzzle^ puzzle = gcnew KnobPuzzle(CodeString);
+			 ConsoleApplication4::CalibrationMainPrompt^ calibForm = gcnew ConsoleApplication4::CalibrationMainPrompt();
+			 calibForm->puzzle = puzzle;
+			 if (calibForm->ShowDialog() == System::Windows::Forms::DialogResult::OK) {
+				 MessageBox::Show("You're done with calibration!");
+			 }
+			 // set up calibration form
+			 // pass off puzzle piece info
+		 }
+
+private: System::Void loadButton_Click(System::Object^  sender, System::EventArgs^  e) {
+			 this->calibrateButton->Enabled = true;
+		 }
+
+private: System::Void textBox1_TextChanged(System::Object^  sender, System::EventArgs^  e) {
+			 if (textBox1->Text->Length == 0) {
+				 this->loadButton->Enabled = false;
+			 }
+			 else {
+				 this->loadButton->Enabled = true; 
+			 }
 		 }
 };
 }

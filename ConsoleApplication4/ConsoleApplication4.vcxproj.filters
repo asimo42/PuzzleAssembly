@@ -57,6 +57,12 @@
     <ClInclude Include="Hints.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="CalibrationMainPrompt.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ColorCalibrationForm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -105,6 +111,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Hints.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CalibrationMainPrompt.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ColorCalibrationForm.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
