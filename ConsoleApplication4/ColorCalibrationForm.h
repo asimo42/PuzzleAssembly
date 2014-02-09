@@ -7,6 +7,7 @@
 #include  <stdio.h>
 #include <vcclr.h>
 #include "Functions.h"
+#include "RunTracking.h"
 
 
 #pragma once
@@ -137,8 +138,24 @@ namespace ConsoleApplication4 {
 				 }
 				 this->piece = this->puzzle->getPieceList()[this->pieceIndex];
 				 MessageBox::Show(this->piece->getName());
+				 List<int>^ HSV_min = this->piece->getHSVmin();
+				 List<int>^ HSV_max = this->piece->getHSVmax();
+				 //System::String^ output =  "HSV_min[1] = " + HSV_min[1];
+				 //MessageBox::Show(output);
+
+				 TempClass^ tmp = gcnew TempClass();
+				 tmp->Game = this->puzzle;
+				System::Threading::Thread ^thr1 = gcnew System::Threading::Thread(gcnew System::Threading::ThreadStart(tmp, &TempClass::startThingy));
+				thr1->Start();
+
+				 RunTracking* calibrator = new RunTracking();
+				 calibrator->calibrateMode = true;
+				 calibrator->setGame(this->puzzle);
+				 calibrator->Start();
 				 // go to next piece
 				 this->pieceIndex++;
 			 }
-};
+
+ };
 }
+

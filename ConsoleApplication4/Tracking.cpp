@@ -52,6 +52,33 @@ void RunTracking::createTrackbarWindow()
 	createTrackbar( "V_MAX", trackbar_window, &V_max, V_max, on_trackbar );
 }
 
+void RunTracking::createTrackbarWindow(TrackedPiece &tmp)
+{
+	namedWindow(trackbar_window);
+        this->calibrate_H_min = tmp.getHSVmin()[0];
+        this->calibrate_H_max = tmp.getHSVmax()[0];
+        this->calibrate_S_min = tmp.getHSVmin()[1];
+        this->calibrate_S_max = tmp.getHSVmax()[1];
+        this->calibrate_V_min = tmp.getHSVmin()[2];
+        this->calibrate_V_max = tmp.getHSVmax()[2];
+	//int H_min2 = tmp.getHSVmin()[0];
+	//int H_max2 = tmp.getHSVmax()[0];
+	//int S_min2 = tmp.getHSVmin()[1];
+	//int S_max2 = tmp.getHSVmax()[1];
+	//int V_min2 = tmp.getHSVmin()[2];
+	//int V_max2 = tmp.getHSVmax()[2];
+	//System::String^ values = H_min2 + " " + H_max2 + " " + S_min2 + " " + S_max2 + " " + V_min2 + " " + V_max2;
+	//System::Windows::Forms::MessageBox::Show(values);
+	//int createTrackbar(const string& trackbarname, const string& winname, int* value, int count, TrackbarCallback onChange=0, void* userdata=0)
+	// value is the the location of the sliding thing, and count is the max value of the whole slider (min is always 0)
+	createTrackbar( "H_MIN", trackbar_window, &calibrate_H_min, H_max, on_trackbar );
+	createTrackbar( "H_MAX", trackbar_window, &calibrate_H_max, H_max, on_trackbar );
+	createTrackbar( "S_MIN", trackbar_window, &calibrate_S_min, S_max, on_trackbar );
+	createTrackbar( "S_MAX", trackbar_window, &calibrate_S_max, S_max, on_trackbar );
+	createTrackbar( "V_MIN", trackbar_window, &calibrate_V_min, V_max, on_trackbar );
+	createTrackbar( "V_MAX", trackbar_window, &calibrate_V_max, V_max, on_trackbar );
+}
+
 void RunTracking::erodeAndDilate(Mat &image)
 {
 	//create structuring element that will be used to "dilate" and "erode" image.
@@ -288,6 +315,10 @@ int RunTracking::startTrack()
 	{
 		createTrackbarWindow();
 	}
+	if (this->calibrateMode) {
+		TrackedPiece tmp = puzzlePieceToTrackedPiece(this->Game->getPieceList()[0]);
+		createTrackbarWindow(tmp);
+	}
 
 	// Moved to member variables of RunTracking class
 //	TrackedPiece yellow = TrackedPiece("Tennis Ball", Scalar(25,44,160), Scalar(77,95,256));
@@ -296,22 +327,23 @@ int RunTracking::startTrack()
 //	TrackedPiece yellow_pentagon = TrackedPiece("Pentagon", Scalar(16, 47, 47), Scalar(32, 200, 256));
 //	TrackedPiece white_square = TrackedPiece("Square", Scalar(77, 0, 168), Scalar(158, 63, 256));
 
-//	Mat puzzle;				//Puzzle board image for drawing shapes on
-	namedWindow(puzzle_window);
-//	namedWindow(puzzle_window, CV_WINDOW_NORMAL);
-//	cvSetWindowProperty(puzzle_window.c_str(), CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);	// Makes full screen
-	drawPuzzleBoard(puzzle);
-	imshow(puzzle_window, puzzle);
-
+	//Mat puzzle;				//Puzzle board image for drawing shapes on
+	if (!this->calibrateMode) {
+		namedWindow(puzzle_window);
+	//	namedWindow(puzzle_window, CV_WINDOW_NORMAL);
+	//	cvSetWindowProperty(puzzle_window.c_str(), CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);	// Makes full screen
+		drawPuzzleBoard(puzzle);
+		imshow(puzzle_window, puzzle);
+	}
 
 	while(1)
 	{
 		capture.read(camera_feed);
 
-		namedWindow(window1);
-//		imshow(window1, camera_feed);
+		namedWindow(original_window);
+//		imshow(original_window, camera_feed);
 
-		namedWindow(window2);
+		namedWindow(filtered_window);
 		cvtColor(camera_feed, HSV_image, CV_BGR2HSV);
 
 		if(calibrate_mode)
@@ -319,7 +351,12 @@ int RunTracking::startTrack()
 			// Track temp puzzle piece with values from slider
 			TrackedPiece tmp = TrackedPiece("temp", Scalar(H_min, S_min, V_min), Scalar(H_max, S_max, V_max));
 			trackTrackedPiece(tmp, camera_feed, HSV_image, threshold_image);
-			imshow(window2, threshold_image);
+			imshow(filtered_window, threshold_image);
+		}
+		else if (this->calibrateMode) {
+			TrackedPiece tmp = TrackedPiece(systemStringToStdString(this->Game->getPieceList()[0]->getName()), Scalar(calibrate_H_min, calibrate_S_min, calibrate_V_min), Scalar(calibrate_H_max, calibrate_S_max, calibrate_V_max));
+			trackTrackedPiece(tmp, camera_feed, HSV_image, threshold_image);
+			imshow(filtered_window, threshold_image);
 		}
 		else
 		{
@@ -329,14 +366,14 @@ int RunTracking::startTrack()
 				trackTrackedPiece(pieces[i], camera_feed, HSV_image, threshold_image);
 			}
 //			trackTrackedPiece(white_square, camera_feed, HSV_image, threshold_image);
-			imshow(window2, threshold_image);
+			imshow(filtered_window, threshold_image);
 		}
 		
-		imshow(window1, camera_feed);
+		imshow(original_window, camera_feed);
 
 		waitKey(30);
 	}
-	
+	destroyAllWindows();
 	return 0;
 }
 

@@ -50,6 +50,8 @@ void initializeTracking(HandleVariables^ %handleVars, KnobPuzzle^ %Game, ScoreKe
 
 // Unmanaged <--> Managed Conversions
 List<int>^ scalarToList(cv::Scalar scalar);
+TrackedPiece puzzlePieceToTrackedPiece(PuzzlePiece^ puzzlePiece);
+PuzzlePiece^ trackedPieceToPuzzlePiece(TrackedPiece trackedPiece);
 
 // game code input/puzzle class functions
 System::String^ searchPuzzleType(System::String^ code);
@@ -75,6 +77,22 @@ void on_trackbar( int, void* );  // this one won't compile as part of RunTrackin
 void writeToLog(System::String^ myMessage);
 
 
+public ref class TempClass {
+public: 
+	KnobPuzzle^ Game;
+	//RunTracking* calibrator;
 
+	void startThingy() { 
+		System::Windows::Forms::MessageBox::Show("Hey look I started a thread!!!!!"); 
+		//calibrator = new RunTracking();
+		//calibrator->calibrateMode = true;
+		//calibrator->setGame(this->Game);
+		//calibrator->Start();
+	}
+
+	void stop() {
+		//calibrator->Stop();
+	}
+};
 
 #endif

@@ -9,6 +9,7 @@
 
 using namespace System::Collections::Generic;
 using namespace System::Windows::Forms;
+using namespace cv;
 
 //----------------------------------------------------------------------------------------------------------
 
@@ -159,8 +160,46 @@ double getElapsedSeconds(long startTime) {
 	return elapsed->TotalSeconds;
 }
 //----------------------------------------------------------------------------------------------------------
+// Convert a managed PuzzlePiece to an unmanaged TrackedPiece
+TrackedPiece puzzlePieceToTrackedPiece(PuzzlePiece^ puzzlePiece) {
+	// pull name
+	System::String^ name = puzzlePiece->getName();
+	// Puzzle piece HSV lists go [H, S, V]
+	int H_min = puzzlePiece->getHSVmin()[0];
+	int H_max = puzzlePiece->getHSVmax()[0];
+	int S_min = puzzlePiece->getHSVmin()[1];
+	int S_max = puzzlePiece->getHSVmax()[1];
+	int V_min = puzzlePiece->getHSVmin()[2];
+	int V_max = puzzlePiece->getHSVmax()[2];
+	// create new Tracked Piece with these results and return
+	TrackedPiece result = TrackedPiece(systemStringToStdString(name), Scalar(H_min, S_min, V_min), Scalar(H_max, S_max, V_max));
+
+	return result;
+}
 //----------------------------------------------------------------------------------------------------------
+// Convert a managed PuzzlePiece to an unmanaged TrackedPiece
+PuzzlePiece^ trackedPieceToPuzzlePiece(TrackedPiece trackedPiece) {
+	// pull name
+	std::string name = trackedPiece.getName();
+	// Tracked piece HSV scalars go [H, S, V]
+	int H_min = trackedPiece.getHSVmin()[0];
+	int H_max = trackedPiece.getHSVmax()[0];
+	int S_min = trackedPiece.getHSVmin()[1];
+	int S_max = trackedPiece.getHSVmax()[1];
+	int V_min = trackedPiece.getHSVmin()[2];
+	int V_max = trackedPiece.getHSVmax()[2];
+	List<int>^ HSV_min;
+	List<int>^ HSV_max;
+	// recreate HSV list<int>^s
+	HSV_min->Add(H_min); HSV_min->Add(S_min); HSV_min->Add(V_min);
+	HSV_max->Add(H_max); HSV_max->Add(S_max); HSV_max->Add(V_max);
+	// create new Puzzle Piece with these results and return
+	PuzzlePiece^ result = gcnew PuzzlePiece(stdStringToSystemString(name), HSV_min, HSV_max);
+
+	return result;
+}
 //----------------------------------------------------------------------------------------------------------
+
 //----------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------

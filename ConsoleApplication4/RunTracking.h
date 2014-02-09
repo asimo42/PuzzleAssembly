@@ -19,9 +19,10 @@ class RunTracking
         gcroot<KnobPuzzle^> Game;
 
         std::string gameName;
+		bool calibrateMode;
 
 
-		RunTracking() {};
+		RunTracking() { Initialize(); }
   
         virtual void Initialize();
         virtual void Start();
@@ -41,6 +42,7 @@ protected:
         virtual void trackTrackedPiece(TrackedPiece &piece, Mat &camera_feed, Mat &HSV_image, Mat &threshold_image);
         virtual void trackFilteredObject(TrackedPiece &piece, Mat &cameraFeed, Mat &threshold_image);
         void createTrackbarWindow();
+		void createTrackbarWindow(TrackedPiece &tmp);
         void erodeAndDilate(Mat &image);
         void drawObject(vector<TrackedPiece> pieces, Mat &frame);
         void drawPuzzleBoard(Mat &image);
@@ -68,9 +70,9 @@ private:
 		
 		long StartTime;
 
-        std::string window1;
+        std::string original_window;
         std::string trackbar_window;
-        std::string window2;
+        std::string filtered_window;
         std::string puzzle_window;
 
 		// hard coded test case - Change this variable in the 'initialize' function to do different test cases. 0 if  not test.
@@ -91,6 +93,13 @@ private:
         int S_max;
         int V_min;
         int V_max;
+
+		int calibrate_H_min;
+        int calibrate_H_max;
+        int calibrate_S_min;
+        int calibrate_S_max;
+        int calibrate_V_min;
+        int calibrate_V_max;
 
 		// Could not get to work as member variables
 //		static VOID CALLBACK RunTracking::static_timerTick(  _In_  HWND hwnd, _In_  UINT uMsg, _In_  UINT_PTR idEvent, _In_  DWORD dwTime);

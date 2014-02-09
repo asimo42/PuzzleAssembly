@@ -23,10 +23,11 @@ void RunTracking::Initialize() {
 
 		// SET THIS VARIABLE FOR TEST CASES. 0 = NOT TEST. 1,2,3,4... for different tests. 
 		this->TestCase = Constants::TESTNUMBER;
+		this->calibrateMode = false;
 
-        this->window1 = "Original Capture";
+        this->original_window = "Original Capture";
         this->trackbar_window = "Trackbar Window";
-        this->window2 = "Filtered Image";
+        this->filtered_window = "Filtered Image";
         this->puzzle_window = "Puzzle Board Window";
 
         //default capture width and height
@@ -46,6 +47,13 @@ void RunTracking::Initialize() {
         this->V_min = Constants::DEFAULT_V_MIN;
         this->V_max = Constants::DEFAULT_V_MAX;
 
+        this->calibrate_H_min = Constants::DEFAULT_H_MIN;
+        this->calibrate_H_max = Constants::DEFAULT_H_MAX;
+        this->calibrate_S_min = Constants::DEFAULT_S_MIN;
+        this->calibrate_S_max = Constants::DEFAULT_S_MAX;
+        this->calibrate_V_min = Constants::DEFAULT_V_MIN;
+        this->calibrate_V_max = Constants::DEFAULT_V_MAX;
+
 		// initialize scorekeeping
 			
 		this->ScoreKeep = gcnew GamePlayed(this->Game); // am currently assuming Game is initialized; need error checking here
@@ -62,8 +70,10 @@ void RunTracking::Initialize() {
 
 // start running opencv
 void RunTracking::Start() {
-        // initialize the class and then start tracking
-        Initialize();
+
+		if (this->calibrateMode) {
+			System::Diagnostics::Debug::WriteLine("It's Calibrate Mode!");
+		}
 		//IF test is selected, go to test
 		if (this->TestCase != 0) {
 			switch(this->TestCase) {

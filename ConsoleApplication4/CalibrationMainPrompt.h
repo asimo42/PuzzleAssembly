@@ -33,6 +33,7 @@ namespace ConsoleApplication4 {
 			this->calibratingLocations = false;
 			this->waitingToPlacePieces = false;
 			this->puzzle = gcnew KnobPuzzle();
+			this->calibNextButton->Focus();
 			//
 			//TODO: Add the constructor code here
 			//
@@ -49,7 +50,7 @@ namespace ConsoleApplication4 {
 				delete components;
 			}
 		}
-	private: System::Windows::Forms::Button^  calibrationHelpButton;
+
 	private: System::Windows::Forms::Label^  label1;
 	private: System::Windows::Forms::Label^  label2;
 	private: System::Windows::Forms::Button^  calibNextButton;
@@ -78,7 +79,6 @@ namespace ConsoleApplication4 {
 		/// </summary>
 		void InitializeComponent(void)
 		{
-			this->calibrationHelpButton = (gcnew System::Windows::Forms::Button());
 			this->label1 = (gcnew System::Windows::Forms::Label());
 			this->label2 = (gcnew System::Windows::Forms::Label());
 			this->calibNextButton = (gcnew System::Windows::Forms::Button());
@@ -86,18 +86,6 @@ namespace ConsoleApplication4 {
 			this->placePiecesLabel = (gcnew System::Windows::Forms::Label());
 			this->pleaseWaitLabel = (gcnew System::Windows::Forms::Label());
 			this->SuspendLayout();
-			// 
-			// calibrationHelpButton
-			// 
-			this->calibrationHelpButton->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Right));
-			this->calibrationHelpButton->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point, 
-				static_cast<System::Byte>(0)));
-			this->calibrationHelpButton->Location = System::Drawing::Point(532, 11);
-			this->calibrationHelpButton->Name = L"calibrationHelpButton";
-			this->calibrationHelpButton->Size = System::Drawing::Size(27, 23);
-			this->calibrationHelpButton->TabIndex = 0;
-			this->calibrationHelpButton->Text = L"\?";
-			this->calibrationHelpButton->UseVisualStyleBackColor = true;
 			// 
 			// label1
 			// 
@@ -183,7 +171,6 @@ namespace ConsoleApplication4 {
 			this->Controls->Add(this->calibNextButton);
 			this->Controls->Add(this->label2);
 			this->Controls->Add(this->label1);
-			this->Controls->Add(this->calibrationHelpButton);
 			this->Name = L"CalibrationMainPrompt";
 			this->Text = L"Calibration";
 			this->ResumeLayout(false);
