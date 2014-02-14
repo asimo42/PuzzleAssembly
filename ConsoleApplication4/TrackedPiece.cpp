@@ -34,6 +34,15 @@ TrackedPiece::TrackedPiece(String piece_name, Scalar HSVmin, Scalar HSVmax)
 	setHSVmax(HSVmax);
 }
 
+TrackedPiece::TrackedPiece(String piece_name, Scalar HSVmin, Scalar HSVmax, int xdest, int ydest)
+{
+	setName(piece_name);
+	setHSVmin(HSVmin);
+	setHSVmax(HSVmax);
+	setXDest(xdest);
+	setYDest(ydest);
+}
+
 bool TrackedPiece::checkForMovement(bool justMoved)
 {
 	// add to movement history

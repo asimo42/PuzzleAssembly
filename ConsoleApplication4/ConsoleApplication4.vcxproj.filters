@@ -63,6 +63,9 @@
     <ClInclude Include="ColorCalibrationForm.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="CalibrationTracking.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -119,6 +122,9 @@
     <ClCompile Include="ColorCalibrationForm.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CalibrationTracking.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="ConsoleApplication4.rc">
@@ -127,6 +133,12 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MainGUIForm.resx">
+      <Filter>Resource Files</Filter>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CalibrationMainPrompt.resx">
+      <Filter>Resource Files</Filter>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ColorCalibrationForm.resx">
       <Filter>Resource Files</Filter>
     </EmbeddedResource>
   </ItemGroup>

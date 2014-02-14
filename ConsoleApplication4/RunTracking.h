@@ -2,11 +2,12 @@
 OpenCV down once the game is completed or stopped.  An instance of this class is created in "StartOpenCV.cpp" when the user hits
 the Run button on the GUI
 */
+#pragma once
 
 #include "stdafx.h"
 #include <vcclr.h>
 #include <opencv2\opencv.hpp>        //includes all OpenCV headers
-#include "Functions.h"
+#include "GameBoard.h"
 
 class RunTracking
 {
@@ -46,6 +47,8 @@ protected:
         void erodeAndDilate(Mat &image);
         void drawObject(vector<TrackedPiece> pieces, Mat &frame);
         void drawPuzzleBoard(Mat &image);
+
+		void loadTrackedPieces();
 
 			//handling placement of pieces (in progress)
 		void processPlacementOfPiece(TrackedPiece trackedpiece);
@@ -93,13 +96,6 @@ private:
         int S_max;
         int V_min;
         int V_max;
-
-		int calibrate_H_min;
-        int calibrate_H_max;
-        int calibrate_S_min;
-        int calibrate_S_max;
-        int calibrate_V_min;
-        int calibrate_V_max;
 
 		// Could not get to work as member variables
 //		static VOID CALLBACK RunTracking::static_timerTick(  _In_  HWND hwnd, _In_  UINT uMsg, _In_  UINT_PTR idEvent, _In_  DWORD dwTime);

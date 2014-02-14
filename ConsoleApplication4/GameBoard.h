@@ -53,6 +53,8 @@ public:
 	int getNumPieces()		   { return this->numPieces; }
 	void setNumPieces(int num) { this->numPieces = num; }
 	List<PuzzlePiece^>^ getPieceList()        { return this->pieceList; }
+	int setGame(System::String^ code);
+	KnobPuzzle^ returnHandle()		 {return this;}
 
 protected:
 	HANDLE myMutex;

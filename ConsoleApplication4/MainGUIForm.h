@@ -52,6 +52,7 @@ namespace PuzzleAssembly {
 	private: System::Windows::Forms::Label^  label1;
 	private: System::ComponentModel::IContainer^  components;
 	private: HandleVariables Vars;
+	private: KnobPuzzle currentPuzzle;
 	private: System::Windows::Forms::Button^  scoresButton;
 	private: System::Windows::Forms::Button^  calibrateButton;
 	private: System::Windows::Forms::Button^  loadButton;
@@ -168,25 +169,33 @@ namespace PuzzleAssembly {
 
 private: System::Void runGameButton_Click(System::Object^  sender, System::EventArgs^  e) {
 
+			 // load up puzzle if not already loaded 
+			 if (this->currentPuzzle.returnHandle()->getNumPieces() == 0) {
+				 MessageBox::Show("Loading Puzzle");
+				 int success = this->loadPuzzleFromCode();
+				 // if loading was unsuccessful, alert user and cancel running game
+				 if (success == -1) {
+					 System::Windows::Forms::MessageBox::Show("Error loading puzzle. \nPlease check code string");
+					 return;
+				 }
+			 }
+
+			 //NEED A FUNCTION FOR CHECKING IF A GAME IS VALID BEFORE RUNNING!!! Build this into the succss value of puzzle.setGame()
+			 if (this->currentPuzzle.returnHandle()->getNumPieces() == 0) {
+				 System::Windows::Forms::MessageBox::Show("Error, loaded puzzle has 0 pieces");
+				 return;
+			 }
+
 			 this->gameRunning = true;
 			 this->runGameButton->Visible = false;
 			 //this->stopGameButton->Visible = true;
-			 System::String^ CodeString = this->textBox1->Text;
-			 System::String^ puzzleType = searchPuzzleType(CodeString);
-			 //KNOB PUZZLE IS STILL HARDCODED - WILL NEED TO MAKE CHANGES TO RELEVANT CLASSES
 
-			 // load up puzzle class and start tracking
-			 if (puzzleType->Equals("KnobPuzzle")) {   
-				 KnobPuzzle^ puzzle = gcnew KnobPuzzle(CodeString);
-				 initializeTracking( Vars.returnHandle(), puzzle, ScoreKeeper.returnHandle());
-			 }
-			 else if (puzzleType->Equals("BlockPuzzle")) {
-				 //etc...
-			 }
+			 // now start the tracking
+			 initializeTracking( Vars.returnHandle(), this->currentPuzzle.returnHandle(), ScoreKeeper.returnHandle());
 
 			 this->runGameButton->Visible = true;
 		 }
-
+//----------------------------------------------------------------------------------------------------------
 
 		 // NOTE ALSO NEED A PAUSE BUTTON
 //private: System::Void stopGameButton_Click(System::Object^  sender, System::EventArgs^  e) {
@@ -195,39 +204,84 @@ private: System::Void runGameButton_Click(System::Object^  sender, System::Event
 //			 this->stopGameButton->Visible = false;
 //		 }
 
-
+//----------------------------------------------------------------------------------------------------------
 private: System::Void scoresButton_Click(System::Object^  sender, System::EventArgs^  e) {
 			 // scores should probably be a tabbed display, e.g. this session's games, Progress to-date
 			 // we'll keep it a simple message box for now - We'll want a scrolling form later
 			System::String^ results = ScoreKeeper.showFinalResults();
 			MessageBox::Show(results);
 		 }
+
+//----------------------------------------------------------------------------------------------------------
 private: System::Void calibrateButton_Click(System::Object^  sender, System::EventArgs^  e) {
-			 // this should go in loadButton_Click eventually
-			 System::String^ CodeString = this->textBox1->Text;
-			 System::String^ puzzleType = searchPuzzleType(CodeString);
-			 // load up puzzle class and start tracking
-			KnobPuzzle^ puzzle = gcnew KnobPuzzle(CodeString);
+
+			 // load up puzzle if not already loaded (the calibrate button shouldn't be enabled if it hasn't been loaded, but just in case)
+			 if (this->currentPuzzle.returnHandle()->getNumPieces() == 0) {
+				 MessageBox::Show("Loading Puzzle");
+				 int success = this->loadPuzzleFromCode();
+				 if (success == -1) {
+					 System::Windows::Forms::MessageBox::Show("Error loading puzzle. \nPlease check code string");
+					 return;
+				 }
+			 }
+
+			 // create new calibration main form and pass it the puzzle
 			 ConsoleApplication4::CalibrationMainPrompt^ calibForm = gcnew ConsoleApplication4::CalibrationMainPrompt();
-			 calibForm->puzzle = puzzle;
+			 calibForm->puzzle = this->currentPuzzle.returnHandle();
+
+			 // wait until the calibration form has exited. 
 			 if (calibForm->ShowDialog() == System::Windows::Forms::DialogResult::OK) {
 				 MessageBox::Show("You're done with calibration!");
 			 }
-			 // set up calibration form
-			 // pass off puzzle piece info
+			 else if (calibForm->ShowDialog() == System::Windows::Forms::DialogResult::Cancel) {
+				 // NEED SOME SORT OF REACTION HERE
+			 }
+			 // color and location info should be embedded now in this->currentPuzzle, which should be passed to tracking initializer
+			 return;
 		 }
 
+//----------------------------------------------------------------------------------------------------------
 private: System::Void loadButton_Click(System::Object^  sender, System::EventArgs^  e) {
+
+			 // load puzzle from puzzle code box text and enable calibrate button.
 			 this->calibrateButton->Enabled = true;
+			 // I NEED TO RETURN AN ERROR FROM LOADPUZZLE
+			 int success = this->loadPuzzleFromCode();
+			 if (success == -1) {
+				 System::Windows::Forms::MessageBox::Show("Error loading puzzle. \nPlease check code string");
+				 return;
+			 }
+			 this->loadButton->Enabled = false;
+
 		 }
 
+//----------------------------------------------------------------------------------------------------------
 private: System::Void textBox1_TextChanged(System::Object^  sender, System::EventArgs^  e) {
+
+			 // if puzzle code box is blank, de-enable load button
 			 if (textBox1->Text->Length == 0) {
 				 this->loadButton->Enabled = false;
 			 }
+			 // otherwise enable load button
 			 else {
 				 this->loadButton->Enabled = true; 
 			 }
+		 }
+
+//----------------------------------------------------------------------------------------------------------
+
+private: int loadPuzzleFromCode() {
+			 System::String^ CodeString = this->textBox1->Text;
+			 System::String^ puzzleType = searchPuzzleType(CodeString);
+			 //KNOB PUZZLE IS STILL HARDCODED - WILL NEED TO MAKE CHANGES TO RELEVANT CLASSES
+
+			 int success = 0;
+			 // load up puzzle class. If unsuccessful, will return -1
+			 if (puzzleType->Equals("KnobPuzzle")) {   
+				 success = this->currentPuzzle.setGame(CodeString);
+			 }
+			 return success;
+			 // add more gametypes here in the future
 		 }
 };
 }

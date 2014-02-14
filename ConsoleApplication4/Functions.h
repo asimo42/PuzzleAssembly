@@ -7,6 +7,8 @@
 #include "GameBoard.h"
 #include "ScoreKeeping.h"
 #include "TrackedPiece.h"
+#include "RunTracking.h"
+#include "CalibrationTracking.h"
 
 #ifndef GUARD_J
 #define GUARD_J
@@ -63,7 +65,12 @@ std::string intToStdString(int number);
 System::String^ stdStringToSystemString(std::string str);
 std::string systemStringToStdString(System::String^ str);
 double getElapsedSeconds(long startTime);
-
+double averageListOfInts(List<int>^ inputList);
+ref class ThreadShell {
+public: 
+	System::Threading::Thread^ myThread;
+	//ThreadShell() { myThread = gcnew System::Threading::Thread(); }
+};
 
 
 // ---FROM TRACKING.CPP----
@@ -77,22 +84,37 @@ void on_trackbar( int, void* );  // this one won't compile as part of RunTrackin
 void writeToLog(System::String^ myMessage);
 
 
-public ref class TempClass {
-public: 
-	KnobPuzzle^ Game;
-	//RunTracking* calibrator;
+      //// Third attempt at embedding a native class
+      //// inside a ref class
+      //template<typename T>
+      //ref class Embedded {
+      //  T* t;
+ 
+      //  !Embedded() {
+      //    if (t != nullptr) {
+      //      delete t;
+      //      t = nullptr;
+      //    }
+      //  }
+ 
+      //  ~Embedded() {
+      //    this->!Embedded();
+      //  }
+ 
+      //public:
+      //  Embedded() : t(new T) {}
+ 
+      //  static T* operator&(Embedded% e) { return e.t; }
+      //  static T* operator->(Embedded% e) { return e.t; }
+      //};
 
-	void startThingy() { 
-		System::Windows::Forms::MessageBox::Show("Hey look I started a thread!!!!!"); 
-		//calibrator = new RunTracking();
-		//calibrator->calibrateMode = true;
-		//calibrator->setGame(this->Game);
-		//calibrator->Start();
-	}
+      //struct NativePoint {
+      //  int x, y;
+      //};
 
-	void stop() {
-		//calibrator->Stop();
-	}
-};
+      //ref class R {
+      //  Embedded<NativePoint> np;
+      //};
+
 
 #endif

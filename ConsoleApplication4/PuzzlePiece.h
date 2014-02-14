@@ -16,6 +16,8 @@ private:
 	List<int>^ HSV_min;
 	List<int>^ HSV_max;
 
+	void Initialize();
+
 public:
 
 	int timePlaced;
@@ -24,6 +26,7 @@ public:
 	PuzzlePiece(void);
 	PuzzlePiece(System::String^ piece_name);
 	PuzzlePiece(System::String^ piece_name, List<int>^ HSVmin, List<int>^ HSVmax);
+	PuzzlePiece(System::String^ piece_name, List<int>^ HSVmin, List<int>^ HSVmax, int xdest, int ydest);
 
 	~PuzzlePiece(void);
 
@@ -31,13 +34,14 @@ public:
 	int getTimePlaced() { return timePlaced; }
 
 	int getXPos() {return x_pos;}
-	double getXDestX() { return x_dest;}
+	double getXDest() { return x_dest;}
 	void setXPos(int x) {x_pos = x;}
+	void setXDest(int x) {x_dest = x;}
 
 	int getYPos() {return y_pos;}
 	double getYDest() { return y_dest;}
 	void setYPos(int y) {y_pos = y;}
-
+	void setYDest(int y) {y_dest = y;}
 
 	void setPos(int x, int y) { x_pos = x; y_pos = y; }
 	void setDestPos(int x, int y) { x_dest = x; y_dest = y; }

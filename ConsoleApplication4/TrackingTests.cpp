@@ -3,10 +3,8 @@
 #include <vcclr.h>
 #include <iostream>
 #include <string>
-//#include <opencv2\opencv.hpp>        //includes all OpenCV headers
 #include "TrackedPiece.h"
 #include "HandleVariables.h"
-#include "RunTracking.h"
 #include "Functions.h"
 #include "Shape.h"
 

@@ -19,6 +19,7 @@ private:
 	HANDLE myMutex;
 	std::string name;
 	int x_pos, y_pos;
+	int x_dest, y_dest;
 	int lastxPos, lastyPos;
 	Scalar HSV_min, HSV_max;
 	Scalar color;
@@ -51,6 +52,7 @@ public:
 
 	TrackedPiece(std::string);
 	TrackedPiece(std::string, Scalar, Scalar);
+	TrackedPiece(std::string, Scalar, Scalar, int, int); // (name, HSVmin, HSVmac, Xdest, Ydest)
 
 	~TrackedPiece(void);
 
@@ -70,10 +72,17 @@ public:
 	int getXPos() {return x_pos;}
 	void setXPos(int x) {x_pos = x;}
 
+	int getXDest() {return x_dest;}
+	void setXDest(int x) {x_dest = x;}
+
 	int getYPos() {return y_pos;}
 	void setYPos(int y) {y_pos = y;}
 
+	int getYDest() {return y_dest;}
+	void setYDest(int y) {y_dest = y;}
+
 	int setPos(int x, int y) { x_pos = x; y_pos = y; }
+	int setDest(int x, int y) { x_dest = x; y_dest = y; }
 
 	int getLastxPos() {return lastxPos;}
 	void setLastxPos(int pos) {lastxPos = pos;}

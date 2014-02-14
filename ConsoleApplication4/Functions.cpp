@@ -4,7 +4,7 @@
 #include <sstream>
 #include <string>
 #include "Functions.h"
-#include "RunTracking.h"
+//#include "RunTracking.h"
 
 
 using namespace System::Collections::Generic;
@@ -76,11 +76,11 @@ array<System::String^>^ getGameFileStrings(System::String^ code) {
 		List<System::String^>^ tmpList = gcnew List<System::String^>();
 		tmpList->Add( "KNOBPUZZLE1");
 		tmpList->Add( "NO.PIECES 5"); 
-		tmpList->Add( "LOC 1 1 COLOR 100 100 150 200 200 200 Square" );
+		tmpList->Add( "LOC 1 1 COLOR 165 107 25 185 233 256 Circle" );
 		tmpList->Add( "LOC 2 2 COLOR 65 23 200 200 200 255 Rectangle" );
-		tmpList->Add( "LOC 3 4 COLOR 10 10 10 100 100 100 Circle" );
+		tmpList->Add( "LOC 3 4 COLOR 10 10 10 100 100 100 Square" );
 		tmpList->Add( "LOC 5 3 COLOR 90 55 100 100 100 150 Star" );
-		tmpList->Add( "LOC 6 7 COLOR 100 299 100 150 150 150 Pentagon" );
+		tmpList->Add( "LOC 6 7 COLOR 18 130 75 30 256 256 Pentagon" );
 		tmpList->Add( "----------------------------------------------------------------");
 		tmpList->Add( "** note: LOC xloc yloc COLOR Hmin Smin Vmin Hmax Smax Vmax name");
 		lines = gcnew array<System::String^>(tmpList->Count);
@@ -143,6 +143,20 @@ std::string systemStringToStdString(System::String^ str)
 }
 
 //----------------------------------------------------------------------------------------------------------
+double averageListOfInts(List<int>^ inputList) {
+	double sum = 0;
+	for each (int num in inputList) {
+		sum += num;
+	}
+	if (inputList->Count != 0) {	
+		double average = sum/inputList->Count;
+		return average;
+	}
+	else { return 0; }
+}
+//----------------------------------------------------------------------------------------------------------
+
+
 
 // convert a cv::scalar into a list of 3 ints (for use in managed code)
 List<int>^ scalarToList(cv::Scalar scalar) {
@@ -172,7 +186,7 @@ TrackedPiece puzzlePieceToTrackedPiece(PuzzlePiece^ puzzlePiece) {
 	int V_min = puzzlePiece->getHSVmin()[2];
 	int V_max = puzzlePiece->getHSVmax()[2];
 	// create new Tracked Piece with these results and return
-	TrackedPiece result = TrackedPiece(systemStringToStdString(name), Scalar(H_min, S_min, V_min), Scalar(H_max, S_max, V_max));
+	TrackedPiece result = TrackedPiece(systemStringToStdString(name), Scalar(H_min, S_min, V_min), Scalar(H_max, S_max, V_max),puzzlePiece->getXDest(),puzzlePiece->getYDest());
 
 	return result;
 }
@@ -194,7 +208,7 @@ PuzzlePiece^ trackedPieceToPuzzlePiece(TrackedPiece trackedPiece) {
 	HSV_min->Add(H_min); HSV_min->Add(S_min); HSV_min->Add(V_min);
 	HSV_max->Add(H_max); HSV_max->Add(S_max); HSV_max->Add(V_max);
 	// create new Puzzle Piece with these results and return
-	PuzzlePiece^ result = gcnew PuzzlePiece(stdStringToSystemString(name), HSV_min, HSV_max);
+	PuzzlePiece^ result = gcnew PuzzlePiece(stdStringToSystemString(name), HSV_min, HSV_max, trackedPiece.getXDest(), trackedPiece.getYDest());
 
 	return result;
 }

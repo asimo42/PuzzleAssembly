@@ -34,6 +34,7 @@ namespace ConsoleApplication4 {
 			this->waitingToPlacePieces = false;
 			this->puzzle = gcnew KnobPuzzle();
 			this->calibNextButton->Focus();
+			this->colorForm = gcnew ConsoleApplication4::ColorCalibrationForm();
 			//
 			//TODO: Add the constructor code here
 			//
@@ -61,6 +62,7 @@ namespace ConsoleApplication4 {
 	private: bool calibratingLocations;
 	private: bool waitingToPlacePieces;
 	public: KnobPuzzle^ puzzle;
+	private: ConsoleApplication4::ColorCalibrationForm^ colorForm;
 
 	protected: 
 
@@ -173,6 +175,7 @@ namespace ConsoleApplication4 {
 			this->Controls->Add(this->label1);
 			this->Name = L"CalibrationMainPrompt";
 			this->Text = L"Calibration";
+			this->FormClosing += gcnew System::Windows::Forms::FormClosingEventHandler(this, &CalibrationMainPrompt::CalibrationMainPrompt_FormClosing);
 			this->ResumeLayout(false);
 			this->PerformLayout();
 
@@ -180,37 +183,56 @@ namespace ConsoleApplication4 {
 #pragma endregion
 	private: System::Void calibNextButton_Click(System::Object^  sender, System::EventArgs^  e) {
 
+				 if (this->puzzle->getPieceList()->Count <= 0) {
+					 System::Windows::Forms::MessageBox::Show("Error: cannot find puzzle piece information. Please check game ID and try again");
+					 this->DialogResult = System::Windows::Forms::DialogResult::Cancel;
+					 this->Close();
+					 return;
+				 }
+
 				 // disable the next button
 				 this->calibNextButton->Enabled = false;
 
 				 // if we are in the color stage, show appropriate prompt
 				 if (this->calibratingColors) {
 
+					 //CalibrationTracking^ locationTracker = gcnew CalibrationTracking();
+					 //locationTracker->setGame(this->puzzle);
+					 //locationTracker->startLocationCalibration();
+					 //return;
+
+
 					 this->Visible = false;
-					 // launch a new calibration form for it
-					 // and load it up with the puzzle data
-					 // pull new data from form and store back into knobpuzzle class
-					 ConsoleApplication4::ColorCalibrationForm^ colorForm = gcnew ConsoleApplication4::ColorCalibrationForm();
+					 // launch a new color calibration form
+					 //ConsoleApplication4::ColorCalibrationForm^ colorForm = gcnew ConsoleApplication4::ColorCalibrationForm();
 					 //pass puzzle class over to color form
-					 colorForm->puzzle = this->puzzle;
-					 if (colorForm->ShowDialog() == System::Windows::Forms::DialogResult::OK) {
+					 this->colorForm->puzzle = this->puzzle;
+					 if (this->colorForm->ShowDialog() == System::Windows::Forms::DialogResult::OK) {
 					 }
+
 					 // make this form visible again, then now switch to placing pieces
 					 this->Visible = true;
 					 this->startColorsText->Visible = false;
+ 					 this->calibratingColors = false;
+					 // instruct user to place pieces
 					 this->placePiecesLabel->Visible = true;
-					 this->calibratingColors = false;
 					 this->waitingToPlacePieces = true;
 				 }
+
+				 // if waiting for the user to place pieces, and then the user clicks the next button:
 				 if (this->waitingToPlacePieces) {
-					 this->waitingToPlacePieces = false;
+					 this->waitingToPlacePieces = false; // stop waiting for pieces, remove instructions to do so
 					 this->placePiecesLabel->Visible = false;
-					 this->pleaseWaitLabel->Visible = true;
-					 this->calibratingLocations = true;
+					 this->pleaseWaitLabel->Visible = true;  // instruct user to wait for the system to calibrate
+					 this->calibratingLocations = true;  //set system to calibration
+
 				 }
 
 				 // if we are in the calibrating location stage, do the following
 				 if (this->calibratingLocations) {
+					 CalibrationTracking^ locationTracker = gcnew CalibrationTracking();
+					 locationTracker->setGame(this->puzzle);
+					 locationTracker->startLocationCalibration();
 
 					 // start finding locations
 
@@ -222,5 +244,10 @@ namespace ConsoleApplication4 {
 				 //re enable the next button
 				 this->calibNextButton->Enabled = true;
 			 }
+
+// If this form is closed prematurely, close the spawned ColorCalibrationForm, which should stop any threads running there. 
+private: System::Void CalibrationMainPrompt_FormClosing(System::Object^  sender, System::Windows::Forms::FormClosingEventArgs^  e) {
+			 this->colorForm->Close();
+		}
 };
 }

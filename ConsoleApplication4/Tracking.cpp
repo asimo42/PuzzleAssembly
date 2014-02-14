@@ -22,7 +22,6 @@
 #include <opencv2\opencv.hpp>	//includes all OpenCV headers
 #include "TrackedPiece.h"
 #include "HandleVariables.h"
-#include "RunTracking.h"
 #include "Functions.h"
 #include "Shape.h"
 #include <Windows.h>	// for timer
@@ -41,6 +40,14 @@ void on_trackbar( int, void* )
 	// trackbar position is changed
 }
 
+//----------------------------------------------------------------------------------------------------------
+ void RunTracking::loadTrackedPieces() {
+	 for (int i = 0; i < this->Game->getPieceList()->Count; i++) {
+		 pieces.push_back(puzzlePieceToTrackedPiece(this->Game->getPieceList()[i]));
+	 }
+ }
+
+//----------------------------------------------------------------------------------------------------------
 void RunTracking::createTrackbarWindow()
 {
 	namedWindow(trackbar_window);
@@ -52,33 +59,7 @@ void RunTracking::createTrackbarWindow()
 	createTrackbar( "V_MAX", trackbar_window, &V_max, V_max, on_trackbar );
 }
 
-void RunTracking::createTrackbarWindow(TrackedPiece &tmp)
-{
-	namedWindow(trackbar_window);
-        this->calibrate_H_min = tmp.getHSVmin()[0];
-        this->calibrate_H_max = tmp.getHSVmax()[0];
-        this->calibrate_S_min = tmp.getHSVmin()[1];
-        this->calibrate_S_max = tmp.getHSVmax()[1];
-        this->calibrate_V_min = tmp.getHSVmin()[2];
-        this->calibrate_V_max = tmp.getHSVmax()[2];
-	//int H_min2 = tmp.getHSVmin()[0];
-	//int H_max2 = tmp.getHSVmax()[0];
-	//int S_min2 = tmp.getHSVmin()[1];
-	//int S_max2 = tmp.getHSVmax()[1];
-	//int V_min2 = tmp.getHSVmin()[2];
-	//int V_max2 = tmp.getHSVmax()[2];
-	//System::String^ values = H_min2 + " " + H_max2 + " " + S_min2 + " " + S_max2 + " " + V_min2 + " " + V_max2;
-	//System::Windows::Forms::MessageBox::Show(values);
-	//int createTrackbar(const string& trackbarname, const string& winname, int* value, int count, TrackbarCallback onChange=0, void* userdata=0)
-	// value is the the location of the sliding thing, and count is the max value of the whole slider (min is always 0)
-	createTrackbar( "H_MIN", trackbar_window, &calibrate_H_min, H_max, on_trackbar );
-	createTrackbar( "H_MAX", trackbar_window, &calibrate_H_max, H_max, on_trackbar );
-	createTrackbar( "S_MIN", trackbar_window, &calibrate_S_min, S_max, on_trackbar );
-	createTrackbar( "S_MAX", trackbar_window, &calibrate_S_max, S_max, on_trackbar );
-	createTrackbar( "V_MIN", trackbar_window, &calibrate_V_min, V_max, on_trackbar );
-	createTrackbar( "V_MAX", trackbar_window, &calibrate_V_max, V_max, on_trackbar );
-}
-
+//----------------------------------------------------------------------------------------------------------
 void RunTracking::erodeAndDilate(Mat &image)
 {
 	//create structuring element that will be used to "dilate" and "erode" image.
@@ -96,12 +77,7 @@ void RunTracking::erodeAndDilate(Mat &image)
 	dilate(image,image,dilateElement);
 }
 
-//string intToStdString(int number){
-//	std::stringstream ss;
-//	ss << number;
-//	return ss.str();
-//}
-
+//----------------------------------------------------------------------------------------------------------
 void RunTracking::drawObject(vector<TrackedPiece> pieces, Mat &frame){
 
 	for(int i =0; i<pieces.size(); i++){
@@ -112,6 +88,7 @@ void RunTracking::drawObject(vector<TrackedPiece> pieces, Mat &frame){
 	}
 }
 
+//----------------------------------------------------------------------------------------------------------
 void RunTracking::trackFilteredObject(TrackedPiece &piece, Mat &cameraFeed, Mat &threshold_image){
 
 	vector <TrackedPiece> pieces;
@@ -202,6 +179,7 @@ void RunTracking::trackFilteredObject(TrackedPiece &piece, Mat &cameraFeed, Mat 
 	}
 }
 
+//----------------------------------------------------------------------------------------------------------
 void RunTracking::trackTrackedPiece(TrackedPiece &piece, Mat &camera_feed, Mat &HSV_image, Mat &threshold_image)
 {
 	//convert to binary image with white = in range specified
@@ -211,6 +189,7 @@ void RunTracking::trackTrackedPiece(TrackedPiece &piece, Mat &camera_feed, Mat &
 
 }
 
+//----------------------------------------------------------------------------------------------------------
 void RunTracking::drawPuzzleBoard(Mat &image)
 {
 	Shape shapes(&image);
@@ -227,6 +206,7 @@ void RunTracking::drawPuzzleBoard(Mat &image)
 	shapes.setColor(Scalar(0, 255, 255));
 	shapes.Draw_Pentagon(Point(1056, 585), 173, -1);
 }
+//----------------------------------------------------------------------------------------------------------
 
 VOID CALLBACK timerTick(  _In_  HWND hwnd, _In_  UINT uMsg, _In_  UINT_PTR idEvent, _In_  DWORD dwTime)
 {
@@ -255,6 +235,7 @@ VOID CALLBACK timerTick(  _In_  HWND hwnd, _In_  UINT uMsg, _In_  UINT_PTR idEve
 	//cout << "Timer tick." << endl;
 }
 
+//----------------------------------------------------------------------------------------------------------
 VOID CALLBACK timerFlash(  _In_  HWND hwnd, _In_  UINT uMsg, _In_  UINT_PTR idEvent, _In_  DWORD dwTime)
 {
 	for(int i = 0; i < pieces.size(); ++i)
@@ -277,6 +258,7 @@ VOID CALLBACK RunTracking::static_timerTick(  _In_  HWND hwnd, _In_  UINT uMsg, 
 }
 */
 
+//----------------------------------------------------------------------------------------------------------
 int RunTracking::startTrack()
 {
 	// set timer to periodically check piece movement
@@ -286,10 +268,15 @@ int RunTracking::startTrack()
 	// set timer to flash shapes
 	UINT timer_flash = 600;
 	SetTimer(NULL, 1, timer_flash, timerFlash);
+	
 
-	pieces.push_back(TrackedPiece("Circle", Scalar(0, 130, 0), Scalar(5, 256, 256)));
-	pieces.push_back(TrackedPiece("Rectangle", Scalar(65, 130, 0), Scalar(82, 256, 256)));
-	pieces.push_back(TrackedPiece("Pentagon", Scalar(18, 130, 75), Scalar(30, 256, 256)));
+	// TRYING TO IMPORT CALIBRATED PIECES HERE::
+	this->loadTrackedPieces();
+	//pieces.push_back(TrackedPiece("Circle", Scalar(0, 130, 0), Scalar(5, 256, 256)));
+	//pieces.push_back(TrackedPiece("Rectangle", Scalar(65, 130, 0), Scalar(82, 256, 256)));
+	//pieces.push_back(TrackedPiece("Pentagon", Scalar(18, 130, 75), Scalar(30, 256, 256)));
+
+	//
 
 	bool calibrate_mode = false;
 
@@ -315,10 +302,6 @@ int RunTracking::startTrack()
 	{
 		createTrackbarWindow();
 	}
-	if (this->calibrateMode) {
-		TrackedPiece tmp = puzzlePieceToTrackedPiece(this->Game->getPieceList()[0]);
-		createTrackbarWindow(tmp);
-	}
 
 	// Moved to member variables of RunTracking class
 //	TrackedPiece yellow = TrackedPiece("Tennis Ball", Scalar(25,44,160), Scalar(77,95,256));
@@ -328,13 +311,13 @@ int RunTracking::startTrack()
 //	TrackedPiece white_square = TrackedPiece("Square", Scalar(77, 0, 168), Scalar(158, 63, 256));
 
 	//Mat puzzle;				//Puzzle board image for drawing shapes on
-	if (!this->calibrateMode) {
-		namedWindow(puzzle_window);
+
+	namedWindow(puzzle_window);
 	//	namedWindow(puzzle_window, CV_WINDOW_NORMAL);
 	//	cvSetWindowProperty(puzzle_window.c_str(), CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);	// Makes full screen
-		drawPuzzleBoard(puzzle);
-		imshow(puzzle_window, puzzle);
-	}
+	drawPuzzleBoard(puzzle);
+	imshow(puzzle_window, puzzle);
+
 
 	while(1)
 	{
@@ -353,11 +336,7 @@ int RunTracking::startTrack()
 			trackTrackedPiece(tmp, camera_feed, HSV_image, threshold_image);
 			imshow(filtered_window, threshold_image);
 		}
-		else if (this->calibrateMode) {
-			TrackedPiece tmp = TrackedPiece(systemStringToStdString(this->Game->getPieceList()[0]->getName()), Scalar(calibrate_H_min, calibrate_S_min, calibrate_V_min), Scalar(calibrate_H_max, calibrate_S_max, calibrate_V_max));
-			trackTrackedPiece(tmp, camera_feed, HSV_image, threshold_image);
-			imshow(filtered_window, threshold_image);
-		}
+
 		else
 		{
 //			trackTrackedPiece(yellow, camera_feed, HSV_image, threshold_image);
@@ -376,4 +355,5 @@ int RunTracking::startTrack()
 	destroyAllWindows();
 	return 0;
 }
+
 

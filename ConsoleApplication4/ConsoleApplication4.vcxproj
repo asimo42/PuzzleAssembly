@@ -89,6 +89,7 @@
     <ClInclude Include="CalibrationMainPrompt.h">
       <FileType>CppForm</FileType>
     </ClInclude>
+    <ClInclude Include="CalibrationTracking.h" />
     <ClInclude Include="ColorCalibrationForm.h">
       <FileType>CppForm</FileType>
     </ClInclude>
@@ -110,6 +111,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CalibrationMainPrompt.cpp" />
+    <ClCompile Include="CalibrationTracking.cpp" />
     <ClCompile Include="ColorCalibrationForm.cpp" />
     <ClCompile Include="Functions.cpp" />
     <ClCompile Include="GameBoard.cpp" />

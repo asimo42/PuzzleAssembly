@@ -6,7 +6,6 @@ e.g. initializing, starting, ending.  Tracking functions are located in "Trackin
 
 #include <opencv2\opencv.hpp>        
 #include "Functions.h"
-#include "RunTracking.h"
 
 // initialize all variables upon creation of class 
 void RunTracking::Initialize() {
@@ -23,7 +22,6 @@ void RunTracking::Initialize() {
 
 		// SET THIS VARIABLE FOR TEST CASES. 0 = NOT TEST. 1,2,3,4... for different tests. 
 		this->TestCase = Constants::TESTNUMBER;
-		this->calibrateMode = false;
 
         this->original_window = "Original Capture";
         this->trackbar_window = "Trackbar Window";
@@ -47,15 +45,7 @@ void RunTracking::Initialize() {
         this->V_min = Constants::DEFAULT_V_MIN;
         this->V_max = Constants::DEFAULT_V_MAX;
 
-        this->calibrate_H_min = Constants::DEFAULT_H_MIN;
-        this->calibrate_H_max = Constants::DEFAULT_H_MAX;
-        this->calibrate_S_min = Constants::DEFAULT_S_MIN;
-        this->calibrate_S_max = Constants::DEFAULT_S_MAX;
-        this->calibrate_V_min = Constants::DEFAULT_V_MIN;
-        this->calibrate_V_max = Constants::DEFAULT_V_MAX;
-
 		// initialize scorekeeping
-			
 		this->ScoreKeep = gcnew GamePlayed(this->Game); // am currently assuming Game is initialized; need error checking here
 
 		// set up the start time to now. All scores will be measured against this start time
@@ -71,9 +61,6 @@ void RunTracking::Initialize() {
 // start running opencv
 void RunTracking::Start() {
 
-		if (this->calibrateMode) {
-			System::Diagnostics::Debug::WriteLine("It's Calibrate Mode!");
-		}
 		//IF test is selected, go to test
 		if (this->TestCase != 0) {
 			switch(this->TestCase) {
