@@ -51,18 +51,31 @@ System::String^ searchPuzzleType(System::String^ code)
 	}
 	return type;
 }
+
+
+//----------------------------------------------------------------------------------------------------------
+// chunk together calibrated input path or default input path
+System::String^ getCalibratedInputPath(System::String^ code) { 
+				System::String^ str = Constants::GAME_INPUT_DIRECTORY + code + ".txt"; 
+				return str; }
+System::String^ getDefaultInputPath(System::String^ code) { 
+				System::String^ str = Constants::GAME_INPUT_DIRECTORY + code + "_Default" + ".txt"; 
+				return str; }
 //----------------------------------------------------------------------------------------------------------
 
-// Pull all strings from the games file into an array of System::Strings^
-array<System::String^>^ getGameFileStrings(System::String^ code) {
+// Pull all strings from a file into an array of System::Strings^
+array<System::String^>^ getStringArrayFromFile(System::String^ inputFile) {
 
-	// game file path hardcoded in Functions.h. Aren't using it currently; see below **Will need to change
-	System::String^ inputFile = Constants::GAME_INPUT_FILE;
-
-	// Read in all lines of code file into an array 'lines'
 	array<System::String^>^ lines;
+	if (System::IO::File::Exists(inputFile)) { System::Windows::Forms::MessageBox::Show("getStringArrayFromFile: FOUND INPUT FILE"); }
+	else {
+		lines[0] = gcnew System::String("ERROR");
+		return lines;
+	}
+	// Read in all lines of file into an array 'lines'
 	try {
 		lines = System::IO::File::ReadAllLines(inputFile);
+		System::Windows::Forms::MessageBox::Show("getStringArrayFromFile(): Reading in input file"); 
 	}
 	// return error if there's a problem
 	catch (System::Exception^ e) {
@@ -92,7 +105,39 @@ array<System::String^>^ getGameFileStrings(System::String^ code) {
 	return lines;
 }
 //----------------------------------------------------------------------------------------------------------
+// write an array of strings to a file **** Currently file is harcoded here - pass as argument in future.
+int writeStringArrayToFile(array<System::String^>^ inputArray, System::String^ fileName) {
 
+    // This text is added only once to the file. 
+    try 
+    {
+         System::IO::File::WriteAllLines(fileName, inputArray);
+    }
+	catch (System::Exception^ e)
+	{
+		System::Diagnostics::Debug::WriteLine(e);
+		//System::Windows::Forms::MessageBox::Show("Error - can't write to file");
+		Console::WriteLine("Error - can't write to file:");
+		Console::WriteLine(e);
+		return -1;
+	}
+
+	//System::String^ appendText = "This is extra text";
+ //   System::IO::File::AppendAllText(path, appendText);
+
+    // Open the file to read from. 
+    array<System::String^>^ lines = System::IO::File::ReadAllLines(fileName);
+    for each (System::String^ s in lines)
+    {
+        Console::WriteLine(s);
+    }
+
+	return 0;
+}
+
+
+
+//----------------------------------------------------------------------------------------------------------
 // find the index of the start of the actual puzzle info in the game file strings
 // by searching for the code string; this is always at the start of the puzzle info.
 int getCodeLocation(array<System::String^>^ lines, System::String^ code)

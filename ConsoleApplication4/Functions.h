@@ -39,9 +39,7 @@ public:
     static const int DEFAULT_V_MIN = 0;
     static const int DEFAULT_V_MAX= 256;
 
-	// don't worry about this path yet; I hardcoded it's contents in "Functions.cpp getGameFileStrings()" for now
-	static System::String^ GAME_INPUT_FILE = "C:/Users/Owner/Documents/401- Senior Design/PuzzleAssembly/PuzzleAssembly/ConsoleApplication4/TestInputForKnobPuzzle.txt";
-;
+	static System::String^ GAME_INPUT_DIRECTORY = System::Windows::Forms::Application::StartupPath + "/../";
 };
 
 
@@ -57,8 +55,11 @@ PuzzlePiece^ trackedPieceToPuzzlePiece(TrackedPiece trackedPiece);
 
 // game code input/puzzle class functions
 System::String^ searchPuzzleType(System::String^ code);
-array<System::String^>^ getGameFileStrings(System::String^ code); 
+array<System::String^>^ getStringArrayFromFile(System::String^ inputFile); 
+int writeStringArrayToFile(array<System::String^>^ inputArrray, System::String^ fileName);
 int getCodeLocation(array<System::String^>^ lines, System::String^ code);
+System::String^ getCalibratedInputPath(System::String^ code);
+System::String^ getDefaultInputPath(System::String^ code);
 
 // misc.
 std::string intToStdString(int number);
@@ -66,10 +67,12 @@ System::String^ stdStringToSystemString(std::string str);
 std::string systemStringToStdString(System::String^ str);
 double getElapsedSeconds(long startTime);
 double averageListOfInts(List<int>^ inputList);
+
+
+// workaround hack to declare a thread as a global variable in a form
 ref class ThreadShell {
 public: 
 	System::Threading::Thread^ myThread;
-	//ThreadShell() { myThread = gcnew System::Threading::Thread(); }
 };
 
 

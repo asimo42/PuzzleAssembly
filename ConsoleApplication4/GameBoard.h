@@ -55,12 +55,17 @@ public:
 	List<PuzzlePiece^>^ getPieceList()        { return this->pieceList; }
 	int setGame(System::String^ code);
 	KnobPuzzle^ returnHandle()		 {return this;}
+	int SaveCalibrationSettings() { 
+				int success = this->WriteSettingsToFile(); 
+				return success;
+	}
 
 protected:
 	HANDLE myMutex;
 	int numPieces;
 	void LookUpGame(System::String^ code);
 	List<PuzzlePiece^>^ pieceList;
+	int WriteSettingsToFile();
 	//List<PuzzlePiece^>^ orderPlaced;
 };
 

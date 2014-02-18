@@ -34,7 +34,7 @@ int KnobPuzzle::setGame(System::String^ code) {
 	List<PuzzlePiece^>^ pieceList = gcnew List<PuzzlePiece^>();
 	LookUpGame(code); // this will fill up the knobpuzzle^ class properties
 	if (this->Error) {
-		System::Windows::Forms::MessageBox::Show("Couldn't initialize game. Check code and/or game file.");
+		System::Windows::Forms::MessageBox::Show("KnobPuzzle::SetGame - Couldn't initialize game. Check code and/or game file.");
 		return -1;
 	}
 	return 0;
@@ -49,10 +49,25 @@ KnobPuzzle::~KnobPuzzle(void)
 //*** CHANGES to input file must be dealt with there ******
 void KnobPuzzle::LookUpGame(System::String^ code) 
 {
-	// get all strings from the code file
-	array<System::String^>^ stringArray = getGameFileStrings(code);
+	// find path for input file from game code
+	System::String^ inputFile = getCalibratedInputPath(code);
+	System::String^ tmp = "LookUpGame: Calibrated Input File Path : " + inputFile;
+	System::Windows::Forms::MessageBox::Show(tmp);
+	if (!System::IO::File::Exists(inputFile)) {
+		// if can't find calibrated file, then use default file instead
+		inputFile = getDefaultInputPath(code);
+		// if neither exist, error and exit.
+		if (!System::IO::File::Exists(inputFile)) {
+			Console::WriteLine("KnobPuzzle::LookUpGame - Could not find game file");
+			this->Error = true;
+			return;
+		}
+	}
+
+	// pull all strings from file
+	array<System::String^>^ stringArray = getStringArrayFromFile(inputFile);
 	if (stringArray[0]->Equals("ERROR")) {
-		System::Windows::Forms::MessageBox::Show("Could not load game file");
+		System::Windows::Forms::MessageBox::Show("KnobPuzzle::LookUpGame -Could not load game file");
 		this->Error = true;
 		return;
 	}
@@ -135,4 +150,86 @@ void KnobPuzzle::LookUpGame(System::String^ code)
 	// load piece data into mother class
 	this->pieceList = PieceList;
 	this->numPieces = no_pieces;
+}
+
+//----------------------------------------------------------------------------------------------------------
+// Write the current KnobPuzzle calibration settings to the calibration file. 
+int KnobPuzzle::WriteSettingsToFile() {
+	System::Diagnostics::Debug::WriteLine("Saving calibration settings to file");
+	int success = 0;
+
+
+	// Find default code file to use as template for changes
+	System::String^ inputFile = getDefaultInputPath(this->getName());
+	if (!System::IO::File::Exists(inputFile)) {
+		System::Windows::Forms::MessageBox::Show("Warning - can't find default input file.");
+		inputFile = getCalibratedInputPath(this->getName());
+		if (!System::IO::File::Exists(inputFile)) {
+			System::Windows::Forms::MessageBox::Show("WriteSettingsToFile(): Could not find original game file");
+			this->Error = true;
+			return -1;
+		}
+	}
+
+	// pull in all strings from code file to serve as template for changes
+	array<System::String^>^ stringArray = getStringArrayFromFile(inputFile);
+	if (stringArray[0]->Equals("ERROR")) {
+		System::Windows::Forms::MessageBox::Show("Could not load game file");
+		this->Error = true;
+		return -1;
+	}
+		// get starting location of code segment
+	int startIndex = getCodeLocation(stringArray, this->puzzleName);
+	if (startIndex < 0 || startIndex > stringArray->Length) {
+		System::Windows::Forms::MessageBox::Show("Could not find game code in game file");
+		this->Error = true;
+		return -1;
+	}
+
+	// get ending location of code segment
+	System::String^ line = stringArray[startIndex];
+	int endIndex = startIndex;
+	while(!line->Contains("----") && endIndex < stringArray->Length)
+	{
+		line = stringArray[endIndex++];
+	}
+	//System::String^ tmp = "Beginning index: " + startIndex + "   End index: " + endIndex;
+	//System::Windows::Forms::MessageBox::Show(tmp);
+
+	System::Diagnostics::Debug::WriteLine("Constructing new file strings");
+	int puzzlePieceIndex = 0;
+	for (int i = startIndex; i < endIndex ; i++) {
+		line = stringArray[i];
+		//if original line does not begin with LOC , then continue to next line
+		if (line->Length < 4 || !line->Substring(0,4)->Equals("LOC ")) {continue;}
+
+		// get the relevent information from the current puzzle piece
+		PuzzlePiece^ currentPiece = this->getPieceList()[puzzlePieceIndex];
+		int xdest = currentPiece->getXDest();
+		int ydest = currentPiece->getYDest();
+		List<int>^ HSVmin = currentPiece->getHSVmin();
+		List<int>^ HSVmax = currentPiece->getHSVmax();
+		System::String^ name = currentPiece->getName();
+
+		// cat puzzle piece information together into a single line in the proper format
+		System::String^ constructor = "LOC " + xdest + " " + ydest + " COLOR " + HSVmin[0] + " " + HSVmin[1] + " " + HSVmax[2] 
+								 + " " + HSVmax[0] + " " + HSVmax[1] + " " + HSVmax[2] + " " + name;
+
+		// copy the line over the old line in the array of file strings
+		stringArray[i] = constructor;
+		System::Diagnostics::Debug::WriteLine(stringArray[i]);
+
+		// go to next puzzle piece
+		puzzlePieceIndex++;
+	}
+
+	writeStringArrayToFile(stringArray, getCalibratedInputPath(this->getName()));
+	//System::Diagnostics::Debug::WriteLine("NEW FILE NOWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW");
+	//// print out whole string array to check
+	//for (int i = 0; i < stringArray->Length ; i++) {
+	//	System::Diagnostics::Debug::WriteLine(stringArray[i]);
+
+	//}
+
+	return success;
 }

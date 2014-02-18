@@ -220,10 +220,13 @@ private: System::Void calibrateButton_Click(System::Object^  sender, System::Eve
 				 MessageBox::Show("Loading Puzzle");
 				 int success = this->loadPuzzleFromCode();
 				 if (success == -1) {
-					 System::Windows::Forms::MessageBox::Show("Error loading puzzle. \nPlease check code string");
+					 //System::Windows::Forms::MessageBox::Show("Error loading puzzle. \nPlease check code string");
 					 return;
 				 }
 			 }
+
+			 //this->currentPuzzle.SaveCalibrationSettings();
+			 //return;
 
 			 // create new calibration main form and pass it the puzzle
 			 ConsoleApplication4::CalibrationMainPrompt^ calibForm = gcnew ConsoleApplication4::CalibrationMainPrompt();
@@ -237,6 +240,23 @@ private: System::Void calibrateButton_Click(System::Object^  sender, System::Eve
 				 // NEED SOME SORT OF REACTION HERE
 			 }
 			 // color and location info should be embedded now in this->currentPuzzle, which should be passed to tracking initializer
+
+			 System::Windows::Forms::DialogResult result = MessageBox::Show("Do you want to save calibration settings?", "Warning", MessageBoxButtons::YesNoCancel, MessageBoxIcon::Warning);
+			 // if user selects that they want to save the settings, save the settings
+			 if(result == System::Windows::Forms::DialogResult::Yes)
+			 {
+				 Console::WriteLine("Saving Settings");
+    			 int success = this->currentPuzzle.SaveCalibrationSettings();
+				 if (success != 0) {
+					MessageBox::Show("Error: Failed to save settings. Calibrated values will be used for this session only.");
+				 }
+			 }
+			 // Otherwise, cancel
+			 else if(result == System::Windows::Forms::DialogResult::No || result == System::Windows::Forms::DialogResult::Cancel)
+			 {
+			   Console::WriteLine("Not saving settings");
+			 }
+
 			 return;
 		 }
 
