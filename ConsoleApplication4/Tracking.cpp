@@ -211,6 +211,7 @@ VOID CALLBACK timerTick(  _In_  HWND hwnd, _In_  UINT uMsg, _In_  UINT_PTR idEve
 {
 	int thresh = 40;
 
+	int status = 0;
 	for(int i = 0; i < pieces.size(); ++i)
 	{	
 		if(pieces[i].getXPos() > (pieces[i].getLastxPos() + thresh) || pieces[i].getXPos() < (pieces[i].getLastxPos() - thresh))
@@ -223,12 +224,27 @@ VOID CALLBACK timerTick(  _In_  HWND hwnd, _In_  UINT uMsg, _In_  UINT_PTR idEve
 		else if(pieces[i].getYPos() > (pieces[i].getLastyPos() + thresh) || pieces[i].getYPos() < (pieces[i].getLastyPos() - thresh))
 		{
 			pieces[i].setLastyPos(pieces[i].getYPos());
-			pieces[i].checkForMovement(true);
+			status = pieces[i].checkForMovement(true);
 			//cout << pieces[i].getName() << ": Y movement." << endl;
 		}
 
 		else 
-			pieces[i].checkForMovement(false);
+			status = pieces[i].checkForMovement(false);
+
+		//Depending of the status returned above, this will change 
+		//if all the other pieces are turned off, turned on, etc...
+		if (status == 1)
+		{
+			for(int j = 0; j < pieces.size(); j++)
+				if (i != j)
+					pieces[j].setTurnOff(false);
+		}
+		else if (status == 2)
+		{
+			for(int j = 0; j < pieces.size(); j++)
+				if (i != j)
+					pieces[j].setTurnOff(true);
+		}
 	}
 
 	//cout << "Timer tick." << endl;
@@ -239,9 +255,20 @@ VOID CALLBACK timerFlash(  _In_  HWND hwnd, _In_  UINT uMsg, _In_  UINT_PTR idEv
 {
 	for(int i = 0; i < pieces.size(); ++i)
 	{
-		if (pieces[i].isFlashing() || !pieces[i].isOn())
+		//First check if the piece should be flashing
+		if (pieces[i].isFlashing())
 		{
 			pieces[i].toggle(puzzle);
+		}
+		//Then check if it should be turned off
+		else if (pieces[i].isTurnedOff())
+		{
+			pieces[i].turnOff(puzzle);
+		}
+		//If its not doing anything special, then make sure that it is turned on
+		else
+		{
+			pieces[i].turnOn(puzzle);
 		}
 	}
 }

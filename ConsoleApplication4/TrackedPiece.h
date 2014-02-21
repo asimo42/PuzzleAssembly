@@ -31,6 +31,9 @@ private:
 	// Set to true when piece should be flashing on screen
 	bool flashing;
 
+	// Set true when piece should be turned off.
+	bool turn_off;
+
 
 
 	// max number of values allowed in movementHistory deque
@@ -61,13 +64,19 @@ public:
 	// times in the last several timer ticks. This should tell that the user has picked up a piece
 	// and is trying to place it.
 	// returns false if there has not been consistent recent movement.
-	bool checkForMovement(bool justMoved);
+	int checkForMovement(bool justMoved);
 
 	void toggle(Mat &image);
+	void turnOff(Mat &image);
+	void turnOn(Mat &image);
 
 	bool isFlashing() {return flashing;}
+	bool isTurnedOff() {return turn_off;}
+	bool isTurnedOn() {return !turn_off;}
 
 	bool isOn() {return on;}
+
+	void setTurnOff(bool value) {turn_off = value;}
 
 	int getXPos() {return x_pos;}
 	void setXPos(int x) {x_pos = x;}
