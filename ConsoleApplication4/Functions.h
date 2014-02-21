@@ -1,18 +1,17 @@
+#pragma once 
+
 #include "stdafx.h"
+
 #include <opencv2\opencv.hpp>	
-#include "HandleVariables.h"
 #include "TrackedPiece.h"
 #include "PuzzlePiece.h"
-#include "Shape.h"
 #include "GameBoard.h"
 #include "ScoreKeeping.h"
-#include "TrackedPiece.h"
-#include "RunTracking.h"
-#include "CalibrationTracking.h"
 
 #ifndef GUARD_J
 #define GUARD_J
 
+using namespace System;
 using namespace System::Collections::Generic;
 
 // Define any constants that will be repeated or that may be changed. EX) int x = Constants::CONSTANT_X
@@ -45,15 +44,15 @@ public:
 
 //--- FROM FUNCTIONS.CPP----
 
-// starting OpenCV
-void initializeTracking(HandleVariables^ %handleVars, KnobPuzzle^ %Game, ScoreKeeping^ %ScoreKeeper);
+// Starting OpenCV tracking
+void initializeTracking(KnobPuzzle^ %Game, ScoreKeeping^ %ScoreKeeper);
 
 // Unmanaged <--> Managed Conversions
 List<int>^ scalarToList(cv::Scalar scalar);
 TrackedPiece puzzlePieceToTrackedPiece(PuzzlePiece^ puzzlePiece);
 PuzzlePiece^ trackedPieceToPuzzlePiece(TrackedPiece trackedPiece);
 
-// game code input/puzzle class functions
+// Game code input/puzzle class functions
 System::String^ searchPuzzleType(System::String^ code);
 array<System::String^>^ getStringArrayFromFile(System::String^ inputFile); 
 int writeStringArrayToFile(array<System::String^>^ inputArrray, System::String^ fileName);
@@ -61,12 +60,13 @@ int getCodeLocation(array<System::String^>^ lines, System::String^ code);
 System::String^ getCalibratedInputPath(System::String^ code);
 System::String^ getDefaultInputPath(System::String^ code);
 
-// misc.
+// Misc.
 std::string intToStdString(int number);
 System::String^ stdStringToSystemString(std::string str);
 std::string systemStringToStdString(System::String^ str);
 double getElapsedSeconds(long startTime);
 double averageListOfInts(List<int>^ inputList);
+//bool checkBools(bool val, ...);
 
 
 // workaround hack to declare a thread as a global variable in a form
@@ -85,39 +85,5 @@ void on_trackbar( int, void* );  // this one won't compile as part of RunTrackin
 // from LOGGING.CPP (not currently used)----
 
 void writeToLog(System::String^ myMessage);
-
-
-      //// Third attempt at embedding a native class
-      //// inside a ref class
-      //template<typename T>
-      //ref class Embedded {
-      //  T* t;
- 
-      //  !Embedded() {
-      //    if (t != nullptr) {
-      //      delete t;
-      //      t = nullptr;
-      //    }
-      //  }
- 
-      //  ~Embedded() {
-      //    this->!Embedded();
-      //  }
- 
-      //public:
-      //  Embedded() : t(new T) {}
- 
-      //  static T* operator&(Embedded% e) { return e.t; }
-      //  static T* operator->(Embedded% e) { return e.t; }
-      //};
-
-      //struct NativePoint {
-      //  int x, y;
-      //};
-
-      //ref class R {
-      //  Embedded<NativePoint> np;
-      //};
-
 
 #endif

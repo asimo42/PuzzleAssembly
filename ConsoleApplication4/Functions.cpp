@@ -1,10 +1,7 @@
 #include "stdafx.h"
-#include <Windows.h>
-#include <iostream>
-#include <sstream>
-#include <string>
+
 #include "Functions.h"
-//#include "RunTracking.h"
+#include "RunTracking.h"
 
 
 using namespace System::Collections::Generic;
@@ -14,11 +11,10 @@ using namespace cv;
 //----------------------------------------------------------------------------------------------------------
 
 // Start tracking via a RunTracking instance. Currently only designed for a KnobPuzzle game
-void initializeTracking(HandleVariables^ %handleVars, KnobPuzzle^ %Game, ScoreKeeping^ %ScoreKeeper)
+void initializeTracking(KnobPuzzle^ %Game, ScoreKeeping^ %ScoreKeeper)
 {
 	// Initialize OpenCV running class (RunTracking) and load with handlevars class and puzzle
     RunTracking* newOpenCV = new RunTracking();
-    newOpenCV->Vars = handleVars;
     newOpenCV->setGame(Game);
     newOpenCV->Start();
 
@@ -200,9 +196,23 @@ double averageListOfInts(List<int>^ inputList) {
 	else { return 0; }
 }
 //----------------------------------------------------------------------------------------------------------
+//bool checkBools(bool val, ...) {
+//	bool result = true;
+//    int i = val;
+//    va_list marker;
+//
+//    va_start( marker, val );
+//    while( i != -1 )
+//    { 
+//	   if (!i) { result = false; }
+//       i = va_arg( marker, int);
+//    }
+//    va_end( marker );
+//
+//	return result;
+//}
 
-
-
+//----------------------------------------------------------------------------------------------------------
 // convert a cv::scalar into a list of 3 ints (for use in managed code)
 List<int>^ scalarToList(cv::Scalar scalar) {
 	List<int>^ myList = gcnew List<int>(0);

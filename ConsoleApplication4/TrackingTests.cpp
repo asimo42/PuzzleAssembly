@@ -1,12 +1,8 @@
 #include "stdafx.h"
 
-#include <vcclr.h>
-#include <iostream>
-#include <string>
-#include "TrackedPiece.h"
-#include "HandleVariables.h"
 #include "Functions.h"
 #include "Shape.h"
+#include "RunTracking.h"
 
 using namespace cv;
 using namespace std;

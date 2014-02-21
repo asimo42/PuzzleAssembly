@@ -11,6 +11,7 @@ e.g. initializing, starting, ending.  Tracking functions are located in "Trackin
 #include <vector>
 #include "TrackedPiece.h"
 #include "Functions.h"
+#include "CalibrationTracking.h"
 
 using namespace cv;
 using namespace std;

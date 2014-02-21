@@ -8,6 +8,7 @@
 #include <vcclr.h>
 #include "Functions.h"
 #include "CalibrationMainPrompt.h"
+#include "RunTracking.h"
 
 #pragma once
 
@@ -30,6 +31,8 @@ namespace PuzzleAssembly {
 		{
 			InitializeComponent();
 			this->gameRunning = false;
+			//if (checkBools(true, true, true, false, true)) { MessageBox::Show("CheckBools failed; returned True when should return False"); }
+			//if (checkBools(true, true, true, true)) { MessageBox::Show("CheckBools success; returned True when should return True"); }
 		}
 
 	protected:
@@ -51,7 +54,6 @@ namespace PuzzleAssembly {
 	public: 
 	private: System::Windows::Forms::Label^  label1;
 	private: System::ComponentModel::IContainer^  components;
-	private: HandleVariables Vars;
 	private: KnobPuzzle currentPuzzle;
 	private: System::Windows::Forms::Button^  scoresButton;
 	private: System::Windows::Forms::Button^  calibrateButton;
@@ -191,7 +193,7 @@ private: System::Void runGameButton_Click(System::Object^  sender, System::Event
 			 //this->stopGameButton->Visible = true;
 
 			 // now start the tracking
-			 initializeTracking( Vars.returnHandle(), this->currentPuzzle.returnHandle(), ScoreKeeper.returnHandle());
+			 initializeTracking( this->currentPuzzle.returnHandle(), ScoreKeeper.returnHandle());
 
 			 this->runGameButton->Visible = true;
 		 }
@@ -271,6 +273,8 @@ private: System::Void loadButton_Click(System::Object^  sender, System::EventArg
 				 System::Windows::Forms::MessageBox::Show("Error loading puzzle. \nPlease check code string");
 				 return;
 			 }
+
+
 			 this->loadButton->Enabled = false;
 
 		 }
@@ -300,6 +304,12 @@ private: int loadPuzzleFromCode() {
 			 if (puzzleType->Equals("KnobPuzzle")) {   
 				 success = this->currentPuzzle.setGame(CodeString);
 			 }
+
+			 int Xpos = this->currentPuzzle.getPieceList()[0]->getShapePointX();
+			 int Ypos = this->currentPuzzle.getPieceList()[0]->getShapePointY();
+			 System::String^ name = this->currentPuzzle.getPieceList()[0]->getName();
+			 System::String^ str = "Shape Drawing location for Piece: " + name + " : XPos = " + Xpos + "  Ypos = " + Ypos;
+			 System::Windows::Forms::MessageBox::Show(str);
 			 return success;
 			 // add more gametypes here in the future
 		 }

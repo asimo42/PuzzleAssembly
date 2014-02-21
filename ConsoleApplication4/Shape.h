@@ -1,8 +1,11 @@
+#pragma once
+
 #ifndef SHAPE_H
 #define SHAPE_H
 
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
+#include "TrackedPiece.h"
 
 #define SCREEN_WIDTH 1280
 #define SCREEN_HEIGHT 1024
@@ -40,6 +43,7 @@ public:
         inline void set_color(Scalar new_color) {color = new_color;}
 
         //-----Drawing Functions------
+		void Draw_Shape(TrackedPiece piece);
         void Draw_Circle(Point middle, int radius, int thickness = 1, int lineType = 8);
         void Draw_Rectangle(Point corner, int wid, int heig, int thinkness = 1, int lineType = 8);
         void Draw_Square(Point corner, int wid, int thickness = 1, int lineType = 8);

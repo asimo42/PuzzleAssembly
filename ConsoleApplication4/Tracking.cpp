@@ -20,10 +20,9 @@
 #include <string>
 #include <vector>
 #include <opencv2\opencv.hpp>	//includes all OpenCV headers
-#include "TrackedPiece.h"
-#include "HandleVariables.h"
 #include "Functions.h"
 #include "Shape.h"
+#include "RunTracking.h"
 #include <Windows.h>	// for timer
 
 using namespace cv;

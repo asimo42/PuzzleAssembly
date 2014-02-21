@@ -1,9 +1,5 @@
 #include "stdafx.h"
-#include <Windows.h>
-#include <string>
-#include <stdio.h>
-#include "GameBoard.h"
-#include "PuzzlePiece.h"
+
 #include "Functions.h"
 
 using namespace System;
@@ -85,8 +81,7 @@ void KnobPuzzle::LookUpGame(System::String^ code)
 	System::String^ line = stringArray[index];
 	array<System::String^>^ tokens;
 	int no_pieces = 0;
-	double x, y; 
-	int hmin, smin, vmin, hmax, smax, vmax;
+	int x, y, hmin, smin, vmin, hmax, smax, vmax;
 	List<Int32>^ HSVmin;
 	List<Int32>^ HSVmax;
 
@@ -107,10 +102,10 @@ void KnobPuzzle::LookUpGame(System::String^ code)
 		}
 
 		// Pull PuzzlePiece^ information
-		if (tokens[0]->Equals("LOC") && tokens[3]->Equals("COLOR") && tokens->Length == 11 ) {
+		if (tokens[0]->Equals("LOC") && tokens[3]->Equals("COLOR") && tokens->Length >= 11 ) {
 			//Sample Format:::    LOC 1 1 COLOR 100 100 150 200 200 200 SQUARE
-			bool try1 = Double::TryParse(tokens[1], x);
-			bool try2 = Double::TryParse(tokens[2], y);
+			bool try1 = Int32::TryParse(tokens[1], x);
+			bool try2 = Int32::TryParse(tokens[2], y);
 			bool try3 = Int32::TryParse(tokens[4], hmin);
 			bool try4 = Int32::TryParse(tokens[5], smin);
 			bool try5 = Int32::TryParse(tokens[6], vmin);
@@ -139,6 +134,11 @@ void KnobPuzzle::LookUpGame(System::String^ code)
 			HSVmax->Add(hmax); HSVmax->Add(smax); HSVmax->Add(vmax);
 			PuzzlePiece^ newPiece = gcnew PuzzlePiece(tokens[10], HSVmin, HSVmax);
 			newPiece->setDestPos(x,y);
+			int success = ParseShapeInformation(tokens, newPiece);
+			if (success != 0) { 
+				System::Windows::Forms::MessageBox::Show("Error: Incorrect shape drawing information");
+				this->Error = true;
+			}
 			PieceList->Add(newPiece);
 		}
 	}
@@ -152,6 +152,48 @@ void KnobPuzzle::LookUpGame(System::String^ code)
 	this->numPieces = no_pieces;
 }
 
+//----------------------------------------------------------------------------------------------------------
+// pull shape-drawing information from puzzle file line
+int KnobPuzzle::ParseShapeInformation(array<System::String^>^ tokens, PuzzlePiece^ piece) 
+{
+	int success = 0;
+	// NOTE - NEEd to return error values when trying to set shapes
+	System::String^ shapeType = piece->getName();
+	int point_x, point_y, height, width, length, radius;
+	bool try1 = true; bool try2 = true; bool try3 = true; bool try4 = true;
+	if (shapeType->Equals("Circle")) {
+		bool try1 = Int32::TryParse(tokens[11], point_x);
+		bool try2 = Int32::TryParse(tokens[12], point_y);
+		piece->setShapePoint(point_x, point_y);
+		bool try3 = Int32::TryParse(tokens[13], radius);
+		piece->setShapeRadius(radius);
+	}
+	if (shapeType->Equals("Rectangle")) {
+		bool try1 = Int32::TryParse(tokens[11], point_x);
+		bool try2 = Int32::TryParse(tokens[12], point_y);
+		piece->setShapePoint(point_x, point_y);
+		bool try3 = Int32::TryParse(tokens[13], width);
+		bool try4 = Int32::TryParse(tokens[14], height);
+		piece->setShapeHeight(height);
+		piece->setShapeWidth(width);
+	}
+	if (shapeType->Equals("Square")) {
+		bool try1 = Int32::TryParse(tokens[11], point_x);
+		bool try2 = Int32::TryParse(tokens[12], point_y);
+		piece->setShapePoint(point_x, point_y);
+		bool try3 = Int32::TryParse(tokens[13], width);
+		piece->setShapeWidth(width);
+	}
+	if (shapeType->Equals("Triangle") || shapeType->Equals("Pentagon")) {
+		bool try1 = Int32::TryParse(tokens[11], point_x);
+		bool try2 = Int32::TryParse(tokens[12], point_y);
+		piece->setShapePoint(point_x, point_y);
+		bool try4 = Int32::TryParse(tokens[13], length);
+		piece->setShapeLength(length);
+	}
+	if (!try1 || !try2 || !try3 ||!try4) { success = -1; }
+	return success;
+}
 //----------------------------------------------------------------------------------------------------------
 // Write the current KnobPuzzle calibration settings to the calibration file. 
 int KnobPuzzle::WriteSettingsToFile() {
@@ -209,12 +251,25 @@ int KnobPuzzle::WriteSettingsToFile() {
 		int ydest = currentPiece->getYDest();
 		List<int>^ HSVmin = currentPiece->getHSVmin();
 		List<int>^ HSVmax = currentPiece->getHSVmax();
+		int shapePointX = currentPiece->getShapePointX();
+		int shapePointY = currentPiece->getShapePointY();
 		System::String^ name = currentPiece->getName();
 
 		// cat puzzle piece information together into a single line in the proper format
 		System::String^ constructor = "LOC " + xdest + " " + ydest + " COLOR " + HSVmin[0] + " " + HSVmin[1] + " " + HSVmax[2] 
-								 + " " + HSVmax[0] + " " + HSVmax[1] + " " + HSVmax[2] + " " + name;
-
+								 + " " + HSVmax[0] + " " + HSVmax[1] + " " + HSVmax[2] + " " + name + " " + shapePointX  + " " + shapePointY;
+		if (name->Equals("Circle")) {
+			constructor = constructor  + " " + currentPiece->getShapeRadius();
+		}
+		else if (name->Equals("Square")) {
+			constructor = constructor  + " " + currentPiece->getShapeWidth();
+		}
+		else if (name->Equals("Rectangle")) {
+			constructor = constructor  + " " + currentPiece->getShapeWidth() + " " + currentPiece->getShapeHeight();
+		}
+		else if (name->Equals("Triangle") || name->Equals("Pentagon")) {
+			constructor = constructor  + " " + currentPiece->getShapeLength();
+		} 
 		// copy the line over the old line in the array of file strings
 		stringArray[i] = constructor;
 		System::Diagnostics::Debug::WriteLine(stringArray[i]);

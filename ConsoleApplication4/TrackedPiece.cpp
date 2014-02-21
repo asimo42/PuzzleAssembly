@@ -9,6 +9,8 @@
 #include <algorithm>
 #include "Shape.h"
 
+using namespace std;
+
 TrackedPiece::TrackedPiece(void)
 {
 	setName("N/A");
@@ -22,19 +24,19 @@ TrackedPiece::~TrackedPiece(void)
 }
 
 
-TrackedPiece::TrackedPiece(String piece_name)
+TrackedPiece::TrackedPiece(std::string piece_name)
 {
 	setName(piece_name);
 }
 
-TrackedPiece::TrackedPiece(String piece_name, Scalar HSVmin, Scalar HSVmax)
+TrackedPiece::TrackedPiece(std::string piece_name, Scalar HSVmin, Scalar HSVmax)
 {
 	setName(piece_name);
 	setHSVmin(HSVmin);
 	setHSVmax(HSVmax);
 }
 
-TrackedPiece::TrackedPiece(String piece_name, Scalar HSVmin, Scalar HSVmax, int xdest, int ydest)
+TrackedPiece::TrackedPiece(std::string piece_name, Scalar HSVmin, Scalar HSVmax, int xdest, int ydest)
 {
 	setName(piece_name);
 	setHSVmin(HSVmin);

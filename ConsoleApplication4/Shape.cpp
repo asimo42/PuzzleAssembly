@@ -1,8 +1,9 @@
 #include "stdafx.h"
-#include "Shape.h"
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <iostream>
+#include "Shape.h"
+#include "Functions.h"
 
 using namespace cv;
 using namespace std;
@@ -19,7 +20,31 @@ Shape::~Shape(void)
 }
 
 //------------Drawing Methods------------
+// Pick which shape to draw
+void Shape::Draw_Shape(TrackedPiece piece)
+{
+	std::string shapeType = piece.getName();
+	if (shapeType == "Circle") {
+		//Draw_Circle()
+	}
+	else if (shapeType == "Rectangle") {
 
+	}
+	else if (shapeType == "Square") {
+
+	}
+	else if (shapeType == "Triangle") {
+
+	}
+	else if (shapeType == "Pentagon") {
+
+	}
+	else { 
+		System::String^ str = "Error: cannot draw piece \"" + stdStringToSystemString(shapeType) + "\". Not a recognized shape.";
+		//System::Windows::Forms::MessageBox::Show(str);
+		System::Console::WriteLine(str);
+	}
+}
 
 //Circle
 void Shape::Draw_Circle(Point middle, int radius, int thickness, int lineType)

@@ -8,6 +8,7 @@
 #include <vcclr.h>
 #include "Functions.h"
 #include "ColorCalibrationForm.h"
+#include "CalibrationTracking.h"
 
 #pragma once
 

@@ -6,19 +6,10 @@ e.g. initializing, starting, ending.  Tracking functions are located in "Trackin
 
 #include <opencv2\opencv.hpp>        
 #include "Functions.h"
+#include "RunTracking.h"
 
 // initialize all variables upon creation of class 
 void RunTracking::Initialize() {
-		//red_circle = TrackedPiece("Circle", Scalar(165, 107, 25), Scalar(185, 233, 256));
-		//green_rectangle = TrackedPiece("Rectangle", Scalar(74, 75, 50), Scalar(88, 214, 256));
-		//yellow_pentagon = TrackedPiece("Pentagon", Scalar(16, 47, 47), Scalar(32, 200, 256));
-
-		/*
-		 * doing this in Tracking.cpp for now
-		 */
-		//pieces.push_back(TrackedPiece("Circle", Scalar(165, 107, 25), Scalar(185, 233, 256)));
-		//pieces.push_back(TrackedPiece("Rectangle", Scalar(74, 75, 50), Scalar(88, 214, 256)));
-		//pieces.push_back(TrackedPiece("Pentagon", Scalar(16, 47, 47), Scalar(32, 200, 256)));
 
 		// SET THIS VARIABLE FOR TEST CASES. 0 = NOT TEST. 1,2,3,4... for different tests. 
 		this->TestCase = Constants::TESTNUMBER;
@@ -53,8 +44,6 @@ void RunTracking::Initialize() {
 		this->ScoreKeep->timeStarted = tim;
 
 		this->STOP = false;
-
-
 }
 //----------------------------------------------------------------------------------------------------------
 

@@ -7,7 +7,7 @@ the Run button on the GUI
 #include "stdafx.h"
 #include <vcclr.h>
 #include <opencv2\opencv.hpp>        //includes all OpenCV headers
-#include "GameBoard.h"
+
 
 class RunTracking
 {
@@ -16,7 +16,6 @@ class RunTracking
 
   //these classes are for communicating between openCV (unmanaged) and the rest of the program
   // gcroot appears to magically transfer my classes from managed->unmanaged without consequences. Don't ask how.
-        gcroot<HandleVariables^> Vars;
         gcroot<KnobPuzzle^> Game;
 
         std::string gameName;

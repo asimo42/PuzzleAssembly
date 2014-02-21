@@ -1,11 +1,17 @@
 KNOBPUZZLE1
 NO.PIECES 5
-LOC 1 1 COLOR 100 100 150 200 200 200 Square
-LOC 2 2 COLOR 65 23 200 200 200 255 Rectangle
-LOC 3 4 COLOR 165 107 25 185 233 256 Circle
-LOC 5 3 COLOR 90 55 100 100 100 150 Star
-LOC 6 7 COLOR 18 130 75 30 256 256 Pentagon
+LOC 1 1 COLOR 100 100 150 200 200 200 Square 748 128 238
+LOC 2 2 COLOR 65 23 200 200 200 255 Rectangle 483 634 287 175
+LOC 3 4 COLOR 165 107 25 185 233 256 Circle 383 244 125
+LOC 5 3 COLOR 90 55 100 100 100 150 Triangle 220 600 266
+LOC 6 7 COLOR 18 130 75 30 256 256 Pentagon 1056 585 173
 
 ----------------------------------------------------------------
 
-** note: LOC xloc yloc COLOR Hmin Smin Vmin Hmax Smax Vmax name
+** note: LOC xloc yloc COLOR Hmin Smin Vmin Hmax Smax Vmax name (shapedrawing specifics)
+*** Shapedrawing data will vary as follows:
+Circle: middle_x, middle_y, radius
+Rectangle: corner_x, corner_y, width, height
+Square: corner_x, corner_y, width
+Triangle: top_x, top_y, length
+Pentagon: top_x, top_y, length
