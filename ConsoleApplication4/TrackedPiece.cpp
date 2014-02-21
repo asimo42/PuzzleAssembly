@@ -51,7 +51,8 @@ int TrackedPiece::checkForMovement(bool justMoved)
 	//
 	//  0 - Do nothing
 	//  1 - Turn On
-	//  2 - Turn Off
+	//  2 - Dim
+	//  3 - Turn off
 
 
 	// add to movement history
@@ -64,20 +65,30 @@ int TrackedPiece::checkForMovement(bool justMoved)
 	int numTrues = count(movementHistory.begin(), movementHistory.end(), true);
 	//cout << "Num trues " << name << ": " << numTrues << endl;
 
-	if(numTrues >= 4 )
+	if (numTrues >= 7)
 	{
+		//clearStatus();
+		cout << name << " **TURN OFF**" << endl;
+		flashing = true;
+		return 3;
+	}
+	else if (numTrues >= 6)
+	{
+		//clearStatus();
+		cout << name << " **DIM**" << endl;
+		flashing = true;
+		return 2;
+	}
+	else if(numTrues >= 4 )
+	{
+		//clearStatus();
 		cout << name << " piece being placed." << endl;
 		flashing = true;	// starts flashing
 		return 1;
 	}
-	else if (numTrues >= 6)
-	{
-		cout << name << " piece being placed." << endl;
-		flashing = true;
-		return 2;
-	}
 	else
 	{
+		clearStatus();
 		flashing = false;	// stops flashing
 		return 0;
 	}
@@ -180,4 +191,37 @@ void TrackedPiece::turnOn(Mat &image)
 		on = true;
 	}
 	imshow("Puzzle Board Window", image);
+}
+
+void TrackedPiece::dim(Mat &image)
+{
+	Shape shapes(&image);
+	if(!isDimmed())
+	{
+		// dim
+		if(name == "Circle")
+		{
+			shapes.setColor(Scalar(0, 0, 125));
+			shapes.Draw_Circle(Point(383, 244), 125, -1);
+		} 
+		else if(name == "Rectangle")
+		{
+			shapes.setColor(Scalar(0, 125, 0));
+			shapes.Draw_Rectangle(Point(483, 634), 287, 175, -1);
+		}
+		else if (name == "Pentagon")
+		{
+			shapes.setColor(Scalar(0, 125, 125));
+			shapes.Draw_Pentagon(Point(1056, 585), 173, -1);
+		}
+		on = true;
+	}
+	imshow("Puzzle Board Window", image);
+}
+
+void TrackedPiece::clearStatus()
+{
+	turn_off = false;
+	dimmed = false;
+	flashing = false;
 }

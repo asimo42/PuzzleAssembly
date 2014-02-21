@@ -34,6 +34,8 @@ private:
 	// Set true when piece should be turned off.
 	bool turn_off;
 
+	bool dimmed;
+
 
 
 	// max number of values allowed in movementHistory deque
@@ -67,16 +69,20 @@ public:
 	int checkForMovement(bool justMoved);
 
 	void toggle(Mat &image);
+	void dim(Mat &image);
 	void turnOff(Mat &image);
 	void turnOn(Mat &image);
 
 	bool isFlashing() {return flashing;}
 	bool isTurnedOff() {return turn_off;}
 	bool isTurnedOn() {return !turn_off;}
+	bool isDimmed() {return dimmed;}
 
 	bool isOn() {return on;}
 
+	void clearStatus();
 	void setTurnOff(bool value) {turn_off = value;}
+	void setDimmed(bool value) {dimmed = dimmed;}
 
 	int getXPos() {return x_pos;}
 	void setXPos(int x) {x_pos = x;}

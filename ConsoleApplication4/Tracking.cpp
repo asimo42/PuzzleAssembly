@@ -243,6 +243,12 @@ VOID CALLBACK timerTick(  _In_  HWND hwnd, _In_  UINT uMsg, _In_  UINT_PTR idEve
 		{
 			for(int j = 0; j < pieces.size(); j++)
 				if (i != j)
+					pieces[j].setDimmed(true);
+		}
+		else if (status == 3)
+		{
+			for(int j = 0; j < pieces.size(); j++)
+				if (i != j)
 					pieces[j].setTurnOff(true);
 		}
 	}
@@ -259,6 +265,11 @@ VOID CALLBACK timerFlash(  _In_  HWND hwnd, _In_  UINT uMsg, _In_  UINT_PTR idEv
 		if (pieces[i].isFlashing())
 		{
 			pieces[i].toggle(puzzle);
+		}
+		//Then check if it should be dimmed
+		else if(pieces[i].isDimmed())
+		{
+			pieces[i].dim(puzzle);
 		}
 		//Then check if it should be turned off
 		else if (pieces[i].isTurnedOff())
