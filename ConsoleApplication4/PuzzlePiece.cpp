@@ -18,7 +18,7 @@ void PuzzlePiece::Initialize()
 	List<int>^ HSVmaxtmp = gcnew List<int>((IEnumerable<int>^) input);
 	setHSVmin(HSVmintmp);
 	setHSVmax(HSVmaxtmp);
-	timePlaced = 0;
+	timePlaced = -1; // value of -1 means piece was not placed
 	shape_point_x = 0; 
 	shape_point_y = 0;
 	shape_width = 0;

@@ -35,6 +35,7 @@ private:
 	System::String^ gameType;
 	KnobPuzzle^ game;
 
+	void Initialize();
 	void CalcAvgTimeBetweenPieces();   // called by compileData
 	void findOrderOfPieces();          // called by compileData
 	void findSortedTimes();            // called by compileData

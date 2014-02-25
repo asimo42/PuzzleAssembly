@@ -104,19 +104,6 @@ void CalibrationTracking::nextPiece() {
 
 		// pull new piece and convert to trackedpiece
 		TrackedPiece tmp = puzzlePieceToTrackedPiece(this->Game->getPieceList()[this->iterator]);
-  //      this->calibrate_H_min = tmp.getHSVmin()[0];
-  //      this->calibrate_H_max = tmp.getHSVmax()[0];
-  //      this->calibrate_S_min = tmp.getHSVmin()[1];
-  //      this->calibrate_S_max = tmp.getHSVmax()[1];
-  //      this->calibrate_V_min = tmp.getHSVmin()[2];
-  //      this->calibrate_V_max = tmp.getHSVmax()[2];
-		//setTrackbarPos("H_Min", systemStringToStdString(trackbar_window), this->calibrate_H_min);
-		//setTrackbarPos("H_Max", systemStringToStdString(trackbar_window), this->calibrate_H_max);
-		//setTrackbarPos("S_Min", systemStringToStdString(trackbar_window), this->calibrate_S_min);
-		//setTrackbarPos("S_Max", systemStringToStdString(trackbar_window), this->calibrate_S_max);
-		//setTrackbarPos("V_Min", systemStringToStdString(trackbar_window), this->calibrate_V_min);
-		//setTrackbarPos("V_Max", systemStringToStdString(trackbar_window), this->calibrate_V_max);
-
 		createTrackbarWindow(tmp);		// create new trackbar window based on new initial values
 		this->NEXT = false;
 }
@@ -125,7 +112,7 @@ void CalibrationTracking::nextPiece() {
 
 // end tracking, 'clean up' game.  this instance of the class will now end (though that might change in the future)
 void CalibrationTracking::endTrack() {
-        System::Windows::Forms::MessageBox::Show("Exiting CalibrationTracking");
+		System::Console::WriteLine("CalibrationTracking::EndTrack() : Exiting CalibrationTracking");
 		cv::destroyAllWindows();
 		this->IS_STOPPED = true;
 }
@@ -150,15 +137,15 @@ void CalibrationTracking::createTrackbarWindow(TrackedPiece &tmp)
 		pin_ptr<int> pinned_S_max = &this->calibrate_S_max;
 		pin_ptr<int> pinned_V_min = &this->calibrate_V_min;
 		pin_ptr<int> pinned_V_max = &this->calibrate_V_max;
-	//System::String^ values = H_min2 + " " + H_max2 + " " + S_min2 + " " + S_max2 + " " + V_min2 + " " + V_max2;
-	//int createTrackbar(const string& trackbarname, const string& winname, int* value, int count, TrackbarCallback onChange=0, void* userdata=0)
-	// value is the the location of the sliding thing, and count is the max value of the whole slider (min is always 0)
-	createTrackbar( "H_MIN", systemStringToStdString(trackbar_window),  pinned_H_min, H_max, on_trackbar );
-	createTrackbar( "H_MAX", systemStringToStdString(trackbar_window),  pinned_H_max, H_max, on_trackbar );
-	createTrackbar( "S_MIN", systemStringToStdString(trackbar_window),  pinned_S_min, S_max, on_trackbar );
-	createTrackbar( "S_MAX", systemStringToStdString(trackbar_window), pinned_S_max, S_max, on_trackbar );
-	createTrackbar( "V_MIN", systemStringToStdString(trackbar_window), pinned_V_min, V_max, on_trackbar );
-	createTrackbar( "V_MAX", systemStringToStdString(trackbar_window), pinned_V_max, V_max, on_trackbar );
+		//System::String^ values = H_min2 + " " + H_max2 + " " + S_min2 + " " + S_max2 + " " + V_min2 + " " + V_max2;
+		// int createTrackbar(const string& trackbarname, const string& winname, int* value, int count, TrackbarCallback onChange=0, void* userdata=0)
+		// value is the the location of the sliding thing, and count is the max value of the whole slider (min is always 0)
+		createTrackbar( "H_MIN", systemStringToStdString(trackbar_window),  pinned_H_min, H_max, on_trackbar );
+		createTrackbar( "H_MAX", systemStringToStdString(trackbar_window),  pinned_H_max, H_max, on_trackbar );
+		createTrackbar( "S_MIN", systemStringToStdString(trackbar_window),  pinned_S_min, S_max, on_trackbar );
+		createTrackbar( "S_MAX", systemStringToStdString(trackbar_window), pinned_S_max, S_max, on_trackbar );
+		createTrackbar( "V_MIN", systemStringToStdString(trackbar_window), pinned_V_min, V_max, on_trackbar );
+		createTrackbar( "V_MAX", systemStringToStdString(trackbar_window), pinned_V_max, V_max, on_trackbar );
 }
 
 

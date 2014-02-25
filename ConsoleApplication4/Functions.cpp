@@ -3,7 +3,7 @@
 #include "Functions.h"
 #include "RunTracking.h"
 
-
+using namespace System;
 using namespace System::Collections::Generic;
 using namespace System::Windows::Forms;
 using namespace cv;
@@ -14,13 +14,12 @@ using namespace cv;
 void initializeTracking(KnobPuzzle^ %Game, ScoreKeeping^ %ScoreKeeper)
 {
 	// Initialize OpenCV running class (RunTracking) and load with handlevars class and puzzle
-    RunTracking* newOpenCV = new RunTracking();
-    newOpenCV->setGame(Game);
-    newOpenCV->Start();
+    RunTracking* newTracker = new RunTracking();
+    newTracker->setGame(Game);
+    newTracker->Start();
 
-    // Once game is over, pull the game results and add them to the over-arching ScoreKeeper class instance for record-keeping
-    MessageBox::Show("Got out of RunTracking");
-	GamePlayed^ gameResults = newOpenCV->returnScore();
+    // Once game is over, pull the game results
+	GamePlayed^ gameResults = newTracker->returnScore();
 
 	// add game results to main scorekeeper instance. Show game results.
 	ScoreKeeper->AddNewGame(gameResults);
@@ -63,7 +62,7 @@ System::String^ getDefaultInputPath(System::String^ code) {
 array<System::String^>^ getStringArrayFromFile(System::String^ inputFile) {
 
 	array<System::String^>^ lines;
-	if (System::IO::File::Exists(inputFile)) { System::Windows::Forms::MessageBox::Show("getStringArrayFromFile: FOUND INPUT FILE"); }
+	if (System::IO::File::Exists(inputFile)) { Console::WriteLine("Functions: getStringArrayFromFile(): Found File: \n" + inputFile); }
 	else {
 		lines[0] = gcnew System::String("ERROR");
 		return lines;
@@ -71,32 +70,35 @@ array<System::String^>^ getStringArrayFromFile(System::String^ inputFile) {
 	// Read in all lines of file into an array 'lines'
 	try {
 		lines = System::IO::File::ReadAllLines(inputFile);
-		System::Windows::Forms::MessageBox::Show("getStringArrayFromFile(): Reading in input file"); 
+		Console::WriteLine("getStringArrayFromFile(): Reading in input file \n" + inputFile); 
 	}
 	// return error if there's a problem
 	catch (System::Exception^ e) {
-		//System::Diagnostics::Debug::WriteLine(e);
-		//lines = gcnew array<System::String^>(1);
-		//System::Windows::Forms::MessageBox::Show("Error - can't read file");
-		//lines[0] = gcnew System::String("ERROR");
+		Console::WriteLine("getStringArrayFromFile(): Error reading input file: \n" + inputFile);
+		System::Diagnostics::Debug::WriteLine(e);
+		Console::WriteLine(e);
+		lines = gcnew array<System::String^>(1);
+		lines[0] = gcnew System::String("ERROR");
+		return lines;
 
 		// for now, we will just hardcode a fake file so we don't get screwed over. CHANGE THIS LATER
 		// we aren't actually technically using these values yet anyway
-		List<System::String^>^ tmpList = gcnew List<System::String^>();
-		tmpList->Add( "KNOBPUZZLE1");
-		tmpList->Add( "NO.PIECES 5"); 
-		tmpList->Add( "LOC 1 1 COLOR 165 107 25 185 233 256 Circle" );
-		tmpList->Add( "LOC 2 2 COLOR 65 23 200 200 200 255 Rectangle" );
-		tmpList->Add( "LOC 3 4 COLOR 10 10 10 100 100 100 Square" );
-		tmpList->Add( "LOC 5 3 COLOR 90 55 100 100 100 150 Star" );
-		tmpList->Add( "LOC 6 7 COLOR 18 130 75 30 256 256 Pentagon" );
-		tmpList->Add( "----------------------------------------------------------------");
-		tmpList->Add( "** note: LOC xloc yloc COLOR Hmin Smin Vmin Hmax Smax Vmax name");
-		lines = gcnew array<System::String^>(tmpList->Count);
-		for (int i = 0; i < tmpList->Count; i++) {
-			lines[i] = tmpList[i];
-		}
-		return lines; 
+		//List<System::String^>^ tmpList = gcnew List<System::String^>();
+		//System::Windows::Forms::MessageBox::Show("getStringArrayFromFile(): Error finding input file \n" + inputFile + "\n using hardcoded backup in code instead"); 
+		//tmpList->Add( "KNOBPUZZLE1");
+		//tmpList->Add( "NO.PIECES 5"); 
+		//tmpList->Add( "LOC 1 1 COLOR 165 107 25 185 233 256 Circle" );
+		//tmpList->Add( "LOC 2 2 COLOR 65 23 200 200 200 255 Rectangle" );
+		//tmpList->Add( "LOC 3 4 COLOR 10 10 10 100 100 100 Square" );
+		//tmpList->Add( "LOC 5 3 COLOR 90 55 100 100 100 150 Star" );
+		//tmpList->Add( "LOC 6 7 COLOR 18 130 75 30 256 256 Pentagon" );
+		//tmpList->Add( "----------------------------------------------------------------");
+		//tmpList->Add( "** note: LOC xloc yloc COLOR Hmin Smin Vmin Hmax Smax Vmax name");
+		//lines = gcnew array<System::String^>(tmpList->Count);
+		//for (int i = 0; i < tmpList->Count; i++) {
+		//	lines[i] = tmpList[i];
+		//}
+		//return lines; 
 	}
 	return lines;
 }
@@ -112,7 +114,6 @@ int writeStringArrayToFile(array<System::String^>^ inputArray, System::String^ f
 	catch (System::Exception^ e)
 	{
 		System::Diagnostics::Debug::WriteLine(e);
-		//System::Windows::Forms::MessageBox::Show("Error - can't write to file");
 		Console::WriteLine("Error - can't write to file:");
 		Console::WriteLine(e);
 		return -1;
@@ -125,6 +126,7 @@ int writeStringArrayToFile(array<System::String^>^ inputArray, System::String^ f
     array<System::String^>^ lines = System::IO::File::ReadAllLines(fileName);
     for each (System::String^ s in lines)
     {
+		Console::WriteLine("The following was written to file " + fileName + " : ");
         Console::WriteLine(s);
     }
 
@@ -136,6 +138,7 @@ int writeStringArrayToFile(array<System::String^>^ inputArray, System::String^ f
 //----------------------------------------------------------------------------------------------------------
 // find the index of the start of the actual puzzle info in the game file strings
 // by searching for the code string; this is always at the start of the puzzle info.
+// ** THIS FUNCTION IS NO LONGER IN USE **
 int getCodeLocation(array<System::String^>^ lines, System::String^ code)
 {
 	int index = -1;
@@ -148,7 +151,7 @@ int getCodeLocation(array<System::String^>^ lines, System::String^ code)
 	}
 	// if never found, return error.
 	if (index == -1) {
-		System::Windows::Forms::MessageBox::Show("Error - cannot find puzzle");
+		Console::WriteLine("Functions: GetCodeLocation() : Error - cannot find puzzle");
 	}
 	return -1;
 
@@ -243,6 +246,17 @@ TrackedPiece puzzlePieceToTrackedPiece(PuzzlePiece^ puzzlePiece) {
 	// create new Tracked Piece with these results and return
 	TrackedPiece result = TrackedPiece(systemStringToStdString(name), Scalar(H_min, S_min, V_min), Scalar(H_max, S_max, V_max),puzzlePiece->getXDest(),puzzlePiece->getYDest());
 
+	// set all drawing data
+	result.setShapePoint(puzzlePiece->getShapePointX(), puzzlePiece->getShapePointY()); 
+	if (name->Equals("Square") || name->Equals("Rectangle")) 
+			{ result.setShapeWidth(puzzlePiece->getShapeWidth()); }
+	if (name->Equals("Rectangle"))                           
+			{ result.setShapeHeight(puzzlePiece->getShapeHeight()); }
+	if (name->Equals("Pentagon") || name->Equals("Triangle"))	
+			{ result.setShapeLength(puzzlePiece->getShapeLength()); }
+	if (name->Equals("Circle")) 
+			{ result.setShapeRadius(puzzlePiece->getShapeRadius()); }
+
 	return result;
 }
 //----------------------------------------------------------------------------------------------------------
@@ -264,6 +278,13 @@ PuzzlePiece^ trackedPieceToPuzzlePiece(TrackedPiece trackedPiece) {
 	HSV_max->Add(H_max); HSV_max->Add(S_max); HSV_max->Add(V_max);
 	// create new Puzzle Piece with these results and return
 	PuzzlePiece^ result = gcnew PuzzlePiece(stdStringToSystemString(name), HSV_min, HSV_max, trackedPiece.getXDest(), trackedPiece.getYDest());
+
+	// set all drawing data
+	result->setShapePoint(trackedPiece.getShapePointX(), trackedPiece.getShapePointY()); 
+	if (name == "Circle") { result->setShapeRadius(trackedPiece.getShapeRadius()); }
+	if (name == "Square" || name == "Rectangle") { result->setShapeWidth(trackedPiece.getShapeWidth()); }
+	if (name == "Rectangle") { result->setShapeHeight(trackedPiece.getShapeHeight()); }
+	if (name == "Pentagon" || name == "Triangle" ) { result->setShapeLength(trackedPiece.getShapeLength()); }
 
 	return result;
 }

@@ -6,13 +6,25 @@
 #using <System.dll>
 #include <stdio.h>
 #include "Functions.h"
+#include "GameBoard.h"
 
 using namespace System;
 using namespace System::Collections::Generic;
 
-GamePlayed::GamePlayed() 
+void GamePlayed::Initialize() 
 {
 	this->gameType = "Unknown";
+	this->timesOfPlacement = gcnew List<int>();
+	this->orderOfPiecesPlayed = gcnew List<System::String^>();
+	this->timeStarted = gcnew DateTime();
+	this->avgTimeBetweenPieces = 0;
+	this->timeForCompletion = 0;
+	this->game = gcnew KnobPuzzle();
+}
+
+GamePlayed::GamePlayed() 
+{
+	Initialize();
 }
 //----------------------------------------------------------------------------------------------------------
 
@@ -23,20 +35,14 @@ GamePlayed::~GamePlayed()
 
 GamePlayed::GamePlayed(KnobPuzzle^ Puzzle) 
 {
-	this->game = Puzzle;
-	this->gameType = "KnobPuzzle";
-	this->timeStarted = gcnew System::DateTime;
-	this->timeStarted = this->timeStarted->Now;
-	//this->timesBetweenPieces = gcnew List<int>();
-	this->timesOfPlacement = gcnew List<int>();
-	this->orderOfPiecesPlayed = gcnew List<System::String^>();
+	Initialize();
+	setGame(Puzzle);
 }
 //----------------------------------------------------------------------------------------------------------
 
 void GamePlayed::setGame(KnobPuzzle^ Puzzle)
 {
 	this->game = Puzzle;
-	this->gameType = "KnobPuzzle";
 	this->timeStarted = gcnew System::DateTime;
 	this->timeStarted = this->timeStarted->Now;
 }
@@ -44,6 +50,11 @@ void GamePlayed::setGame(KnobPuzzle^ Puzzle)
 
 void GamePlayed::CalcAvgTimeBetweenPieces()
 {
+	// if no pieces were placed, set to 0
+	if (this->timesOfPlacement->Count == 0) {
+		this->avgTimeBetweenPieces = 0;
+		return;
+	}
 	int sum = 0;
 	int newtime = 0;
 
@@ -61,7 +72,10 @@ void GamePlayed::findSortedTimes() {
 
 	List<int>^ sortedList = gcnew List<int>();
 	for each (PuzzlePiece^ piece in this->game->getPieceList()) {
-		sortedList->Add(piece->timePlaced);
+		if (!(piece->getTimePlaced() == -1)) {
+			sortedList->Add(piece->getTimePlaced());
+		}
+		else { Console::WriteLine("Piece  " + piece->getName() + " was never placed"); }
 	}
 	sortedList->Sort();
 	this->timesOfPlacement = sortedList;
@@ -72,7 +86,7 @@ void GamePlayed::findOrderOfPieces() {
 	List<System::String^>^ orderedList = gcnew List<System::String^>();
 	for (int i = 0; i < this->timesOfPlacement->Count; i++) {
 		for each (PuzzlePiece^ piece in this->game->getPieceList()) {
-			if (piece->timePlaced == this->timesOfPlacement[i] && !orderedList->Contains(piece->getName())) { 
+			if (piece->getTimePlaced() == this->timesOfPlacement[i] && !orderedList->Contains(piece->getName())) { 
 				orderedList->Add(piece->getName()); 
 			}
 		}
@@ -93,9 +107,13 @@ void GamePlayed::compileData()
 
 System::String^ GamePlayed::printData()
 {
+	// if the order hasn't been calculated yet, neet to compile data
 	if (this->orderOfPiecesPlayed->Count == 0)
 	{
 		compileData();
+		if (this->timesOfPlacement->Count < this->game->getPieceList()->Count) {
+			System::Windows::Forms::MessageBox::Show(" Not all pieces were placed");
+		}
 		if (this->orderOfPiecesPlayed->Count == 0) { return "game not completed"; }
 	}
 	System::String^ resultString = "";

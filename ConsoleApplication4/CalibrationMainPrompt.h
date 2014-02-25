@@ -218,6 +218,9 @@ namespace ConsoleApplication4 {
 					 // instruct user to place pieces
 					 this->placePiecesLabel->Visible = true;
 					 this->waitingToPlacePieces = true;
+					//re enable the next button
+					this->calibNextButton->Enabled = true;
+					return;
 				 }
 
 				 // if waiting for the user to place pieces, and then the user clicks the next button:
@@ -226,7 +229,6 @@ namespace ConsoleApplication4 {
 					 this->placePiecesLabel->Visible = false;
 					 this->pleaseWaitLabel->Visible = true;  // instruct user to wait for the system to calibrate
 					 this->calibratingLocations = true;  //set system to calibration
-
 				 }
 
 				 // if we are in the calibrating location stage, do the following

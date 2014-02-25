@@ -19,6 +19,17 @@ Shape::~Shape(void)
 {
 }
 
+void Shape::setImage(Mat* img) {
+	image = img;
+	color = Scalar(0,0,255);
+}
+
+// close puzzle board window
+void Shape::endImage() {
+	//cv::destroyAllWindows();
+	this->image->release();
+}
+
 //------------Drawing Methods------------
 // Pick which shape to draw
 void Shape::Draw_Shape(TrackedPiece piece)

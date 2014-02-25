@@ -26,7 +26,10 @@ class Shape
 public:
         //-----Constructors & Destructor-----
         Shape(Mat* img);
+		Shape() {}
         ~Shape(void);
+		void setImage(Mat* img);
+		void endImage(); 
 
         //-----Accessors
         inline Mat* get_image() const {return image;}

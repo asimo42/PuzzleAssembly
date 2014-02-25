@@ -37,7 +37,7 @@ void RunTracking::Initialize() {
         this->V_max = Constants::DEFAULT_V_MAX;
 
 		// initialize scorekeeping
-		this->ScoreKeep = gcnew GamePlayed(this->Game); // am currently assuming Game is initialized; need error checking here
+		this->ScoreKeep = gcnew GamePlayed();
 
 		// set up the start time to now. All scores will be measured against this start time
 		DateTime tim = DateTime::Now;
@@ -71,10 +71,13 @@ void RunTracking::Start() {
 
 // end tracking, 'clean up' game.  this instance of the class will now end (though that might change in the future)
 void RunTracking::endTrack() {
-        // **may want to wait for main GUI to pull all the scorekeeping info first.
-        System::Diagnostics::Debug::WriteLine("Hey, opencv is done");
-        System::Diagnostics::Debug::WriteLine("GAME OVER!!!");
         System::Windows::Forms::MessageBox::Show("GAME OVER!");
+		System::Console::WriteLine("RunTracking::EndTrack() : Exiting RunTracking");
+		// destroy tracking windows
+		cv::destroyAllWindows();
+		// destroy puzzle board
+		this->shapes.endImage();
+		return;
 }
 
 //----------------------------------------------------------------------------------------------------------

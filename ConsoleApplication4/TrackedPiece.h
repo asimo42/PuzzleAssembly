@@ -24,6 +24,14 @@ private:
 	Scalar HSV_min, HSV_max;
 	Scalar color;
 
+	// drawing data
+	int shape_point_x; 
+	int shape_point_y;
+	int shape_width;
+	int shape_height;
+	int shape_length;
+	int shape_radius;
+
 	// Set to true when piece has consistently moved recently. 
 	// i.e. the user has picked up and is trying to place the piece.
 	bool isMoving;
@@ -116,6 +124,21 @@ public:
 
 	Scalar getColor() {return color;}
 	void setColor(Scalar c) {color = c;}
+
+	// shape drawing variables
+	void setShapePoint(int x, int y) { this->shape_point_x = x; this->shape_point_y = y; }
+	int getShapePointX()   { return shape_point_x; }
+	int getShapePointY()   { return shape_point_y; }
+	 
+	void setShapeHeight(int h);
+	void setShapeWidth(int w);
+	void setShapeLength(int l);
+	void setShapeRadius(int r);
+	int getShapeHeight() { return shape_height; }
+	int getShapeWidth()  { return shape_width;  }
+	int getShapeLength() { return shape_length; }
+	int getShapeRadius() { return shape_radius; }
+
 };
 
 //void on_trackbar( int, void* );

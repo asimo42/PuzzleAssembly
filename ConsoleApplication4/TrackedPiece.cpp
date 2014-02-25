@@ -225,3 +225,21 @@ void TrackedPiece::clearStatus()
 	dimmed = false;
 	flashing = false;
 }
+
+	//Set Shape Drawing Data
+void TrackedPiece::setShapeHeight(int h) { 
+		if (this->getName() == "Rectangle") { this->shape_height = h; }
+		else { System::Console::WriteLine("Error: TrackedPiece.cpp - Tried to set a height for a non-rectangle"); }
+	}
+void TrackedPiece::setShapeWidth(int w) { 
+		if (this->getName() == "Rectangle" || this->getName() == "Square") { this->shape_width = w; }
+		else { System::Console::WriteLine("Error: TrackedPiece.cpp - Tried to set a width for something other than a rectangle or square"); }
+	}
+void TrackedPiece::setShapeLength(int l) {  
+		if (this->getName() == "Triangle" || this->getName() == "Pentagon") { this->shape_length = l; }
+		else { System::Console::WriteLine("Error: TrackedPiece.cpp - Tried to set a length for something other than a triangle or pentagon"); }
+	}
+void TrackedPiece::setShapeRadius(int r) { 
+		if (this->getName() == "Circle") { this->shape_radius = r; }
+		else { System::Console::WriteLine("Error: TrackedPiece.cpp - Tried to set a radius for a non-circle"); }
+	}

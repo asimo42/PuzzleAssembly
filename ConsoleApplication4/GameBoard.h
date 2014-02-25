@@ -10,23 +10,29 @@ using namespace System::Collections::Generic;
 
 public ref class GameBase {
 public:
-	GameBase()								   { puzzleName = ""; puzzleType = ""; LevelOfDifficulty = 0;} // holder
+	GameBase()							   { puzzleName = ""; puzzleType = ""; errorString = ""; LevelOfDifficulty = 0; END_GAME = false;} 
 	virtual void setName(System::String^ Name) { this->puzzleName = Name; }
-	System::String^ getName()				   { return puzzleName; }
-	void setType(System::String^ type)         { this->puzzleType = type; }
-	System::String^ getType()				   { return puzzleType; }
-	void setLevelOfDifficulty(int level)	   {this->LevelOfDifficulty = level; }
-	int getLevelOfDifficulty()				   {return this->LevelOfDifficulty;}
+	System::String^ getName()			   { return puzzleName; }
+	void setType(System::String^ type)     { this->puzzleType = type; }
+	System::String^ getType()			   { return puzzleType; }
+	void setLevelOfDifficulty(int level)   { this->LevelOfDifficulty = level; }
+	int getLevelOfDifficulty()			   { return this->LevelOfDifficulty; }
+	System::String^ getErrorString()       { return this->errorString; }
+	void setEndGame()				{ this->END_GAME = true; }
+	void resetEndGame()				{ this->END_GAME = false; }
+	bool isEndGame()			    { return this->END_GAME; }
 
 protected:
 
+	HANDLE myMutex;
+
 	bool Error;
+	bool END_GAME;
 	System::String^ puzzleName;
 	System::String^ puzzleType;
+	System::String^ errorString;
 	int LevelOfDifficulty; // level of difficulty not currently in use
 
-
-	//virtual void setLevelOfDifficulty(int level) { this->LevelOfDifficulty = level; }
 };
 
 
@@ -41,27 +47,36 @@ public ref class KnobPuzzle : public GameBase
 
 public:
 
+	// constructors
 	KnobPuzzle(void);
-	KnobPuzzle(System::String^ code); 
+	KnobPuzzle(System::String^ code);
+	KnobPuzzle(const KnobPuzzle^) {} // copy constructor 1 : pass in KnobPuzzle^
+	KnobPuzzle(const KnobPuzzle%) {} // copy constructor 2 : pass in KnobPuzzle
 	~KnobPuzzle(void);
-	int getNumPieces()		      { return this->numPieces; }
-	void setNumPieces(int num)    { this->numPieces = num; }
+
+	// access class data from outside
 	int setGame(System::String^ code);
-	KnobPuzzle^ returnHandle()		 {return this;}
-	virtual List<PuzzlePiece^>^ getPieceList() { return this->pieceList; }
-	int SaveCalibrationSettings() { 
-				int success = this->WriteSettingsToFile(); 
-				return success;
-	}
+	bool checkIsInitialized(System::String^ code);   //check if the given game (input string) has already been loaded
+	List<PuzzlePiece^>^ getPieceList() { return this->pieceList; }
+
+	// manipulate class
+	KnobPuzzle^ returnHandle()		 {return this;}   // return this (KnobPuzzle) as a (KnobPuzzle^)
+
+	// write out current class data to file (normally newly calibrated values)
+	int SaveCalibrationSettings();
 
 protected:
-	HANDLE myMutex;
-	int numPieces;
+
+	// individual piece information
+	List<PuzzlePiece^>^ pieceList;
+
+	void Initialize();
 	void LookUpGame(System::String^ code);
 	int ParseShapeInformation(array<System::String^>^ tokens, PuzzlePiece^ piece);
 	int WriteSettingsToFile();
-	//List<PuzzlePiece^>^ orderPlaced;
-	List<PuzzlePiece^>^ pieceList;
+
+private:
+
 };
 
 #endif

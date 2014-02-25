@@ -32,7 +32,7 @@ using namespace std;
 // Global for now, should not be though
 vector<TrackedPiece> pieces;
 
-Mat puzzle;				//Puzzle board image for drawing shapes on
+Mat puzzle_board;				//Puzzle board image for drawing shapes on
 
 void on_trackbar( int, void* )
 {//This function gets called whenever a
@@ -191,7 +191,8 @@ void RunTracking::trackTrackedPiece(TrackedPiece &piece, Mat &camera_feed, Mat &
 //----------------------------------------------------------------------------------------------------------
 void RunTracking::drawPuzzleBoard(Mat &image)
 {
-	Shape shapes(&image);
+	//Shape shapes(&image);
+	shapes.setImage(&image);
 	shapes.Clear_To_Black();	// Must clear to black first, otherwise get exception
 	// Magic numbers below are coordinates from trail and error on 1280x1024 screen
 	shapes.setColor(Scalar(0, 0, 255));
@@ -264,22 +265,22 @@ VOID CALLBACK timerFlash(  _In_  HWND hwnd, _In_  UINT uMsg, _In_  UINT_PTR idEv
 		//First check if the piece should be flashing
 		if (pieces[i].isFlashing())
 		{
-			pieces[i].toggle(puzzle);
+			pieces[i].toggle(puzzle_board);
 		}
 		//Then check if it should be dimmed
 		else if(pieces[i].isDimmed())
 		{
-			pieces[i].dim(puzzle);
+			pieces[i].dim(puzzle_board);
 		}
 		//Then check if it should be turned off
 		else if (pieces[i].isTurnedOff())
 		{
-			pieces[i].turnOff(puzzle);
+			pieces[i].turnOff(puzzle_board);
 		}
 		//If its not doing anything special, then make sure that it is turned on
 		else
 		{
-			pieces[i].turnOn(puzzle);
+			pieces[i].turnOn(puzzle_board);
 		}
 	}
 }
@@ -352,8 +353,8 @@ int RunTracking::startTrack()
 	namedWindow(puzzle_window);
 	//	namedWindow(puzzle_window, CV_WINDOW_NORMAL);
 	//	cvSetWindowProperty(puzzle_window.c_str(), CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);	// Makes full screen
-	drawPuzzleBoard(puzzle);
-	imshow(puzzle_window, puzzle);
+	drawPuzzleBoard(puzzle_board);
+	imshow(puzzle_window, puzzle_board);
 
 
 	while(1)
@@ -388,6 +389,10 @@ int RunTracking::startTrack()
 		imshow(original_window, camera_feed);
 
 		waitKey(30);
+		if (this->Game->isEndGame()) {
+			endTrack();
+			return 0;
+		}
 	}
 	destroyAllWindows();
 	return 0;

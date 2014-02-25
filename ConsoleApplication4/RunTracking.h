@@ -7,6 +7,7 @@ the Run button on the GUI
 #include "stdafx.h"
 #include <vcclr.h>
 #include <opencv2\opencv.hpp>        //includes all OpenCV headers
+#include "Shape.h"
 
 
 class RunTracking
@@ -27,13 +28,14 @@ class RunTracking
         virtual void Initialize();
         virtual void Start();
         virtual void Stop() { STOP = true; }
-        virtual void setGame(KnobPuzzle^ game) {this->Game = game;}
+        virtual void setGame(KnobPuzzle^ game) {this->Game = game; this->ScoreKeep->setGame(game);}
         gcroot<GamePlayed^> returnScore();
 
 
 protected:
 
         bool STOP;
+		Shape shapes;
         // when openCV is terminated (gameover), this instance of GamePlayed will be added to the overall ScoreKeeping class for the gui
         gcroot<GamePlayed^> ScoreKeep;
         

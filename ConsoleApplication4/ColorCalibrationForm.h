@@ -34,7 +34,6 @@ namespace ConsoleApplication4 {
 			this->pieceIndex = 0;
 			this->piece = gcnew PuzzlePiece();
 			this->NEXT = false;
-			//this->calibrator = gcnew CalibrationTracking();
 			//
 			//TODO: Add the constructor code here
 			//
