@@ -27,6 +27,10 @@ int _tmain(int argc, _TCHAR* argv[])
 	System::Windows::Forms::Application::EnableVisualStyles();
 	Application::SetCompatibleTextRenderingDefault(false); 
 
+	// Run external executable to set camera settings
+	// TODO: Can't get this to work... have to run the CameraPrefs.exe manually
+	//system("C:/Users/Casey/Documents/Visual Studio 2012/Projects/PuzzleAssembly/CameraPrefs/CameraPrefs.exe");
+
 	// Create the main window and run it
 	Application::Run(gcnew PuzzleAssembly::MainGUIForm());
 
