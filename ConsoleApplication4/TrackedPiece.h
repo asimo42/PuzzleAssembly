@@ -51,6 +51,8 @@ private:
 	// max number of values allowed in movementHistory deque
 	static const unsigned int MAX_DEQUE_SIZE = 5;
 
+	static const unsigned int PLACED_THRESH = 10;
+
 	// Holds movement history of pieces each time the timer checks for movement.
 	// Holds a max of MAX_DEQUE_SIZE elements
 	deque<bool> movementHistory;
@@ -82,7 +84,7 @@ public:
 	int checkForMovement(bool justMoved);
 
 	// Checks if piece has consistently been sitting in correct x,y position. If so, sets isPlacedCorrectly boolean to true.
-	bool isPlacedCorrectly(Point pos);
+	bool checkIfPlacedCorrectly();
 
 	void toggle(Mat &image);
 	void dim(Mat &image);

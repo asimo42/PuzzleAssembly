@@ -8,6 +8,7 @@
 #include <Windows.h>
 #include <algorithm>
 #include "Shape.h"
+#include <cmath>
 
 using namespace std;
 
@@ -93,6 +94,31 @@ int TrackedPiece::checkForMovement(bool justMoved)
 		return 0;
 	}
 
+}
+
+bool TrackedPiece::checkIfPlacedCorrectly()
+{
+	if (abs(x_dest-x_pos) < PLACED_THRESH && abs(y_dest-y_pos) < PLACED_THRESH)
+		placementHistory.push_back(true);
+	else
+		placementHistory.push_back(false);
+
+	// check if max size reached
+	if(movementHistory.size() > MAX_DEQUE_SIZE)
+		movementHistory.pop_front();
+
+	// check for consistent placement in correct position
+	int numTrues = count(movementHistory.begin(), movementHistory.end(), true);
+	if (numTrues >= 5) {
+		isPlacedCorrectly = true;
+		cout << name << " placed correctly!" << endl;
+		return true;
+	} else {
+		isPlacedCorrectly = false;
+		return false;
+	}
+	// else placed correctly = false?
+	// Once it has been  placed, do we want it to be able to be unplaced?
 }
 
 void TrackedPiece::toggle(Mat &image)

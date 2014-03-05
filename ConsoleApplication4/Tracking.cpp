@@ -230,8 +230,10 @@ VOID CALLBACK timerTick(  _In_  HWND hwnd, _In_  UINT uMsg, _In_  UINT_PTR idEve
 			//cout << pieces[i].getName() << ": Y movement." << endl;
 		}
 
-		else 
+		else {
 			status = pieces[i].checkForMovement(false);
+			pieces[i].checkIfPlacedCorrectly();
+		}
 
 		//Depending of the status returned above, this will change 
 		//if all the other pieces are turned off, turned on, etc...
