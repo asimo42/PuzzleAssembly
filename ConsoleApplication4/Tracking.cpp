@@ -223,7 +223,7 @@ VOID CALLBACK timerTick(  _In_  HWND hwnd, _In_  UINT uMsg, _In_  UINT_PTR idEve
 		if(pieces[i].getXPos() > (pieces[i].getLastxPos() + thresh) || pieces[i].getXPos() < (pieces[i].getLastxPos() - thresh))
 		{
 			pieces[i].setLastxPos(pieces[i].getXPos());
-			pieces[i].checkForMovement(true);
+			status = pieces[i].checkForMovement(true);
 			//cout << pieces[i].getName() << ": X movement" << endl;
 		}	
 
