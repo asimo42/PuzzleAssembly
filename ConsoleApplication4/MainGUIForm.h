@@ -69,6 +69,12 @@ namespace PuzzleAssembly {
 	private: System::Windows::Forms::Label^  label2;
 	private: System::Windows::Forms::Label^  label3;
 	private: System::Windows::Forms::HelpProvider^  helpProvider1;
+	private: System::Windows::Forms::CheckBox^  level1CheckBox;
+	private: System::Windows::Forms::CheckBox^  level2CheckBox;
+	private: System::Windows::Forms::CheckBox^  level3CheckBox;
+	private: System::Windows::Forms::Button^  levelDescriptionsButton;
+
+	private: System::Windows::Forms::Label^  label4;
 
 	private: ScoreKeeping ScoreKeeper;
 
@@ -98,6 +104,11 @@ namespace PuzzleAssembly {
 			this->label2 = (gcnew System::Windows::Forms::Label());
 			this->label3 = (gcnew System::Windows::Forms::Label());
 			this->helpProvider1 = (gcnew System::Windows::Forms::HelpProvider());
+			this->level1CheckBox = (gcnew System::Windows::Forms::CheckBox());
+			this->level2CheckBox = (gcnew System::Windows::Forms::CheckBox());
+			this->level3CheckBox = (gcnew System::Windows::Forms::CheckBox());
+			this->levelDescriptionsButton = (gcnew System::Windows::Forms::Button());
+			this->label4 = (gcnew System::Windows::Forms::Label());
 			this->SuspendLayout();
 			// 
 			// runGameButton
@@ -106,7 +117,7 @@ namespace PuzzleAssembly {
 			this->runGameButton->AutoSizeMode = System::Windows::Forms::AutoSizeMode::GrowAndShrink;
 			this->runGameButton->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 24, static_cast<System::Drawing::FontStyle>((System::Drawing::FontStyle::Bold | System::Drawing::FontStyle::Italic)), 
 				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
-			this->runGameButton->Location = System::Drawing::Point(546, 166);
+			this->runGameButton->Location = System::Drawing::Point(597, 207);
 			this->runGameButton->Name = L"runGameButton";
 			this->runGameButton->Size = System::Drawing::Size(247, 142);
 			this->runGameButton->TabIndex = 0;
@@ -142,7 +153,7 @@ namespace PuzzleAssembly {
 			this->scoresButton->AutoSizeMode = System::Windows::Forms::AutoSizeMode::GrowAndShrink;
 			this->scoresButton->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 20.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, 
 				static_cast<System::Byte>(0)));
-			this->scoresButton->Location = System::Drawing::Point(1, 194);
+			this->scoresButton->Location = System::Drawing::Point(12, 235);
 			this->scoresButton->Name = L"scoresButton";
 			this->scoresButton->Size = System::Drawing::Size(277, 114);
 			this->scoresButton->TabIndex = 8;
@@ -157,7 +168,7 @@ namespace PuzzleAssembly {
 			this->calibrateButton->Enabled = false;
 			this->calibrateButton->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 20.25F, System::Drawing::FontStyle::Regular, 
 				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
-			this->calibrateButton->Location = System::Drawing::Point(284, 194);
+			this->calibrateButton->Location = System::Drawing::Point(322, 235);
 			this->calibrateButton->Name = L"calibrateButton";
 			this->calibrateButton->Size = System::Drawing::Size(256, 114);
 			this->calibrateButton->TabIndex = 9;
@@ -185,7 +196,7 @@ namespace PuzzleAssembly {
 			this->stopGameButton->Enabled = false;
 			this->stopGameButton->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 24, static_cast<System::Drawing::FontStyle>((System::Drawing::FontStyle::Bold | System::Drawing::FontStyle::Italic)), 
 				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
-			this->stopGameButton->Location = System::Drawing::Point(544, 21);
+			this->stopGameButton->Location = System::Drawing::Point(595, 40);
 			this->stopGameButton->Name = L"stopGameButton";
 			this->stopGameButton->Size = System::Drawing::Size(247, 139);
 			this->stopGameButton->TabIndex = 11;
@@ -215,12 +226,82 @@ namespace PuzzleAssembly {
 			this->label3->TabIndex = 13;
 			this->label3->Text = L"Please enter a game code below (exactly as it appears)";
 			// 
+			// level1CheckBox
+			// 
+			this->level1CheckBox->AutoSize = true;
+			this->level1CheckBox->Checked = true;
+			this->level1CheckBox->CheckState = System::Windows::Forms::CheckState::Checked;
+			this->level1CheckBox->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 15.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, 
+				static_cast<System::Byte>(0)));
+			this->level1CheckBox->Location = System::Drawing::Point(166, 190);
+			this->level1CheckBox->Name = L"level1CheckBox";
+			this->level1CheckBox->Size = System::Drawing::Size(79, 29);
+			this->level1CheckBox->TabIndex = 14;
+			this->level1CheckBox->Text = L"Easy";
+			this->level1CheckBox->UseVisualStyleBackColor = true;
+			this->level1CheckBox->CheckedChanged += gcnew System::EventHandler(this, &MainGUIForm::level1CheckBox_CheckedChanged);
+			// 
+			// level2CheckBox
+			// 
+			this->level2CheckBox->AutoSize = true;
+			this->level2CheckBox->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 15.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, 
+				static_cast<System::Byte>(0)));
+			this->level2CheckBox->Location = System::Drawing::Point(255, 192);
+			this->level2CheckBox->Name = L"level2CheckBox";
+			this->level2CheckBox->Size = System::Drawing::Size(107, 29);
+			this->level2CheckBox->TabIndex = 15;
+			this->level2CheckBox->Text = L"Medium";
+			this->level2CheckBox->UseVisualStyleBackColor = true;
+			this->level2CheckBox->CheckedChanged += gcnew System::EventHandler(this, &MainGUIForm::level2CheckBox_CheckedChanged);
+			// 
+			// level3CheckBox
+			// 
+			this->level3CheckBox->AutoSize = true;
+			this->level3CheckBox->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 15.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, 
+				static_cast<System::Byte>(0)));
+			this->level3CheckBox->Location = System::Drawing::Point(368, 192);
+			this->level3CheckBox->Name = L"level3CheckBox";
+			this->level3CheckBox->Size = System::Drawing::Size(77, 29);
+			this->level3CheckBox->TabIndex = 16;
+			this->level3CheckBox->Text = L"Hard";
+			this->level3CheckBox->UseVisualStyleBackColor = true;
+			this->level3CheckBox->CheckedChanged += gcnew System::EventHandler(this, &MainGUIForm::level3CheckBox_CheckedChanged);
+			// 
+			// levelDescriptionsButton
+			// 
+			this->levelDescriptionsButton->BackColor = System::Drawing::Color::Linen;
+			this->levelDescriptionsButton->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 12, System::Drawing::FontStyle::Regular, 
+				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
+			this->levelDescriptionsButton->Location = System::Drawing::Point(451, 185);
+			this->levelDescriptionsButton->Name = L"levelDescriptionsButton";
+			this->levelDescriptionsButton->Size = System::Drawing::Size(127, 44);
+			this->levelDescriptionsButton->TabIndex = 17;
+			this->levelDescriptionsButton->Text = L"Descriptions...";
+			this->levelDescriptionsButton->UseVisualStyleBackColor = false;
+			this->levelDescriptionsButton->Click += gcnew System::EventHandler(this, &MainGUIForm::levelDescriptionsButton_Click);
+			// 
+			// label4
+			// 
+			this->label4->AutoSize = true;
+			this->label4->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 14.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, 
+				static_cast<System::Byte>(0)));
+			this->label4->Location = System::Drawing::Point(8, 192);
+			this->label4->Name = L"label4";
+			this->label4->Size = System::Drawing::Size(152, 24);
+			this->label4->TabIndex = 18;
+			this->label4->Text = L"Level of Difficulty:";
+			// 
 			// MainGUIForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->BackColor = System::Drawing::Color::Beige;
-			this->ClientSize = System::Drawing::Size(803, 312);
+			this->ClientSize = System::Drawing::Size(854, 353);
+			this->Controls->Add(this->label4);
+			this->Controls->Add(this->levelDescriptionsButton);
+			this->Controls->Add(this->level3CheckBox);
+			this->Controls->Add(this->level2CheckBox);
+			this->Controls->Add(this->level1CheckBox);
 			this->Controls->Add(this->label3);
 			this->Controls->Add(this->label2);
 			this->Controls->Add(this->stopGameButton);
@@ -394,11 +475,19 @@ private: System::Void textBox1_TextChanged(System::Object^  sender, System::Even
 //----------------------------------------------------------------------------------------------------------
 // take code from input textbox and load puzzle from it
 private: int loadPuzzleFromCode() {
+
+			 int success = 0;
+
+			 // make sure the user has selected a level of difficulty
+			 if (!level1CheckBox->Checked == true && !level2CheckBox->Checked == true && ! !level3CheckBox->Checked == true) {
+				 MessageBox::Show("Please select a level of difficulty");
+				 return -1;
+			 }
+
 			 System::String^ CodeString = this->textBox1->Text;
 			 System::String^ puzzleType = searchPuzzleType(CodeString);
 			 //KNOB PUZZLE IS STILL HARDCODED - WILL NEED TO GO THROUGH ALL CODE IF YOU WANT TO ADD NEW GAME TYPES
 
-			 int success = 0;
 			 // load up puzzle class. If unsuccessful, will return -1
 			 if (puzzleType->Equals("KnobPuzzle")) {   
 				 success = this->currentPuzzle.setGame(CodeString);
@@ -410,7 +499,16 @@ private: int loadPuzzleFromCode() {
 				 System::Console::WriteLine("MainGUIForm.h : loadPuzzleFromCode(): error loading knob puzzle from code");
 				 return success;
 			 }
-
+			 // load level of difficulty to puzzle
+			 if (level1CheckBox->Checked == true) {
+				 this->currentPuzzle.setLevelOfDifficulty(1);
+			 }
+			 if (level2CheckBox->Checked == true) {
+				 this->currentPuzzle.setLevelOfDifficulty(2);
+			 }
+			 if (level3CheckBox->Checked == true) {
+				 this->currentPuzzle.setLevelOfDifficulty(3);
+			 }
 
 			 // test code for importing drawing info::
 			 //int Xpos = this->currentPuzzle.getPieceList()[0]->getShapePointX();
@@ -424,6 +522,33 @@ private: int loadPuzzleFromCode() {
 		 }
 private: System::Void MainGUIForm_HelpButtonClicked(System::Object^  sender, System::ComponentModel::CancelEventArgs^  e) {
 			 MessageBox::Show("You Clicked the Help Button! Help functionality under construction.");
+		 }
+
+// if user selects a level of difficulty box, set that box to check and uncheck the other difficulty boxes. 
+private: System::Void level2CheckBox_CheckedChanged(System::Object^  sender, System::EventArgs^  e) {
+			 if (level2CheckBox->Checked == true) { 
+				 level1CheckBox->Checked = false;
+				 level3CheckBox->Checked = false;	
+			 }
+		
+		 }
+private: System::Void level3CheckBox_CheckedChanged(System::Object^  sender, System::EventArgs^  e) {
+			 if (level3CheckBox->Checked == true) { 
+				 level1CheckBox->Checked = false;
+				 level2CheckBox->Checked = false;	
+			 }
+	
+		 }
+private: System::Void level1CheckBox_CheckedChanged(System::Object^  sender, System::EventArgs^  e) {
+			 if (level1CheckBox->Checked == true) { 
+				level2CheckBox->Checked = false;
+				level3CheckBox->Checked = false;	
+			 }
+	
+		 }
+private: System::Void levelDescriptionsButton_Click(System::Object^  sender, System::EventArgs^  e) {
+			 System::String^ tmp = "Levels of Difficulty: \nEasy:   \n\nMedium: \n\nHard: ";
+			 MessageBox::Show(tmp);
 		 }
 };
 }

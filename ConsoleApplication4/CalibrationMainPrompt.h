@@ -197,16 +197,9 @@ namespace ConsoleApplication4 {
 				 // if we are in the color stage, show appropriate prompt
 				 if (this->calibratingColors) {
 
-					 //CalibrationTracking^ locationTracker = gcnew CalibrationTracking();
-					 //locationTracker->setGame(this->puzzle);
-					 //locationTracker->startLocationCalibration();
-					 //return;
-
-
 					 this->Visible = false;
-					 // launch a new color calibration form
-					 //ConsoleApplication4::ColorCalibrationForm^ colorForm = gcnew ConsoleApplication4::ColorCalibrationForm();
-					 //pass puzzle class over to color form
+
+					 //pass puzzle class over to color form and launch it
 					 this->colorForm->puzzle = this->puzzle;
 					 if (this->colorForm->ShowDialog() == System::Windows::Forms::DialogResult::OK) {
 					 }

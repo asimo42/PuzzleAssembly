@@ -27,6 +27,7 @@ void Shape::setImage(Mat* img) {
 // close puzzle board window
 void Shape::endImage() {
 	//cv::destroyAllWindows();
+	//cvReleaseImage(this->image);
 	this->image->release();
 }
 

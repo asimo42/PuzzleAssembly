@@ -75,8 +75,6 @@ void RunTracking::endTrack() {
 		System::Console::WriteLine("RunTracking::EndTrack() : Exiting RunTracking");
 		// destroy tracking windows
 		cv::destroyAllWindows();
-		// destroy puzzle board
-		this->shapes.endImage();
 		return;
 }
 

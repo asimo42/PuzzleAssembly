@@ -9,6 +9,7 @@ the Run button on the GUI
 #include <opencv2\opencv.hpp>        //includes all OpenCV headers
 #include "Shape.h"
 
+#define _CRTDBG_MAP_ALLOC
 
 class RunTracking
 {
@@ -24,6 +25,7 @@ class RunTracking
 
 
 		RunTracking() { Initialize(); }
+		~RunTracking() {}
   
         virtual void Initialize();
         virtual void Start();

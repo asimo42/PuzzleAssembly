@@ -25,6 +25,7 @@ void initializeTracking(KnobPuzzle^ %Game, ScoreKeeping^ %ScoreKeeper)
 	ScoreKeeper->AddNewGame(gameResults);
 	System::String^ results = gameResults->printData();	
 	MessageBox::Show(results);
+	delete newTracker;
 
 	return;
 }
