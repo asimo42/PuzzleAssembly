@@ -36,6 +36,8 @@ private:
 	// i.e. the user has picked up and is trying to place the piece.
 	bool isMoving;
 
+	bool isPlacedCorrectly;
+
 	// Set to true when piece should be flashing on screen
 	bool flashing;
 
@@ -47,11 +49,14 @@ private:
 
 
 	// max number of values allowed in movementHistory deque
-	static const unsigned int MAX_DEQUE_SIZE = 8;
+	static const unsigned int MAX_DEQUE_SIZE = 5;
 
 	// Holds movement history of pieces each time the timer checks for movement.
 	// Holds a max of MAX_DEQUE_SIZE elements
 	deque<bool> movementHistory;
+
+	// Holds a history of if the piece is sitting in its correct x,y location on the puzzle board
+	deque<bool> placementHistory;
 
 public:
 	// position of shape on screen
@@ -75,6 +80,9 @@ public:
 	// and is trying to place it.
 	// returns false if there has not been consistent recent movement.
 	int checkForMovement(bool justMoved);
+
+	// Checks if piece has consistently been sitting in correct x,y position. If so, sets isPlacedCorrectly boolean to true.
+	bool isPlacedCorrectly(Point pos);
 
 	void toggle(Mat &image);
 	void dim(Mat &image);

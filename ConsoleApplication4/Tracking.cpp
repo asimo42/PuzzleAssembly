@@ -24,6 +24,7 @@
 #include "Shape.h"
 #include "RunTracking.h"
 #include <Windows.h>	// for timer
+#include <WinBase.h>	//for sleep()
 
 using namespace cv;
 using namespace std;
@@ -304,7 +305,7 @@ int RunTracking::startTrack()
 	SetTimer(NULL, 1, timer_ms, timerTick);
 
 	// set timer to flash shapes
-	UINT timer_flash = 600;
+	UINT timer_flash = 200;
 	SetTimer(NULL, 1, timer_flash, timerFlash);
 	
 
@@ -356,7 +357,8 @@ int RunTracking::startTrack()
 	drawPuzzleBoard(puzzle_board);
 	imshow(puzzle_window, puzzle_board);
 
-
+	Sleep(500);
+	cout << "Done sleeping." << endl;
 	while(1)
 	{
 		capture.read(camera_feed);

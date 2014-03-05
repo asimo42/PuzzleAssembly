@@ -65,7 +65,7 @@ int TrackedPiece::checkForMovement(bool justMoved)
 	int numTrues = count(movementHistory.begin(), movementHistory.end(), true);
 	//cout << "Num trues " << name << ": " << numTrues << endl;
 
-	if (numTrues >= 7)
+	if (numTrues >= 8)
 	{
 		//clearStatus();
 		cout << name << " **TURN OFF**" << endl;
@@ -79,7 +79,7 @@ int TrackedPiece::checkForMovement(bool justMoved)
 		flashing = true;
 		return 2;
 	}
-	else if(numTrues >= 4 )
+	else if(numTrues >= 3 )
 	{
 		//clearStatus();
 		cout << name << " piece being placed." << endl;
