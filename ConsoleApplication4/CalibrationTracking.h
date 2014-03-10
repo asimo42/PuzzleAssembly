@@ -26,6 +26,7 @@ ref class CalibrationTracking
         virtual void Stop() { STOP = true; }
 		virtual void Next() { NEXT = true; }
         virtual void setGame(KnobPuzzle^ game) {this->Game = game;}
+		virtual void setPieceToTrack(PuzzlePiece^ piece) {this->pieceBeingTracked = piece; }
 
 protected:
 
@@ -35,11 +36,13 @@ protected:
 		bool COLOR_CALIBRATION;
 		bool LOCATION_CALIBRATION;
         KnobPuzzle^ Game;
+		PuzzlePiece^ pieceBeingTracked;
 
 		virtual int startTrackColor();
 		virtual int startTrackLocation();
         virtual void endTrack();
 		virtual void nextPiece();
+		virtual void savePieceInformation();
         virtual void trackTrackedPiece(TrackedPiece &piece, Mat &camera_feed, Mat &HSV_image, Mat &threshold_image);
         virtual List<int>^ findPieceLocation(TrackedPiece &piece, Mat &camera_feed, Mat &HSV_image, Mat &threshold_image);
         virtual List<int>^ trackFilteredObject(TrackedPiece &piece, Mat &cameraFeed, Mat &threshold_image);

@@ -108,14 +108,15 @@ void GamePlayed::compileData()
 System::String^ GamePlayed::printData()
 {
 	// if the order hasn't been calculated yet, neet to compile data
-	if (this->orderOfPiecesPlayed->Count == 0)
-	{
+	// wait, why not compile any potentially new data anyway?
+	//if (this->orderOfPiecesPlayed->Count == 0)
+	//{
 		compileData();
 		if (this->timesOfPlacement->Count < this->game->getPieceList()->Count) {
 			System::Windows::Forms::MessageBox::Show(" Not all pieces were placed");
 		}
 		if (this->orderOfPiecesPlayed->Count == 0) { return "game not completed"; }
-	}
+	//}
 	System::String^ resultString = "";
 	resultString = "Game : " + game->getName() + "\n";
 	System::String^ tim = this->timeStarted->ToString("F");
@@ -157,6 +158,8 @@ System::String^ ScoreKeeping::showFinalResults()
 {
 	// Lock thread
 	myMutex = CreateMutex(NULL, FALSE, (LPCWSTR) "compiling results");
+	WaitForSingleObject(myMutex, INFINITE);
+
 	System::String^ finalString = "Performance and Progress\n\n";
 
 	// start off by getting the results for each individual game

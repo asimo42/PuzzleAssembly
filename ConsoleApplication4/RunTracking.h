@@ -11,6 +11,10 @@ the Run button on the GUI
 
 #define _CRTDBG_MAP_ALLOC
 
+// interesting example of wrapping: http://stackoverflow.com/questions/12701177/memory-leaks-in-c-cli-code-what-did-i-do-wrong
+// they wrap an opencv Mat
+// stuff on destructors: http://www.codeproject.com/Articles/7965/Deterministic-Destruction-in-C-CLI
+
 class RunTracking
 {
 

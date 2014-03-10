@@ -45,7 +45,7 @@ public:
 //--- FROM FUNCTIONS.CPP----
 
 // Starting OpenCV tracking
-void initializeTracking(KnobPuzzle^ %Game, ScoreKeeping^ %ScoreKeeper);
+GamePlayed^ initializeTracking(KnobPuzzle^ %Game);
 
 // Unmanaged <--> Managed Conversions
 List<int>^ scalarToList(cv::Scalar scalar);

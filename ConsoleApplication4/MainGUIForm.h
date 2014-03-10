@@ -32,12 +32,23 @@ namespace PuzzleAssembly {
 			InitializeComponent();
 
 			// ** THESE ARE INITIALIZED FOR TESTING PURPOSES ONLY - REMOVE FOR FINAL VERSION
+			turnAllButtonsOnExceptStop();
 			this->loadButton->Enabled = true;
-			this->calibrateButton->Enabled = true;
-			this->runGameButton->Enabled = true;
+			this->gameRunning = false;
+			this->calibrating = false;
 			//******
 
-			this->gameRunning = false;
+			// For me, CameraPrefs folder is located 2 folders above the consolepplication4.exe file
+			//System::String^ cameraExecutablePath = System::Windows::Forms::Application::StartupPath + "/../../CameraPrefs/CameraPrefs.exe";
+			//MessageBox::Show("Attempting to run : " + cameraExecutablePath);
+			//if (System::IO::File::Exists(cameraExecutablePath)) {
+			//	MessageBox::Show("Executable file found");
+			//	System::Diagnostics::Process^ process = System::Diagnostics::Process::Start(cameraExecutablePath);
+			//}
+			//else {
+			//	MessageBox::Show("Can't find CameraPrefs.exe. Please change my file path in MainGUIForm.h :: MainGUIform(void)");
+			//}
+
 
 		}
 
@@ -52,16 +63,18 @@ namespace PuzzleAssembly {
 				delete components;
 			}
 		}
-	private: System::Windows::Forms::Button^  runGameButton;
 
+	// My Variables
 	public: bool gameRunning;
+	public: bool calibrating;
 	private: System::Windows::Forms::TextBox^  textBox1;
-	public: 
 	private: System::Windows::Forms::Label^  label1;
 	private: System::ComponentModel::IContainer^  components;
 	private: KnobPuzzle currentPuzzle;
-	//private: ThreadShell myThreadShell;
-	//private: RunTracking* runTracking;
+	private: ScoreKeeping ScoreKeeper;
+
+	// Visual Studio's GUI stuff
+	private: System::Windows::Forms::Button^  runGameButton;
 	private: System::Windows::Forms::Button^  scoresButton;
 	private: System::Windows::Forms::Button^  calibrateButton;
 	private: System::Windows::Forms::Button^  loadButton;
@@ -73,11 +86,7 @@ namespace PuzzleAssembly {
 	private: System::Windows::Forms::CheckBox^  level2CheckBox;
 	private: System::Windows::Forms::CheckBox^  level3CheckBox;
 	private: System::Windows::Forms::Button^  levelDescriptionsButton;
-
 	private: System::Windows::Forms::Label^  label4;
-
-	private: ScoreKeeping ScoreKeeper;
-
 
 	protected: 
 
@@ -317,6 +326,8 @@ namespace PuzzleAssembly {
 			this->Name = L"MainGUIForm";
 			this->Text = L"Puzzle Assembly Assistant";
 			this->HelpButtonClicked += gcnew System::ComponentModel::CancelEventHandler(this, &MainGUIForm::MainGUIForm_HelpButtonClicked);
+			this->FormClosing += gcnew System::Windows::Forms::FormClosingEventHandler(this, &MainGUIForm::MainGUIForm_FormClosing);
+			this->Load += gcnew System::EventHandler(this, &MainGUIForm::MainGUIForm_Load);
 			this->ResumeLayout(false);
 			this->PerformLayout();
 
@@ -325,50 +336,70 @@ namespace PuzzleAssembly {
 
 private: System::Void runGameButton_Click(System::Object^  sender, System::EventArgs^  e) {
 	
+			 // Lock down thread while loading puzzle, so that only one thread is accessing it (I'm not actually sure this is doing anything)
 			 HANDLE myMutex = CreateMutex(NULL, FALSE, (LPCWSTR) "runGameButton_Click : loading game");
+			 WaitForSingleObject(myMutex, INFINITE);
 
-			 // load up puzzle if not already loaded. 
-			 if (!this->currentPuzzle.checkIsInitialized(this->textBox1->Text)) {
+			 // load up puzzle if not already loaded (make sure it's the same puzzle that the user has entered in the text box too). 
+			 if (!this->currentPuzzle.checkIsInitialized(this->getCodeStringFromGUI())) {
 				 MessageBox::Show("Loading Puzzle");
 				 Console::WriteLine("MainGUIForm.h : runGameButton_Click() : Loading Puzzle");
+
+				 // load the puzzle from the given code
 				 int success = this->loadPuzzleFromCode();
+
 				 // if loading was unsuccessful, alert user and cancel running game
 				 if (success == -1) {
 					 System::Windows::Forms::MessageBox::Show("Error loading puzzle. \nPlease check code string");
-					 Console::WriteLine("MainGUIForm.h : runGameButton_Click() : Error loading puzzle. \nPlease check code string");
+					 Console::WriteLine("MainGUIForm.h : runGameButton_Click() : Error loading puzzle. Please check code string");
+ 		 			 ReleaseMutex(myMutex);
 					 return;
 				 }
 			 }
 
-		 	ReleaseMutex(myMutex);
+			 // reload the level of difficulty in case it's changed
+			 this->currentPuzzle.setLevelOfDifficulty(this->getLevelOfDifficulty());
+			 if (this->currentPuzzle.getLevelOfDifficulty() == -1) {
+					 Console::WriteLine("MainGUIForm.h : runGameButton_Click() : Error loading puzzle. Please check code string");
+ 		 			 ReleaseMutex(myMutex);
+					 return;
+			 }
 
-			 //MAY WANT A COMPREHENSIVE ERROR CHECK within KnobPuzzle, for a one line check
+			 // release lock
+		 	 ReleaseMutex(myMutex);
 
+			 // MAY WANT A COMPREHENSIVE ERROR CHECK within KnobPuzzle, for a one line check
+
+			 // Turn on 'Stop' button and turn off the other buttons for while game is running
 			 this->gameRunning = true;
-			 this->runGameButton->Enabled = false;
-			 this->loadButton->Enabled = false;
-			 this->calibrateButton->Enabled = false;
-			 this->scoresButton->Enabled = false;
+			 turnAllButtonsOff();
 			 this->stopGameButton->Enabled = true;
 
-			 // now start the tracking
-			 initializeTracking( this->currentPuzzle.returnHandle(), ScoreKeeper.returnHandle());
+			 // now start the game by initializing the tracking. Pass in the puzzle. It will return the game stats for that game
+			 GamePlayed^ gameResults = initializeTracking( this->currentPuzzle.returnHandle());
+			 
+			 //add new game results to the ScoreKeeper
+			 this->ScoreKeeper.AddNewGame(gameResults);
 
-			 this->runGameButton->Enabled = true;
-			 this->stopGameButton->Enabled = false;
-			 this->loadButton->Enabled = true;
-			 this->calibrateButton->Enabled = true;
-			 this->scoresButton->Enabled = true;
+			 // reset the 'endgame' variable in KnobPuzzle (in case it was set by StopButtonClick)
+			 this->currentPuzzle.resetEndGame();
 
+			 // Turn off 'Stop' button, and enable all other buttons
+			 turnAllButtonsOnExceptStop();
+
+			 this->gameRunning = false;
 		 }
 //----------------------------------------------------------------------------------------------------------
 // User stops game before it ends naturally
 private: System::Void stopGameButton_Click(System::Object^  sender, System::EventArgs^  e) {
-			 this->gameRunning = false;
+			 // if game isn't running, then return ( this shouldn't be able to happen)
+			 if (!gameRunning) {
+				 return;
+			 }
 
-			 // tell KnobPuzlze to end; RunTracking will see this and end. 
-			 this->currentPuzzle.setEndGame();				
-
+			 // tell KnobPuzzle to end; RunTracking will see the change in this variable and end. 
+			 this->currentPuzzle.setEndGame();		
+			 this->gameRunning = false; // set gameRunning to false (for main gui)
 		 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -379,45 +410,85 @@ private: System::Void scoresButton_Click(System::Object^  sender, System::EventA
 			MessageBox::Show(results);
 		 }
 
+private: System::Void turnAllButtonsOff() {
+			 this->runGameButton->Enabled = false;
+			 this->loadButton->Enabled = false;
+			 this->calibrateButton->Enabled = false;
+			 this->scoresButton->Enabled = false;
+			 this->stopGameButton->Enabled = false;
+		 }
+
+private: System::Void turnAllButtonsOnExceptStop() {
+			 this->runGameButton->Enabled = true;
+			 this->loadButton->Enabled = true;
+			 this->calibrateButton->Enabled = true;
+			 this->scoresButton->Enabled = true;
+			 this->stopGameButton->Enabled = false;
+		 }
 //----------------------------------------------------------------------------------------------------------
 private: System::Void calibrateButton_Click(System::Object^  sender, System::EventArgs^  e) {
 
-			 HANDLE myMutex = CreateMutex(NULL, FALSE, (LPCWSTR) "runGameButton_Click : loading game");
+			 // Lock down thread for entire calibration process to minimize conflicts
+			 HANDLE myMutex = CreateMutex(NULL, FALSE, (LPCWSTR) "calibrateButton_Click : loading and calibrating");
+			 WaitForSingleObject(myMutex, INFINITE);
 
 			 // load up puzzle if not already loaded (compare current KnobPuzzle to the textbox input)
-			 if (!this->currentPuzzle.checkIsInitialized(this->textBox1->Text)) {
+			 if (!this->currentPuzzle.checkIsInitialized(this->getCodeStringFromGUI())) {
 				 MessageBox::Show("Loading Puzzle");
 				 System::Console::WriteLine("MainGUIForm.h : calibrateButton_Click() : Loading Puzzle");
 				 int success = this->loadPuzzleFromCode();
 				 if (success == -1) {
 					 System::Console::WriteLine("MainGUIForm.h : calibrateButton_Click() : Error loading puzzle. \nPlease check code string");
+ 		 			 ReleaseMutex(myMutex);
 					 return;
 				 }
 			 }
 
-			 // create new calibration main form and pass it the puzzle
+			 // all buttons off while calibrating
+			 turnAllButtonsOff();
+
+			 this->calibrating = true;
+			 // create new calibration main form and pass it the puzzle. User will now enter the calibration process
 			 ConsoleApplication4::CalibrationMainPrompt^ calibForm = gcnew ConsoleApplication4::CalibrationMainPrompt();
 			 calibForm->puzzle = this->currentPuzzle.returnHandle();
 
 			 // wait until the calibration form has exited. 
-			 if (calibForm->ShowDialog() == System::Windows::Forms::DialogResult::OK) {
+			 System::Windows::Forms::DialogResult dialogResult = calibForm->ShowDialog(); 
+
+			 this->calibrating = false;
+  		 	 ReleaseMutex(myMutex);
+
+			 // if DialogResult is OK, then calibration has been completed successfully (or should)
+			 if (dialogResult == System::Windows::Forms::DialogResult::OK) {
 				 MessageBox::Show("You're done with calibration!");
+				 delete calibForm;
 			 }
-			 else if (calibForm->ShowDialog() == System::Windows::Forms::DialogResult::Cancel) {
+
+
+			 // if DialogResult was Cancel (user exited prematurely, or there was an error)
+			 // then cancel the calibration and reload all of the old calibration data
+			 else if (dialogResult == System::Windows::Forms::DialogResult::Cancel) {
+				 delete calibForm;
 				// reload old data into current puzzle
-				 MessageBox::Show("Re-Loading Puzzle data");
-				 System::Console::WriteLine("MainGUIForm.h : calibrateButton_Click() : ReLoading Puzzle");
+				 MessageBox::Show("Re-Loading old puzzle data");
+				 System::Console::WriteLine("MainGUIForm.h : calibrateButton_Click() : ReLoading old Puzzle data");
 				 int success = this->loadPuzzleFromCode();
 				 if (success == -1) {
 					 System::Console::WriteLine("MainGUIForm.h : calibrateButton_Click() : Error reLoading puzzle. \nPlease check code string");
+					 turnAllButtonsOnExceptStop();
 					 return;
 				 }
+				 // no point in continuing to next stage (saving settings) so return
+				turnAllButtonsOnExceptStop();
+				return;
 			 }
 
 			 // color and location info should be embedded now in this->currentPuzzle, which should be passed to tracking initializer
 
+			 // ask user if they want to save settings
 			 System::Windows::Forms::DialogResult result = MessageBox::Show("Do you want to save calibration settings for future sessions?", "Warning", MessageBoxButtons::YesNoCancel, MessageBoxIcon::Warning);
-			 // if user selects that they want to save the settings, save the settings
+
+			 // if user says yes, save the settings to the hardcoded location (user doesn't select)
 			 if(result == System::Windows::Forms::DialogResult::Yes)
 			 {
 				 Console::WriteLine("Saving Settings");
@@ -434,8 +505,8 @@ private: System::Void calibrateButton_Click(System::Object^  sender, System::Eve
 			   Console::WriteLine("Not saving settings");
 			 }
 
- 		 	ReleaseMutex(myMutex);
-
+			 // turn buttons back on
+			 turnAllButtonsOnExceptStop();
 			 return;
 		 }
 
@@ -452,19 +523,19 @@ private: System::Void loadButton_Click(System::Object^  sender, System::EventArg
 			 }
 			 // disable load button - to signify puzzle successfully loaded
 			 this->loadButton->Enabled = false;
-
 		 }
 
 //----------------------------------------------------------------------------------------------------------
 private: System::Void textBox1_TextChanged(System::Object^  sender, System::EventArgs^  e) {
 
-			 // if puzzle code box is blank, de-enable all buttons
-			 if (textBox1->Text->Length == 0) {
+			 // if puzzle code box is blank, de-enable all buttons (because there is obviously no game to play)
+			 if (this->textBox1->Text->Length == 0) {
 				 this->loadButton->Enabled = false;
 				 this->calibrateButton->Enabled = false;
 				 this->runGameButton->Enabled = false;
 			 }
-			 // otherwise enable load and run button
+
+			 // otherwise enable load and run button (assumes a game has been entered)
 			 else {
 				 this->loadButton->Enabled = true; 
 				 this->calibrateButton->Enabled = true;
@@ -472,25 +543,30 @@ private: System::Void textBox1_TextChanged(System::Object^  sender, System::Even
 			 }
 		 }
 
+
 //----------------------------------------------------------------------------------------------------------
-// take code from input textbox and load puzzle from it
+// take code from input textbox and load puzzle from it (Should I have this take a string argument?)
 private: int loadPuzzleFromCode() {
 
 			 int success = 0;
 
-			 // make sure the user has selected a level of difficulty
-			 if (!level1CheckBox->Checked == true && !level2CheckBox->Checked == true && ! !level3CheckBox->Checked == true) {
+			 // make sure the user has properly selected a level of difficulty
+			 int level = this->getLevelOfDifficulty();
+			 if ( level == -1) {
 				 MessageBox::Show("Please select a level of difficulty");
 				 return -1;
 			 }
+			 // load level of difficulty to puzzle
+			 else { this->currentPuzzle.setLevelOfDifficulty(level); }
 
-			 System::String^ CodeString = this->textBox1->Text;
+			 // pull puzzle name from GUI
+			 System::String^ CodeString = this->getCodeStringFromGUI();
 			 System::String^ puzzleType = searchPuzzleType(CodeString);
 			 //KNOB PUZZLE IS STILL HARDCODED - WILL NEED TO GO THROUGH ALL CODE IF YOU WANT TO ADD NEW GAME TYPES
 
 			 // load up puzzle class. If unsuccessful, will return -1
 			 if (puzzleType->Equals("KnobPuzzle")) {   
-				 success = this->currentPuzzle.setGame(CodeString);
+				 success = this->currentPuzzle.setGame(CodeString); // this function will load up all puzzle data
 			 }
 
 			 // check if loading was successful
@@ -498,16 +574,6 @@ private: int loadPuzzleFromCode() {
 				 //MessageBox::Show("MainGUIForm.h : loadPuzzleFromCode(): error loading knob puzzle from code");
 				 System::Console::WriteLine("MainGUIForm.h : loadPuzzleFromCode(): error loading knob puzzle from code");
 				 return success;
-			 }
-			 // load level of difficulty to puzzle
-			 if (level1CheckBox->Checked == true) {
-				 this->currentPuzzle.setLevelOfDifficulty(1);
-			 }
-			 if (level2CheckBox->Checked == true) {
-				 this->currentPuzzle.setLevelOfDifficulty(2);
-			 }
-			 if (level3CheckBox->Checked == true) {
-				 this->currentPuzzle.setLevelOfDifficulty(3);
 			 }
 
 			 // test code for importing drawing info::
@@ -520,6 +586,25 @@ private: int loadPuzzleFromCode() {
 
 			 return success;
 		 }
+
+
+//----------------------------------------------------------------------------------------------------------
+// Handle the form closing via X button
+private: System::Void MainGUIForm_FormClosing(System::Object^  sender, System::Windows::Forms::FormClosingEventArgs^  e) {
+			 // if game is running, need to end the game before we can quit
+			 if (this->gameRunning) {
+				 this->currentPuzzle.setEndGame();		
+			 }
+			 // if currently calibrating, just don't let the form close. User must close out of calibration first.
+			 if (this->calibrating) {
+				 Console::WriteLine("MainGUIForm.h: MainGUIForm_FormClosing(): attempted to exit main gui during calibration. Cancelled exit.");
+				 e->Cancel = true;
+			 } 
+		 }
+
+// minor button click events
+//----------------------------------------------------------------------------------------------------------
+// help functionality under construction
 private: System::Void MainGUIForm_HelpButtonClicked(System::Object^  sender, System::ComponentModel::CancelEventArgs^  e) {
 			 MessageBox::Show("You Clicked the Help Button! Help functionality under construction.");
 		 }
@@ -546,9 +631,29 @@ private: System::Void level1CheckBox_CheckedChanged(System::Object^  sender, Sys
 			 }
 	
 		 }
+// display a little messagebox describing the difference between the levels of difficulty
 private: System::Void levelDescriptionsButton_Click(System::Object^  sender, System::EventArgs^  e) {
 			 System::String^ tmp = "Levels of Difficulty: \nEasy:   \n\nMedium: \n\nHard: ";
 			 MessageBox::Show(tmp);
 		 }
+
+//----------------------------------------------------------------------------------------------------------
+// mini function that pulls the game code from the GUI (isolated in case text input method changes
+private: System::String^ getCodeStringFromGUI() {
+			 System::String^ resultString = this->textBox1->Text;
+			 return resultString;
+		 }
+//----------------------------------------------------------------------------------------------------------
+// mini function that pulls the level of difficulty from the GUI
+private: int getLevelOfDifficulty() {
+			int level = -1; // boxes aren't properly checked, will return error (-1)
+			if (level1CheckBox->Checked == true) { return 1; }
+			else if (level2CheckBox->Checked == true) { return 2; }
+			else if (level3CheckBox->Checked == true) { return 3; }
+			return level;
+		 }
+private: System::Void MainGUIForm_Load(System::Object^  sender, System::EventArgs^  e) {
+		 }
+
 };
 }

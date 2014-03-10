@@ -11,10 +11,13 @@ using namespace System::Windows::Forms;
 void KnobPuzzle::Initialize() 
 {
 	this->Error = false;  // error boolean will be set if something goes wrong somewhere
+	this->errorString = ""; // if we ever want to return a string describing the error
 	this->puzzleName = gcnew System::String("KNOBPUZZLE");
 	this->puzzleType = gcnew System::String("KNOBPUZZLE");
+	this->LevelOfDifficulty = 0;
 	this->errorString = gcnew System::String("");
 	this->pieceList = gcnew List<PuzzlePiece^>();
+	this->myMutex = CreateMutex(NULL, FALSE, (LPCWSTR) "KnobPuzzle Class Mutex");
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -33,12 +36,14 @@ KnobPuzzle::KnobPuzzle(System::String^ code)
 
 int KnobPuzzle::setGame(System::String^ code) {
 
-	myMutex = CreateMutex(NULL, FALSE, (LPCWSTR) "Knobpuzzle::setGame()");
+	// lock mutex for loading game data
+	WaitForSingleObject(this->myMutex, INFINITE);
 
-	Initialize();
+	Initialize(); // re-initialize all class data
 	this->puzzleName = code; // update puzzle name
 	LookUpGame(code); // this will fill up the knobpuzzle^ class properties
 
+	// release mutex
 	ReleaseMutex(myMutex);
 
 	if (this->Error) {
@@ -57,23 +62,26 @@ KnobPuzzle::~KnobPuzzle(void)
 //*** CHANGES to input file must be dealt with there ******
 void KnobPuzzle::LookUpGame(System::String^ code) 
 {
-	myMutex = CreateMutex(NULL, FALSE, (LPCWSTR) "LookupGame()");
+	// lock down thread while looking up game - just in case we use more threading in future
+	WaitForSingleObject(this->myMutex, INFINITE);
 
 	// find path for input file from game code
-	System::String^ inputFile = getCalibratedInputPath(code);
+	System::String^ calibratedFile = getCalibratedInputPath(code);
 	System::String^	defaultFile = getDefaultInputPath(code);
-	//System::String^ tmp = "KnobPuzzle::LookUpGame(): Calibrated Input File Path : " + inputFile + "\n Default Input File Path : " + defaultFile;
-	Console::WriteLine("KnobPuzzle::LookUpGame(): Calibrated Input File Path : " + inputFile + "\n Default Input File Path : " + defaultFile);
+	System::String^ inputFile = calibratedFile;
+
+	Console::WriteLine("KnobPuzzle::LookUpGame(): Calibrated Input File Path : " + calibratedFile + "\n Default Input File Path : " + defaultFile);
 
 	// if can't find calibrated file, then use default file instead
-	if (!System::IO::File::Exists(inputFile)) {
+	if (!System::IO::File::Exists(calibratedFile)) {
 		// if can't find calibrated file, then use default file instead
 		Console::WriteLine("KnobPuzzle::LookUpGame() - Could not find calibrated file. Will use default instead.");
 		inputFile = defaultFile;
 		// if neither exist, error and exit.
-		if (!System::IO::File::Exists(inputFile)) {
+		if (!System::IO::File::Exists(defaultFile)) {
 			Console::WriteLine("KnobPuzzle::LookUpGame() - Could not find either calibrated or default game file");
 			this->Error = true;
+			ReleaseMutex(myMutex);
 			return;
 		}
 	}
@@ -83,6 +91,7 @@ void KnobPuzzle::LookUpGame(System::String^ code)
 	if (stringArray == nullptr || stringArray[0]->Equals("ERROR")) {
 		MessageBox::Show("KnobPuzzle::LookUpGame -Could not pull strings from Game file");
 		this->Error = true;
+		ReleaseMutex(myMutex);	
 		return;
 	}
 
@@ -94,6 +103,7 @@ void KnobPuzzle::LookUpGame(System::String^ code)
 	List<Int32>^ HSVmax;
 
 	// go through each line in our section of input file. **THIS IS HARDCODED - changes to input file must be dealt with there
+	// **NOTE** level of difficulty is not currently parsed. It's there for the future. 
 	int index = 0;
 	System::String^ line = stringArray[index];
 	Console::WriteLine("KnobPuzzle::LookUpGame() : parsing puzzle pieces from input file");
@@ -118,29 +128,34 @@ void KnobPuzzle::LookUpGame(System::String^ code)
 			// check if the parsing worked
 			if (!try1 || !try2 || !try3 || !try4 || !try5 || !try6 || !try7 || !try8) {
 				MessageBox::Show("Error: An inappropriate HSV value was found in line:\n" + line);
+				Console::WriteLine("KnobPuzzle::LookUpGame() : Error: An inappropriate HSV value was found in line:\n" + line);
 				this->Error = true;
+				ReleaseMutex(myMutex);
 				return;
 			}
 			// check if the HSV values seem reasonable
 			if (hmin < 0 || smin < 0 || vmin < 0 || hmax > 256 || smax > 256 || vmax > 256) { 
 				MessageBox::Show("Error: HSV value error - min values must be 0 or greater, max values must be between 0 and 256. \n" + line);
+				Console::WriteLine("KnobPuzzle::LookUpGame() : Error : HSV value - min values must be 0 or greater, max values must be between 0 and 256.\n" + line);
 				this->Error = true;
+				ReleaseMutex(myMutex);
 				return;
 			}
 			// plug tracking information into new puzzle piece
-			HSVmin = gcnew List<Int32>(3);
+			HSVmin = gcnew List<Int32>(3); // HSV min values
 			HSVmin->Add(hmin); HSVmin->Add(smin); HSVmin->Add(vmin);
-			HSVmax = gcnew List<Int32>(3);
+			HSVmax = gcnew List<Int32>(3); // HSV max values
 			HSVmax->Add(hmax); HSVmax->Add(smax); HSVmax->Add(vmax);
 			PuzzlePiece^ newPiece = gcnew PuzzlePiece(pieceName, HSVmin, HSVmax);
-			newPiece->setDestPos(x,y);
+			newPiece->setDestPos(x,y);   // destination location of piece
 
-			// now parse shape drawing information
-			int success = ParseShapeInformation(tokens, newPiece);
+			// now parse shape drawing information. 
+			int success = ParseShapeInformation(tokens, newPiece); // this function automatically adds the shape info to the puzzle piece
 			if (success != 0) { 
 				Console::WriteLine("KnobPuzzle::LookUpGame() : Error: Incorrect shape drawing information: \n Line: " + line);
 				MessageBox::Show("Error: Incorrect shape drawing information");
 				this->Error = true;
+				ReleaseMutex(myMutex);
 				return;
 			}
 
@@ -153,19 +168,21 @@ void KnobPuzzle::LookUpGame(System::String^ code)
 			Console::WriteLine("KnobPuzzle::LookUpGame() : Error: Incomplete piece information: \n Line: " + line);
 			MessageBox::Show("Error: Incomplete piece information: \n Line: " + line);
 			this->Error = true;
+			ReleaseMutex(myMutex);
 			return;
 		}
 	}
 
-	// if puzzle has 0 pieces, throw error
+	// if puzzle still has has 0 pieces after reading through file, throw error
 	if (PieceList->Count == 0) {
 		Console::WriteLine("KnobPuzzle::LookUpGame() : Puzzle doesn't have pieces");
 		MessageBox::Show("Error: Puzzle doesn't have pieces");
 		this->Error = true;
+		ReleaseMutex(myMutex);
 		return;
 	}
 
-	// load piece data into mother class
+	// load piece data into mother class if all went well
 	this->pieceList = PieceList;
 
 	ReleaseMutex(myMutex);
@@ -249,7 +266,9 @@ int KnobPuzzle::SaveCalibrationSettings() {
 // Write the current KnobPuzzle calibration settings to the calibration file. THIS FUNCTION NEEDS TO BE REVAMPED TO CONSTRUCT NEW FILES WITHOUT TEMPLATE
 int KnobPuzzle::WriteSettingsToFile() {
 
+	// lock everything down to this thread
 	myMutex = CreateMutex(NULL, FALSE, (LPCWSTR) "Writing settings to File");
+	WaitForSingleObject(myMutex, INFINITE);
 
 	System::Diagnostics::Debug::WriteLine("Saving calibration settings to file");
 	Console::WriteLine("KnobPuzzle::WriteSettingsToFile(): Saving calibration settings to file");
@@ -257,6 +276,7 @@ int KnobPuzzle::WriteSettingsToFile() {
 
 	// Find default code file to use as template for changes
 	System::String^ inputFile = getDefaultInputPath(this->getName());
+
 	// if default code file is missing, use calibrated as template instead
 	if (!System::IO::File::Exists(inputFile)) {
 		System::Windows::Forms::MessageBox::Show("KnobPuzzle::WriteSettingsToFile(): Warning - can't find default input file.");
@@ -264,6 +284,7 @@ int KnobPuzzle::WriteSettingsToFile() {
 		if (!System::IO::File::Exists(inputFile)) {
 			System::Windows::Forms::MessageBox::Show("KnobPuzzle::WriteSettingsToFile(): Could not find calibrated or default game file");
 			this->Error = true;
+			ReleaseMutex(myMutex);
 			return -1;
 		}
 	}
@@ -273,29 +294,18 @@ int KnobPuzzle::WriteSettingsToFile() {
 	if (stringArray[0]->Equals("ERROR")) {
 		System::Windows::Forms::MessageBox::Show("KnobPuzzle::WriteSettingsToFile(): Could not load game file");
 		this->Error = true;
+		ReleaseMutex(myMutex);
 		return -1;
 	}
-	//	// get starting location of code segment
-	//int startIndex = getCodeLocation(stringArray, this->puzzleName);
-	//if (startIndex < 0 || startIndex > stringArray->Length) {
-	//	System::Windows::Forms::MessageBox::Show("Could not find game code in game file");
-	//	this->Error = true;
-	//	return -1;
-	//}
 
-	int startIndex = 0;
-	// get ending location of code segment
-	System::String^ line = stringArray[startIndex];
-	int endIndex = startIndex;
-	while(!line->Contains("----") && endIndex < stringArray->Length)
-	{
-		line = stringArray[endIndex++];
-	}
+	System::String^ line = "";
 
 	System::Diagnostics::Debug::WriteLine("Constructing new file strings");
 	Console::WriteLine("Constructing new file strings");
 	int puzzlePieceIndex = 0;
-	for (int i = startIndex; i < endIndex ; i++) {
+
+	// loop through pieces and write them out
+	for (int i = 0; i < stringArray->Length ; i++) {
 		line = stringArray[i];
 		//if original line does not begin with LOC , then continue to next line
 		if (line->Length < 4 || !line->Substring(0,4)->Equals("LOC ")) {continue;}
@@ -306,13 +316,19 @@ int KnobPuzzle::WriteSettingsToFile() {
 		int ydest = currentPiece->getYDest();
 		List<int>^ HSVmin = currentPiece->getHSVmin();
 		List<int>^ HSVmax = currentPiece->getHSVmax();
+		int Hmin = HSVmin[0];
+		int Smin = HSVmin[1];
+		int Vmin = HSVmin[2];
+		int Hmax = HSVmax[0];
+		int Smax = HSVmax[1];
+		int Vmax = HSVmax[2];
 		int shapePointX = currentPiece->getShapePointX();
 		int shapePointY = currentPiece->getShapePointY();
 		System::String^ name = currentPiece->getName();
 
 		// cat puzzle piece information together into a single line in the proper format
-		System::String^ constructor = "LOC " + xdest + " " + ydest + " COLOR " + HSVmin[0] + " " + HSVmin[1] + " " + HSVmax[2] 
-								 + " " + HSVmax[0] + " " + HSVmax[1] + " " + HSVmax[2] + " " + name + " " + shapePointX  + " " + shapePointY;
+		System::String^ constructor = "LOC " + xdest + " " + ydest + " COLOR " + Hmin + " " + Smin + " " + Vmin
+								 + " " + Hmax + " " + Smax + " " + Vmax + " " + name + " " + shapePointX  + " " + shapePointY;
 		if (name->Equals("Circle")) {
 			constructor = constructor  + " " + currentPiece->getShapeRadius();
 		}
@@ -332,23 +348,27 @@ int KnobPuzzle::WriteSettingsToFile() {
 		// go to next puzzle piece
 		puzzlePieceIndex++;
 	}
-
+	// write out final string array to calibrated file
 	writeStringArrayToFile(stringArray, getCalibratedInputPath(this->getName()));
-	//System::Diagnostics::Debug::WriteLine("NEW FILE NOWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW");
-	//// print out whole string array to check
-	//for (int i = 0; i < stringArray->Length ; i++) {
-	//	System::Diagnostics::Debug::WriteLine(stringArray[i]);
 
-	//}
-
+	// unlock thread
 	ReleaseMutex(myMutex);
 
 	return success;
 }
 
 //----------------------------------------------------------------------------------------------------------
-// Check if the puzzle has been initialized and has pieces. THIS NEEDS TO BE MORE COMPREHENSIVE
+// Check if the puzzle has been initialized and has pieces, and matches the code we think it should be playing. THIS NEEDS TO BE MORE COMPREHENSIVE
 bool KnobPuzzle::checkIsInitialized(System::String^ code) {
+	// check for errors or no pieces, and make sure name matches
 	if (!this->Error && this->pieceList->Count > 0 && this->puzzleName->Equals(code)) { return true; }
+	else { return false; }
+}
+
+//----------------------------------------------------------------------------------------------------------
+// Check if the puzzle has been initialized and has pieces. THIS NEEDS TO BE MORE COMPREHENSIVE
+bool KnobPuzzle::checkIsInitialized() {
+	// see if the error is set or if there is 0 pieces (bad)
+	if (!this->Error && this->pieceList->Count > 0) { return true; }
 	else { return false; }
 }

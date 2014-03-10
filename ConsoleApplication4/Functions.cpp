@@ -10,24 +10,25 @@ using namespace cv;
 
 //----------------------------------------------------------------------------------------------------------
 
-// Start tracking via a RunTracking instance. Currently only designed for a KnobPuzzle game
-void initializeTracking(KnobPuzzle^ %Game, ScoreKeeping^ %ScoreKeeper)
+// Start tracking via a RunTracking instance, and then return the results of the game. Currently only designed for a KnobPuzzle game
+GamePlayed^ initializeTracking(KnobPuzzle^ %Game)
 {
-	// Initialize OpenCV running class (RunTracking) and load with handlevars class and puzzle
-    RunTracking* newTracker = new RunTracking();
-    newTracker->setGame(Game);
-    newTracker->Start();
+	GamePlayed^ gameResults = gcnew GamePlayed();
+	// Initialize OpenCV running class (RunTracking) and load with puzzle
+	{
+		RunTracking* newTracker = new RunTracking();
+		newTracker->setGame(Game);
+		newTracker->Start();
 
-    // Once game is over, pull the game results
-	GamePlayed^ gameResults = newTracker->returnScore();
+		// Once game is over, pull the game results
+		gameResults = newTracker->returnScore();
 
-	// add game results to main scorekeeper instance. Show game results.
-	ScoreKeeper->AddNewGame(gameResults);
-	System::String^ results = gameResults->printData();	
-	MessageBox::Show(results);
-	delete newTracker;
-
-	return;
+		// add game results to main scorekeeper instance. Show game results.
+		System::String^ results = gameResults->printData();	
+		MessageBox::Show(results);
+		delete newTracker;
+	}
+	return gameResults;
 }
 //----------------------------------------------------------------------------------------------------------
 
@@ -188,6 +189,8 @@ std::string systemStringToStdString(System::String^ str)
 }
 
 //----------------------------------------------------------------------------------------------------------
+
+// take average of a list of ints. If no integers given, will return 0
 double averageListOfInts(List<int>^ inputList) {
 	double sum = 0;
 	for each (int num in inputList) {
