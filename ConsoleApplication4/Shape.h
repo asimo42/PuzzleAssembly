@@ -44,9 +44,12 @@ public:
         //THIS IS NOT DELETE SHAPE; it delets all images and leaves image black 
         inline void Clear_To_Black() {*image = Mat::zeros(SCREEN_HEIGHT, SCREEN_WIDTH, CV_8UC3);}
         inline void set_color(Scalar new_color) {color = new_color;}
+		inline void set_startingPoint(Point strt) {startingPoint = strt;}
+		inline void set_height(int num) {height = num;}
+		inline void set_width(int num) {width = num;}
 
         //-----Drawing Functions------
-		void Draw_Shape(TrackedPiece piece);
+		void Draw_Shape(TrackedPiece piece, int dim_factor);
         void Draw_Circle(Point middle, int radius, int thickness = 1, int lineType = 8);
         void Draw_Rectangle(Point corner, int wid, int heig, int thinkness = 1, int lineType = 8);
         void Draw_Square(Point corner, int wid, int thickness = 1, int lineType = 8);

@@ -199,6 +199,12 @@ void RunTracking::drawPuzzleBoard(Mat &image)
 	//Shape shapes(&image);
 	shapes.setImage(&image);
 	shapes.Clear_To_Black();	// Must clear to black first, otherwise get exception
+	for (unsigned int i = 0; i < pieces.size(); i++)
+	{
+		shapes.Draw_Shape(pieces[i], 1);
+	}
+	
+	/*
 	// Magic numbers below are coordinates from trail and error on 1280x1024 screen
 	shapes.setColor(Scalar(0, 0, 255));
 	shapes.Draw_Circle(Point(383, 244), 125, -1);
@@ -210,6 +216,7 @@ void RunTracking::drawPuzzleBoard(Mat &image)
 	shapes.Draw_Rectangle(Point(483, 634), 287, 175, -1);
 	shapes.setColor(Scalar(0, 255, 255));
 	shapes.Draw_Pentagon(Point(1056, 585), 173, -1);
+	*/
 }
 //----------------------------------------------------------------------------------------------------------
 
