@@ -17,10 +17,10 @@ using namespace System::Diagnostics;
 void RunTracking::Test1() {
 	MessageBox::Show("RUNNING TEST 1: 1 second between each piece placement.");
 	int placeTime;
-	for each (PuzzlePiece^ piece in this->ScoreKeep->getGame()->getPieceList())
+	for each (PuzzlePiece^ piece in this->Game->getPieceList())
 	{
-		placeTime = getElapsedSeconds(this->ScoreKeep->timeStarted->Ticks);
-		piece->setTimePlaced(placeTime);
+		placeTime = getElapsedSeconds(this->gameRecord->getTimeStarted()->Ticks);
+		piece->setTimePlacedToNow();
 		Debug::WriteLine("time is " + placeTime);
 		System::Threading::Thread::Sleep(1*1000); // wait for 1 second (1000 ms)
 	}
@@ -40,17 +40,17 @@ void RunTracking::Test2() {
 
 	// fill in all the times with junk
 	int placeTime;
-	for each (PuzzlePiece^ piece in this->ScoreKeep->getGame()->getPieceList())
+	for each (PuzzlePiece^ piece in this->Game->getPieceList())
 	{
-		placeTime = getElapsedSeconds(this->ScoreKeep->timeStarted->Ticks);
-		piece->setTimePlaced(placeTime);
+		placeTime = getElapsedSeconds(this->gameRecord->getTimeStarted()->Ticks);
+		piece->setTimePlacedToNow();
 		Debug::WriteLine("time is " + placeTime);
 		System::Threading::Thread::Sleep(1); // wait for 1 ms
 	}
 
-	for each (PuzzlePiece^ piece in this->ScoreKeep->getGame()->getPieceList()) {
+	for each (PuzzlePiece^ piece in this->Game->getPieceList()) {
 		if (piece->getName()->Equals(stdStringToSystemString(yellow_pentagon.getName()))) {
-			piece->setTimePlaced(600);
+			piece->setTimePlacedToNow();
 			Debug::WriteLine("Pentagon placed at 600 s ");
 		}
 	}

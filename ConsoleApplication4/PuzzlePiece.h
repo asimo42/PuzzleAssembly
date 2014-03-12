@@ -28,7 +28,7 @@ private:
 
 public:
 
-	int timePlaced;
+	DateTime timePlaced;
 	System::String^ name;
 
 	PuzzlePiece(void);
@@ -40,8 +40,8 @@ public:
 
 	// Get and Set Timing/Gameplay Data
 
-	void setTimePlaced(int tim) {timePlaced = tim;} 
-	int getTimePlaced() { return timePlaced; }
+	void setTimePlacedToNow();
+	DateTime getTimePlaced() { return timePlaced; }
 
 
 	// Get and Set Tracking Data

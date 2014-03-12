@@ -8,41 +8,59 @@ using namespace System;
 using namespace System::Collections::Generic;
 
 
-// Keeps stats of a single game
+// Keeps stats of a single game. Can only be compiled once, then becomes essentially read-only
 ref class GamePlayed
 {
 public:
-
-	int timeForCompletion;
-	double avgTimeBetweenPieces;
-	DateTime^ timeStarted; // datetime object with time that the puzzle was started
-	List<int>^ timesOfPlacement; // must calculate this manually from puzzle
-	List<System::String^>^ orderOfPiecesPlayed; // must calculate this manually
 
 	GamePlayed();
 	~GamePlayed();
 	GamePlayed(KnobPuzzle^ Puzzle);
 
 	void setGame(KnobPuzzle^ Puzzle);
-	KnobPuzzle^ getGame() { return this->game; }
-	void setType(System::String^ type) {this->gameType = type;}
-	System::String^ getType() { return this->gameType; }
-	void setTimeForCompletion(int newTime) {this->timeForCompletion = newTime; }
-	void compileData(); // pull information from puzzle pieces to fill arrays
-	System::String^ printData(); // create string with results from game
 
+	System::String^ getType() { return this->gameType; }
+
+	void setStartTimeToNow(); // tell GamePlayed to pull the current date/time to record as start time
+	void setTimeCompletedToNow(); // tell GamePlayed to pull the current date/time to record as end time
+
+	int getTimeForCompletion() { return this->timeForCompletion; }
+
+	double getAverageTimeBetweenPieces() { return this->avgTimeBetweenPieces; }
+	DateTime^ getTimeStarted() { return this->timeStarted; }
+	List<int>^ getTimesOfPlacement() { return this->timesOfPlacement; }
+	List<System::String^>^ getOrderOfPiecesPlayed() { return this->orderOfPiecesPlayed; }
+
+	int compileData(); // pull information from puzzle pieces to fill arrays. Can only do this once
+	System::String^ printData() {return "GamePlayed::printData() currently obsolete";}
 private:
-	System::String^ gameType;
+
 	KnobPuzzle^ game;
+	System::String^ gameType;
+	bool ALREADY_COMPILED;
+
+	DateTime timeStarted; // datetime object with time that the puzzle was started
+	DateTime timeCompleted; // datetime object with time that the puzzle was ended
+
+	int timeForCompletion;
+	double avgTimeBetweenPieces;
+
+	// please note that these three arrays are like a separated dictionary - 
+	// each entry in OrderOfPiecesPlayed should correspond to the matching index in the other two arrays. 
+	// BE VERY CAREFUL WITH THIS
+	List<int>^ timesOfPlacement; // actual times of placement (minus start time) in seconds
+	List<int>^ timeBetweenPlacements; // time it took to place each piece in seconds
+	List<System::String^>^ orderOfPiecesPlayed; // names of pieces, from first placed to last placed
 
 	void Initialize();
-	void CalcAvgTimeBetweenPieces();   // called by compileData
-	void findOrderOfPieces();          // called by compileData
-	void findSortedTimes();            // called by compileData
 };
 
 
+//----------------------------------------------------------------------------------------------------------//-------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------//--------------------------------------------------------------------------------------
+
 // Keeps running stats of the whole session ( >= 1 game) or possibly over multiple sessions (future addition)
+// Stores data via GamePlayed^ objects
 ref class ScoreKeeping 
 {
 public:

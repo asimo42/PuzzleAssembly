@@ -34,7 +34,7 @@ class RunTracking
         virtual void Initialize();
         virtual void Start();
         virtual void Stop() { STOP = true; }
-        virtual void setGame(KnobPuzzle^ game) {this->Game = game; this->ScoreKeep->setGame(game);}
+        virtual void setGame(KnobPuzzle^ game) {this->Game = game; this->gameRecord->setGame(game);}
         gcroot<GamePlayed^> returnScore();
 
 
@@ -42,8 +42,8 @@ protected:
 
         bool STOP;
 		Shape shapes;
-        // when openCV is terminated (gameover), this instance of GamePlayed will be added to the overall ScoreKeeping class for the gui
-        gcroot<GamePlayed^> ScoreKeep;
+        // when openCV is terminated (gameover), this instance of GamePlayed will be added to the overall scorekeeping class for the gui
+        gcroot<GamePlayed^> gameRecord;
         
         virtual int startTrack();
         virtual void endTrack();

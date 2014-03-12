@@ -235,6 +235,14 @@ double getElapsedSeconds(long startTime) {
 	TimeSpan^ elapsed = gcnew TimeSpan(placeTime);
 	return elapsed->TotalSeconds;
 }
+
+//----------------------------------------------------------------------------------------------------------
+
+// get elapsed seconds between two DateTimes
+int secondsBetweenTwoDateTimes(DateTime time1, DateTime time2) {
+	TimeSpan span = time1.Subtract(time2);
+	return span.Seconds;
+}
 //----------------------------------------------------------------------------------------------------------
 // Convert a managed PuzzlePiece to an unmanaged TrackedPiece
 TrackedPiece puzzlePieceToTrackedPiece(PuzzlePiece^ puzzlePiece) {
