@@ -34,27 +34,27 @@ void Shape::endImage() {
 //------------Drawing Methods------------
 
 // Pick which shape to draw
-void Shape::Draw_Shape(TrackedPiece piece, int dim_factor)
+void Shape::Draw_Shape(TrackedPiece piece, double dim_factor)
 {
 	std::string shapeType = piece.getName();
 	if (shapeType == "Circle") {
-		setColor(Scalar(0, 0, 255/dim_factor));
+		setColor(Scalar(0, 0, 255 * dim_factor));
 		Draw_Circle(Point(piece.getShapePointX(),piece.getShapePointY()), piece.getShapeRadius(), -1);
 	}
 	else if (shapeType == "Rectangle") {
-		setColor(Scalar(0, 255/dim_factor, 0));
+		setColor(Scalar(0, 255 * dim_factor, 0));
 		Draw_Rectangle(Point(piece.getShapePointX(),piece.getShapePointY()), piece.getShapeWidth(),piece.getShapeHeight(), -1);
 	}
 	else if (shapeType == "Square") {
-		setColor(Scalar(255/dim_factor, 0, 0));
+		setColor(Scalar(255 * dim_factor, 0, 0));
 		Draw_Square(Point(piece.getShapePointX(),piece.getShapePointY()), piece.getShapeWidth(), -1);
 	}
 	else if (shapeType == "Triangle") {
-		setColor(Scalar(255/dim_factor, 0, 255/dim_factor));
+		setColor(Scalar(255 * dim_factor, 0, 255 * dim_factor));
 		Draw_Triangle(Point(piece.getShapePointX(),piece.getShapePointY()), piece.getShapeLength(), -1);
 	}
 	else if (shapeType == "Pentagon") {
-		setColor(Scalar(0, 255/dim_factor, 255/dim_factor));
+		setColor(Scalar(0, 255 * dim_factor, 255 * dim_factor));
 		Draw_Pentagon(Point(piece.getShapePointX(),piece.getShapePointY()), piece.getShapeLength(), -1);
 	}
 	else { 

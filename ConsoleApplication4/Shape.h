@@ -49,7 +49,7 @@ public:
 		inline void set_width(int num) {width = num;}
 
         //-----Drawing Functions------
-		void Draw_Shape(TrackedPiece piece, int dim_factor);
+		void Draw_Shape(TrackedPiece piece, double dim_factor);
         void Draw_Circle(Point middle, int radius, int thickness = 1, int lineType = 8);
         void Draw_Rectangle(Point corner, int wid, int heig, int thinkness = 1, int lineType = 8);
         void Draw_Square(Point corner, int wid, int thickness = 1, int lineType = 8);

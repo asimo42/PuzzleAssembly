@@ -203,20 +203,6 @@ void RunTracking::drawPuzzleBoard(Mat &image)
 	{
 		shapes.Draw_Shape(pieces[i], 1);
 	}
-	
-	/*
-	// Magic numbers below are coordinates from trail and error on 1280x1024 screen
-	shapes.setColor(Scalar(0, 0, 255));
-	shapes.Draw_Circle(Point(383, 244), 125, -1);
-	shapes.setColor(Scalar(255, 0, 0));
-	shapes.Draw_Square(Point(748, 128), 238, -1);
-	shapes.setColor(Scalar(255, 0, 255));
-	shapes.Draw_Triangle(Point(220, 600), 266, -1);
-	shapes.setColor(Scalar(0, 255, 0));
-	shapes.Draw_Rectangle(Point(483, 634), 287, 175, -1);
-	shapes.setColor(Scalar(0, 255, 255));
-	shapes.Draw_Pentagon(Point(1056, 585), 173, -1);
-	*/
 }
 //----------------------------------------------------------------------------------------------------------
 
@@ -246,23 +232,31 @@ VOID CALLBACK timerTick(  _In_  HWND hwnd, _In_  UINT uMsg, _In_  UINT_PTR idEve
 
 		//Depending of the status returned above, this will change 
 		//if all the other pieces are turned off, turned on, etc...
-		if (status == 1)
+		if (status == 1 || status == 0)
 		{
 			for(int j = 0; j < pieces.size(); j++)
 				if (i != j)
-					pieces[j].setTurnOff(false);
+				{
+					pieces[j].clearStatus();
+				}
 		}
 		else if (status == 2)
 		{
 			for(int j = 0; j < pieces.size(); j++)
 				if (i != j)
+				{
+					pieces[j].clearStatus();
 					pieces[j].setDimmed(true);
+				}
 		}
 		else if (status == 3)
 		{
 			for(int j = 0; j < pieces.size(); j++)
 				if (i != j)
+				{
+					pieces[j].clearStatus();
 					pieces[j].setTurnOff(true);
+				}
 		}
 	}
 
