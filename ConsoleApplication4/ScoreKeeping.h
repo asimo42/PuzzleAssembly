@@ -42,7 +42,7 @@ private:
 	DateTime timeStarted; // datetime object with time that the puzzle was started
 	DateTime timeCompleted; // datetime object with time that the puzzle was ended
 
-	int timeForCompletion;
+	int timeForCompletion; // time between start and end of game in seconds
 	double avgTimeBetweenPieces;
 
 	// please note that these three arrays are like a separated dictionary - 

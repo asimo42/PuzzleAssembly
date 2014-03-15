@@ -305,9 +305,6 @@ VOID CALLBACK RunTracking::static_timerTick(  _In_  HWND hwnd, _In_  UINT uMsg, 
 int RunTracking::startTrack()
 {
 
-//http://stackoverflow.com/questions/11420748/setting-camera-parameters-in-opencv-python
-
-
 	// set timer to periodically check piece movement
 	UINT timer_ms = 500;
 	HWND hwnd1 = NULL;

@@ -240,7 +240,7 @@ double getElapsedSeconds(long startTime) {
 
 // get elapsed seconds between two DateTimes
 int secondsBetweenTwoDateTimes(DateTime time1, DateTime time2) {
-	TimeSpan span = time1.Subtract(time2);
+	TimeSpan span = time2.Subtract(time1);
 	return span.Seconds;
 }
 //----------------------------------------------------------------------------------------------------------

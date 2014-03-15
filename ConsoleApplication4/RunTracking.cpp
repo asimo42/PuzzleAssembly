@@ -40,8 +40,8 @@ void RunTracking::Initialize() {
 		this->gameRecord = gcnew GamePlayed();
 		this->gameRecord->setStartTimeToNow();
 
-		// set up the start time to now. All scores will be measured against this start time
-		DateTime tim = DateTime::Now;
+		//// set up the start time to now. All scores will be measured against this start time
+		//DateTime tim = DateTime::Now;
 
 
 		this->STOP = false;

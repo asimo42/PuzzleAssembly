@@ -16,7 +16,6 @@ void GamePlayed::Initialize()
 	this->gameType = "Unknown";
 	this->timesOfPlacement = gcnew List<int>();
 	this->orderOfPiecesPlayed = gcnew List<System::String^>();
-	//this->timeStarted = nullptr;
 	this->avgTimeBetweenPieces = 0;
 	this->timeForCompletion = 0;
 	this->game = gcnew KnobPuzzle();
@@ -76,11 +75,16 @@ int GamePlayed::compileData()
 		Console::WriteLine("GamePlayed.cpp::compileData():: Error - tried to recompile GamePlayed Data");
 		return -1;
 	}
+	// make sure the knobpuzzle was initialized 
 	if (!this->game->checkIsInitialized()) {
 		Console::WriteLine("GamePlayed.cpp::compileData():: Error - KnobPuzzle was never initialized in this GamePlayed instance.");
 		return -1;
 	}
 	// check if the start time was successfully recorded
+	if (this->timeStarted.Equals(DateTime::MinValue)) {
+		Console::WriteLine("GamePlayed.cpp::compileData():: Error - Start time was never recorded for GamePlayed^ instance.");
+		return -1;
+	}
 
 	// calculate seconds it took to finish the game
 	this->timeForCompletion = secondsBetweenTwoDateTimes(this->timeStarted, this->timeCompleted);
@@ -89,45 +93,52 @@ int GamePlayed::compileData()
 	List<int>^ timesPlaced = gcnew List<int>();
 	Dictionary< System::String^, int >^ pieceDict= gcnew Dictionary< System::String^, int >();
 	int tim = 0;
+	Console::WriteLine("Compiling Data: showing the times that each piece was placed");
 	for each (PuzzlePiece^ piece in this->game->getPieceList()) {
-		tim = secondsBetweenTwoDateTimes(this->timeStarted, piece->getTimePlaced());
+		tim = secondsBetweenTwoDateTimes(this->timeStarted, piece->getTimePlaced()); // calc seconds between beginning of game and when piece was placed
+		Console::WriteLine(piece->getName() + "   : " + tim);
 		timesPlaced->Add(tim);
-		pieceDict->Add(piece->getName(),tim); 
+		pieceDict->Add(piece->getName(),tim); // add piece and time to dictionary (dictionary is for convenience for next step)
 	}
 
-	List<System::String^>^ sortedKeys = gcnew List<System::String^>(pieceDict->Count);
-	List<int>^ sortedVals = gcnew List<int>(pieceDict->Count);
+	// make two lists to hold sorted time values, and their corresponding piece names
+	List<System::String^>^ sortedKeys = gcnew List<System::String^>();
+	List<int>^ sortedVals = gcnew List<int>();
+
 	// sort times from smallest to largest
-	for (int i = 0; i <= pieceDict->Count; i++) {
+	for (int i = 0; i < timesPlaced->Count; i++) {
 		System::String^ minStr = "";
 		int minVal = 9999999;
+
+		// find smallest time entry in dictionary
 		for each (System::String^ key in pieceDict->Keys) {
 			if (pieceDict[key] < minVal) {
 				minStr = key;
 				minVal = pieceDict[key];
 			}
-
 		}
-		pieceDict->Remove(minStr);
+		pieceDict->Remove(minStr); // remove piece from dictionary so that it isn't rerecorded
 		sortedKeys->Add(minStr);
 		sortedVals->Add(minVal);
 	}
 	this->orderOfPiecesPlayed = sortedKeys;
 	this->timesOfPlacement = sortedVals;
 
+	// now use sorted values to make a 3rd list - the times between each piece and the one before it
 	List<int>^ timesBetweenPieces = gcnew List<int>();
 	int temp = 0;
 	for each (int tim in sortedVals) {
 		timesBetweenPieces->Add(tim - temp);
 		temp = tim;
 	}
-	// calculate average time taken between pieces
-	this->avgTimeBetweenPieces = averageListOfInts(timesBetweenPieces);
 	this->timeBetweenPlacements = timesBetweenPieces;
 
-	Console::WriteLine("TESTING THE SORTING MECHANISM FOR DICTIONARY");
-	for (int i = 0; i <= pieceDict->Count; i++) {
-		Console::WriteLine(sortedKeys[i] + "   " + sortedVals[i]);
+	// calculate average time taken between pieces
+	this->avgTimeBetweenPieces = averageListOfInts(timesBetweenPieces);
+
+	Console::WriteLine("Testing the sorted data:");
+	for (int i = 0; i < sortedKeys->Count; i++) {
+		Console::WriteLine(sortedKeys[i] + "   " + sortedVals[i] + "   time between placement: " + timeBetweenPlacements[i]);
 	}
 	// set 'already compiled' to true, so that data can never be compiled again.
 	ALREADY_COMPILED = true;

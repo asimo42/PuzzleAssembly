@@ -17,15 +17,28 @@ using namespace System::Diagnostics;
 void RunTracking::Test1() {
 	MessageBox::Show("RUNNING TEST 1: 1 second between each piece placement.");
 	int placeTime;
-	for each (PuzzlePiece^ piece in this->Game->getPieceList())
-	{
-		placeTime = getElapsedSeconds(this->gameRecord->getTimeStarted()->Ticks);
-		piece->setTimePlacedToNow();
-		Debug::WriteLine("time is " + placeTime);
+	//for each (PuzzlePiece^ piece in this->Game->getPieceList())
+	//{
+	//	placeTime = getElapsedSeconds(this->gameRecord->getTimeStarted()->Ticks);
+	//	piece->setTimePlacedToNow();
+	//	Debug::WriteLine("time is " + placeTime);
+	//	System::Threading::Thread::Sleep(1*1000); // wait for 1 second (1000 ms)
+	//}
+
+	// put down pieces in reverse order
+	for (int i = this->Game->getPieceList()->Count -1; i >= 0; i--) {
 		System::Threading::Thread::Sleep(1*1000); // wait for 1 second (1000 ms)
+		this->Game->getPieceList()[i]->setTimePlacedToNow();
 	}
 
-	this->Stop();
+	// now reset the time placed of the third piece, and then the second piece
+	//System::Threading::Thread::Sleep(3*1000); // wait for 1 second (1000 ms)
+	//this->Game->getPieceList()[2]->setTimePlacedToNow();
+	//System::Threading::Thread::Sleep(3*1000); // wait for 1 second (1000 ms)
+
+
+	this->endTrack();
+
 }
 
 //----------------------------------------------------------------------------------------------------------

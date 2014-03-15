@@ -6,6 +6,9 @@
 #include <stdlib.h>
 #include  <stdio.h>
 #include <vcclr.h>
+#include <opencv2\opencv.hpp>	//includes all OpenCV headers
+#include "Shape.h"
+
 #include "Functions.h"
 #include "ColorCalibrationForm.h"
 #include "CalibrationTracking.h"
@@ -225,6 +228,25 @@ namespace ConsoleApplication4 {
  					 this->calibratingColors = false;
 					 this->waitingToPlacePieces = true;
 
+
+					Mat puzzle_board;
+					Shape shapes(&puzzle_board);
+					shapes.setImage(&puzzle_board);
+					shapes.Clear_To_Black();	// Must clear to black first, otherwise get exception
+					// Magic numbers below are coordinates from trail and error on 1280x1024 screen
+					shapes.setColor(Scalar(0, 0, 255));
+					shapes.Draw_Circle(cv::Point(383, 244), 125, -1);
+					shapes.setColor(cv::Scalar(255, 0, 0));
+					shapes.Draw_Square(cv::Point(748, 128), 238, -1);
+					shapes.setColor(Scalar(255, 0, 255));
+					shapes.Draw_Triangle(cv::Point(220, 600), 266, -1);
+					shapes.setColor(Scalar(0, 255, 0));
+					shapes.Draw_Rectangle(cv::Point(483, 634), 287, 175, -1);
+					shapes.setColor(Scalar(0, 255, 255));
+					shapes.Draw_Pentagon(cv::Point(1056, 585), 173, -1);
+					imshow("game board", puzzle_board);
+
+
 					//re enable the next button
 					this->calibNextButton->Enabled = true;
 					return;
@@ -232,6 +254,8 @@ namespace ConsoleApplication4 {
 
 				 // if we are currently waiting for the user to place pieces, and the user clicks the next button, then start to calibrate locations:
 				 if (this->waitingToPlacePieces) {
+
+					 destroyAllWindows();
 					 // change instructions from 'please place pieces' to 'please wait for locations to be calibrated'
 					 this->placePiecesLabel->Visible = false; 
 					 this->pleaseWaitLabel->Visible = true;
