@@ -65,21 +65,21 @@ int TrackedPiece::checkForMovement(bool justMoved)
 	int numTrues = count(movementHistory.begin(), movementHistory.end(), true);
 	//cout << "Num trues " << name << ": " << numTrues << endl;
 
-	if (numTrues >= 7)
+	if (numTrues >= 8)
 	{
 		//clearStatus();
 		cout << name << " **TURN OFF**" << endl;
 		flashing = true;
 		return 3;
 	}
-	else if (numTrues >= 6)
+	else if (numTrues >= 3)
 	{
 		//clearStatus();
 		cout << name << " **DIM**" << endl;
 		flashing = true;
 		return 2;
 	}
-	else if(numTrues >= 4 )
+	else if(numTrues >= 2 )
 	{
 		//clearStatus();
 		cout << name << " piece being placed." << endl;
@@ -100,42 +100,13 @@ void TrackedPiece::toggle(Mat &image)
 	Shape shapes(&image);
 	if(isOn())
 	{
-		//turn off
-		if(name == "Circle")
-		{
-			shapes.setColor(Scalar(0, 0, 0));
-			shapes.Draw_Circle(Point(383, 244), 125, -1);
-		} 
-		else if(name == "Rectangle")
-		{
-			shapes.setColor(Scalar(0, 0, 0));
-			shapes.Draw_Rectangle(Point(483, 634), 287, 175, -1);
-		}
-		else if (name == "Pentagon")
-		{
-			shapes.setColor(Scalar(0, 0, 0));
-			shapes.Draw_Pentagon(Point(1056, 585), 173, -1);
-		}
+		shapes.Draw_Shape(*this, 0);
 		on = false;
 	}
 	else
 	{
 		// turn on
-		if(name == "Circle")
-		{
-			shapes.setColor(Scalar(0, 0, 255));
-			shapes.Draw_Circle(Point(383, 244), 125, -1);
-		} 
-		else if(name == "Rectangle")
-		{
-			shapes.setColor(Scalar(0, 255, 0));
-			shapes.Draw_Rectangle(Point(483, 634), 287, 175, -1);
-		}
-		else if (name == "Pentagon")
-		{
-			shapes.setColor(Scalar(0, 255, 255));
-			shapes.Draw_Pentagon(Point(1056, 585), 173, -1);
-		}
+		shapes.Draw_Shape(*this, 1);
 		on = true;
 	}
 	imshow("Puzzle Board Window", image);
@@ -146,22 +117,7 @@ void TrackedPiece::turnOff(Mat &image)
 	Shape shapes(&image);
 	if(isOn())
 	{
-		//turn off
-		if(name == "Circle")
-		{
-			shapes.setColor(Scalar(0, 0, 0));
-			shapes.Draw_Circle(Point(383, 244), 125, -1);
-		} 
-		else if(name == "Rectangle")
-		{
-			shapes.setColor(Scalar(0, 0, 0));
-			shapes.Draw_Rectangle(Point(483, 634), 287, 175, -1);
-		}
-		else if (name == "Pentagon")
-		{
-			shapes.setColor(Scalar(0, 0, 0));
-			shapes.Draw_Pentagon(Point(1056, 585), 173, -1);
-		}
+		shapes.Draw_Shape(*this, 0);
 		on = false;
 	}
 	imshow("Puzzle Board Window", image);
@@ -172,22 +128,7 @@ void TrackedPiece::turnOn(Mat &image)
 	Shape shapes(&image);
 	if(!isOn())
 	{
-		// turn on
-		if(name == "Circle")
-		{
-			shapes.setColor(Scalar(0, 0, 255));
-			shapes.Draw_Circle(Point(383, 244), 125, -1);
-		} 
-		else if(name == "Rectangle")
-		{
-			shapes.setColor(Scalar(0, 255, 0));
-			shapes.Draw_Rectangle(Point(483, 634), 287, 175, -1);
-		}
-		else if (name == "Pentagon")
-		{
-			shapes.setColor(Scalar(0, 255, 255));
-			shapes.Draw_Pentagon(Point(1056, 585), 173, -1);
-		}
+		shapes.Draw_Shape(*this, 1);
 		on = true;
 	}
 	imshow("Puzzle Board Window", image);
@@ -196,26 +137,8 @@ void TrackedPiece::turnOn(Mat &image)
 void TrackedPiece::dim(Mat &image)
 {
 	Shape shapes(&image);
-	if(!isDimmed())
-	{
-		// dim
-		if(name == "Circle")
-		{
-			shapes.setColor(Scalar(0, 0, 125));
-			shapes.Draw_Circle(Point(383, 244), 125, -1);
-		} 
-		else if(name == "Rectangle")
-		{
-			shapes.setColor(Scalar(0, 125, 0));
-			shapes.Draw_Rectangle(Point(483, 634), 287, 175, -1);
-		}
-		else if (name == "Pentagon")
-		{
-			shapes.setColor(Scalar(0, 125, 125));
-			shapes.Draw_Pentagon(Point(1056, 585), 173, -1);
-		}
-		on = true;
-	}
+	shapes.Draw_Shape(*this, 0.35);
+	on = false;
 	imshow("Puzzle Board Window", image);
 }
 
