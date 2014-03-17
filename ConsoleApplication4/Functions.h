@@ -17,7 +17,7 @@ using namespace System::Collections::Generic;
 // Define any constants that will be repeated or that may be changed. EX) int x = Constants::CONSTANT_X
 ref class Constants {
 public:
-	static const int TESTNUMBER = 1;	// chose a test number to run. 0 = not a test
+	static const int TESTNUMBER = 0;	// chose a test number to run. 0 = not a test
 
 	//OPENCV related defaults ---
 
