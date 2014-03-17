@@ -6,6 +6,9 @@
 #include <stdlib.h>
 #include  <stdio.h>
 #include <vcclr.h>
+#include <opencv2\opencv.hpp>	//includes all OpenCV headers
+#include "Shape.h"
+
 #include "Functions.h"
 #include "ColorCalibrationForm.h"
 #include "CalibrationTracking.h"
@@ -186,6 +189,7 @@ namespace ConsoleApplication4 {
 
 				 if (this->puzzle->getPieceList()->Count <= 0) {
 					 System::Windows::Forms::MessageBox::Show("Error: cannot find puzzle piece information. Please check game ID and try again");
+					 Console::WriteLine("CalibrationMainPrompt.h::calibNextButton_Click() : Error- puzzle has no pieces. Exiting calibration");
 					 this->DialogResult = System::Windows::Forms::DialogResult::Cancel;
 					 this->Close();
 					 return;
@@ -194,63 +198,100 @@ namespace ConsoleApplication4 {
 				 // disable the next button
 				 this->calibNextButton->Enabled = false;
 
-				 // if we are in the color stage, show appropriate prompt
+				 // if we are currently in the color stage, do the following
 				 if (this->calibratingColors) {
 
-					 //CalibrationTracking^ locationTracker = gcnew CalibrationTracking();
-					 //locationTracker->setGame(this->puzzle);
-					 //locationTracker->startLocationCalibration();
-					 //return;
-
-
+					 // make the main calibration form invisible
 					 this->Visible = false;
-					 // launch a new color calibration form
-					 //ConsoleApplication4::ColorCalibrationForm^ colorForm = gcnew ConsoleApplication4::ColorCalibrationForm();
-					 //pass puzzle class over to color form
+
+					 //pass puzzle class over to color form, launch it, and wait for it to return a dialogresult
 					 this->colorForm->puzzle = this->puzzle;
-					 if (this->colorForm->ShowDialog() == System::Windows::Forms::DialogResult::OK) {
+					 System::Windows::Forms::DialogResult dialogResult = colorForm->ShowDialog(); 
+					 if (dialogResult == System::Windows::Forms::DialogResult::OK) {
+						 Console::WriteLine("CalibrationMainPrompt.h::calibNextButton_Click() : colorFrom returned dialogue result OK");
+						 delete colorForm;
+					 }
+					 else if (dialogResult == System::Windows::Forms::DialogResult::Cancel) {
+						 Console::WriteLine("CalibrationMainPrompt.h::calibNextButton_Click() : colorFrom returned dialogue result Cancel");
+						 delete colorForm;
+						 this->Close(); // cancel calibration; close form. This will result in DialogResult::Cancel
 					 }
 
-					 // make this form visible again, then now switch to placing pieces
+					 // make this form visible again
 					 this->Visible = true;
+
+					 // switch text from 'startcolors' to 'please place pieces on board'
 					 this->startColorsText->Visible = false;
- 					 this->calibratingColors = false;
-					 // instruct user to place pieces
 					 this->placePiecesLabel->Visible = true;
+
+					 // change current status from 'calibrating colors' to 'waiting for user to place pieces'
+ 					 this->calibratingColors = false;
 					 this->waitingToPlacePieces = true;
+
+
+					Mat puzzle_board;
+					Shape shapes(&puzzle_board);
+					shapes.setImage(&puzzle_board);
+					shapes.Clear_To_Black();	// Must clear to black first, otherwise get exception
+					// Magic numbers below are coordinates from trail and error on 1280x1024 screen
+					shapes.setColor(Scalar(0, 0, 255));
+					shapes.Draw_Circle(cv::Point(383, 244), 125, -1);
+					shapes.setColor(cv::Scalar(255, 0, 0));
+					shapes.Draw_Square(cv::Point(748, 128), 238, -1);
+					shapes.setColor(Scalar(255, 0, 255));
+					shapes.Draw_Triangle(cv::Point(220, 600), 266, -1);
+					shapes.setColor(Scalar(0, 255, 0));
+					shapes.Draw_Rectangle(cv::Point(483, 634), 287, 175, -1);
+					shapes.setColor(Scalar(0, 255, 255));
+					shapes.Draw_Pentagon(cv::Point(1056, 585), 173, -1);
+					imshow("game board", puzzle_board);
+
+
 					//re enable the next button
 					this->calibNextButton->Enabled = true;
 					return;
 				 }
 
-				 // if waiting for the user to place pieces, and then the user clicks the next button:
+				 // if we are currently waiting for the user to place pieces, and the user clicks the next button, then start to calibrate locations:
 				 if (this->waitingToPlacePieces) {
-					 this->waitingToPlacePieces = false; // stop waiting for pieces, remove instructions to do so
-					 this->placePiecesLabel->Visible = false;
-					 this->pleaseWaitLabel->Visible = true;  // instruct user to wait for the system to calibrate
-					 this->calibratingLocations = true;  //set system to calibration
-				 }
 
-				 // if we are in the calibrating location stage, do the following
-				 if (this->calibratingLocations) {
+					 destroyAllWindows();
+					 // change instructions from 'please place pieces' to 'please wait for locations to be calibrated'
+					 this->placePiecesLabel->Visible = false; 
+					 this->pleaseWaitLabel->Visible = true;
+
+					 // change current status from 'waiting for user to place pieces' to 'calibrating locations'
+ 					 this->waitingToPlacePieces = false; 
+					 this->calibratingLocations = true; 
+
+					 // set up a new CalibrationTracking^, pass it our puzzle, and ask it to find the locations
 					 CalibrationTracking^ locationTracker = gcnew CalibrationTracking();
 					 locationTracker->setGame(this->puzzle);
 					 locationTracker->startLocationCalibration();
 
-					 // start finding locations
+					 // here the user waits while it calibrates location
 
-					 // this is the last stage, so set dialog result to OK to leave calibration
+					 // this was the last step, so set dialog result to OK to leave calibration
 					 this->DialogResult = System::Windows::Forms::DialogResult::OK;
-
+					 this->Close();
+					 return;
 				 }
 
 				 //re enable the next button
 				 this->calibNextButton->Enabled = true;
 			 }
 
+
+
 // If this form is closed prematurely, close the spawned ColorCalibrationForm, which should stop any threads running there. 
 private: System::Void CalibrationMainPrompt_FormClosing(System::Object^  sender, System::Windows::Forms::FormClosingEventArgs^  e) {
-			 this->colorForm->Close();
+			 if (this->colorForm->Enabled) {
+				 this->colorForm->Close();
+				 delete colorForm;
+			 }
+			 if (this->DialogResult != System::Windows::Forms::DialogResult::OK) {
+				this->DialogResult = System::Windows::Forms::DialogResult::Cancel;
+			 }
 		}
 };
 }

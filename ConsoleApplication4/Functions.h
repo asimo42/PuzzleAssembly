@@ -45,7 +45,7 @@ public:
 //--- FROM FUNCTIONS.CPP----
 
 // Starting OpenCV tracking
-void initializeTracking(KnobPuzzle^ %Game, ScoreKeeping^ %ScoreKeeper);
+GamePlayed^ initializeTracking(KnobPuzzle^ %Game);
 
 // Unmanaged <--> Managed Conversions
 List<int>^ scalarToList(cv::Scalar scalar);
@@ -67,6 +67,7 @@ std::string systemStringToStdString(System::String^ str);
 double getElapsedSeconds(long startTime);
 double averageListOfInts(List<int>^ inputList);
 //bool checkBools(bool val, ...);
+int secondsBetweenTwoDateTimes(DateTime time1, DateTime time2);
 
 
 // workaround hack to declare a thread as a global variable in a form

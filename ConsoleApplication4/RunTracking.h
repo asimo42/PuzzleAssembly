@@ -9,6 +9,11 @@ the Run button on the GUI
 #include <opencv2\opencv.hpp>        //includes all OpenCV headers
 #include "Shape.h"
 
+#define _CRTDBG_MAP_ALLOC
+
+// interesting example of wrapping: http://stackoverflow.com/questions/12701177/memory-leaks-in-c-cli-code-what-did-i-do-wrong
+// they wrap an opencv Mat
+// stuff on destructors: http://www.codeproject.com/Articles/7965/Deterministic-Destruction-in-C-CLI
 
 class RunTracking
 {
@@ -24,11 +29,12 @@ class RunTracking
 
 
 		RunTracking() { Initialize(); }
+		~RunTracking() {}
   
         virtual void Initialize();
         virtual void Start();
         virtual void Stop() { STOP = true; }
-        virtual void setGame(KnobPuzzle^ game) {this->Game = game; this->ScoreKeep->setGame(game);}
+        virtual void setGame(KnobPuzzle^ game) {this->Game = game; this->gameRecord->setGame(game);}
         gcroot<GamePlayed^> returnScore();
 
 
@@ -36,8 +42,8 @@ protected:
 
         bool STOP;
 		Shape shapes;
-        // when openCV is terminated (gameover), this instance of GamePlayed will be added to the overall ScoreKeeping class for the gui
-        gcroot<GamePlayed^> ScoreKeep;
+        // when openCV is terminated (gameover), this instance of GamePlayed will be added to the overall scorekeeping class for the gui
+        gcroot<GamePlayed^> gameRecord;
         
         virtual int startTrack();
         virtual void endTrack();

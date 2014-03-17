@@ -36,12 +36,13 @@ void RunTracking::Initialize() {
         this->V_min = Constants::DEFAULT_V_MIN;
         this->V_max = Constants::DEFAULT_V_MAX;
 
-		// initialize scorekeeping
-		this->ScoreKeep = gcnew GamePlayed();
+		// initialize gameRecording and set its start time to now
+		this->gameRecord = gcnew GamePlayed();
+		this->gameRecord->setStartTimeToNow();
 
-		// set up the start time to now. All scores will be measured against this start time
-		DateTime tim = DateTime::Now;
-		this->ScoreKeep->timeStarted = tim;
+		//// set up the start time to now. All scores will be measured against this start time
+		//DateTime tim = DateTime::Now;
+
 
 		this->STOP = false;
 }
@@ -71,19 +72,24 @@ void RunTracking::Start() {
 
 // end tracking, 'clean up' game.  this instance of the class will now end (though that might change in the future)
 void RunTracking::endTrack() {
+
+		// end openCV stuff
         System::Windows::Forms::MessageBox::Show("GAME OVER!");
 		System::Console::WriteLine("RunTracking::EndTrack() : Exiting RunTracking");
 		// destroy tracking windows
 		cv::destroyAllWindows();
-		// destroy puzzle board
-		this->shapes.endImage();
+
+		// compile record for game
+		this->gameRecord->setTimeCompletedToNow();
+		this->gameRecord->compileData();
+
 		return;
 }
 
 //----------------------------------------------------------------------------------------------------------
 
 gcroot<GamePlayed^> RunTracking::returnScore() {
-        return this->ScoreKeep;
+        return this->gameRecord;
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -91,7 +97,7 @@ gcroot<GamePlayed^> RunTracking::returnScore() {
 void RunTracking::processPlacementOfPiece(TrackedPiece trackedpiece) 
 {
 	// first, get the current time
-	double placeTime = getElapsedSeconds(this->ScoreKeep->timeStarted->Ticks);
+	double placeTime = getElapsedSeconds(this->gameRecord->getTimeStarted()->Ticks);
 	// then match the tracked piece to it's corresponding PuzzlePiece
 	// probably by name
 	// then pull the time of placement and give it to the PuzzlePiece

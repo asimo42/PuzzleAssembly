@@ -30,10 +30,11 @@ namespace ConsoleApplication4 {
 		ColorCalibrationForm(void)
 		{
 			InitializeComponent();
-			this->puzzle = gcnew KnobPuzzle();
-			this->pieceIndex = 0;
-			this->piece = gcnew PuzzlePiece();
-			this->NEXT = false;
+
+			// initialize our global variables here
+			this->puzzle = gcnew KnobPuzzle(); // this holds our puzzle, which will be passed in by CalibrationMainPrompt.h
+			this->pieceIndex = 0; // this tells us which piece we are currently calibrating
+			this->piece = gcnew PuzzlePiece(); // this is the piece we are currently calibrating
 			//
 			//TODO: Add the constructor code here
 			//
@@ -166,41 +167,58 @@ namespace ConsoleApplication4 {
 
 	private: System::Void okButton_Click(System::Object^  sender, System::EventArgs^  e) {
 
+				// make sure the puzzle has been properly assigned first 
+				 if (!this->puzzle->checkIsInitialized()) {
+					 Console::WriteLine("ColorCalibrationForm.h::okButton_Click: Error - this form was not properly initialized with a puzzle. Please give it a puzzle.");
+					 this->DialogResult = System::Windows::Forms::DialogResult::Cancel;		// if not, return DialogResult::Cancel			 
+				 }
+
+				 // if the last piece has been calibrated, stop the calibrator, change the dialog result to OK and close this form
+				 // note that the color calibration form is handling updating the colors in the PuzzlePiece instances
+				 if (this->pieceIndex >= this->puzzle->getPieceList()->Count && this->puzzle->getPieceList()->Count != 0) {
+					 //MessageBox::Show("That was the last piece!");
+
+					 // lock thread while we wait for calibration thread to end
+					 HANDLE myMutex = CreateMutex(NULL, FALSE, (LPCWSTR) "calibration");
+			   		 WaitForSingleObject(myMutex, INFINITE);
+
+					 // tell calibrator to stop, and wait until it responds that it has done so
+					 this->calibrator.Stop();
+					 while (!this->calibrator.IS_STOPPED) {
+						 Console::WriteLine("Waiting for calibrator thread to end");
+						 System::Threading::Thread::Sleep(5);
+					 }
+					 // now abort the calibration thread and join it to the current one
+					 this->myThreadShell.myThread->Abort();
+					 this->myThreadShell.myThread->Join();
+
+					 // release mutex and exit out of this form with the dialogresult::OK
+					 ReleaseMutex(myMutex);
+					 this->DialogResult = System::Windows::Forms::DialogResult::OK;
+					 this->Close();
+					 return;
+				 }
+
 				 // if on the first piece, set up the new thread for the calibration. Thread will start tracking first piece.
 				 if (this->pieceIndex == 0) {
 					 // display current piece name on gui
 					 this->piece = this->puzzle->getPieceList()[this->pieceIndex];
 					 this->currentPieceLabel->Text = this->piece->getName();
 
-					 // setup calibrator thread
+					 // setup calibrator thread with puzzle and start it (I'm wondering if it would be better to pass it the puzzle piece to track instead - probably)
 					 this->calibrator.setGame(this->puzzle);
 					 this->myThreadShell.myThread = gcnew System::Threading::Thread(gcnew System::Threading::ThreadStart(calibrator.returnHandle(), &CalibrationTracking::Start));
-					 this->myThreadShell.myThread->Start();
+					 this->myThreadShell.myThread->Start(); 
+					 // the first piece will start calibrating automatically
 
-					 // set NEXT flag so that nex time user clicks OK, it goes to next piece. Also update this form's pieceIndex
-					 this->NEXT = true;
+					// update piece index to next piece
 					 this->pieceIndex++;
-					 return;
-				 }
 
-				 // if the last piece has been calibrated, stop the calibrator, change the dialog result to OK and close this form
-				 // note that the color calibration form is handling updating the colors in the PuzzlePiece instances
-				 if (this->pieceIndex >= this->puzzle->getPieceList()->Count) {
-					 this->calibrator.Stop();
-					 while (!this->calibrator.IS_STOPPED) {
-						 System::Diagnostics::Debug::WriteLine("Waiting for calibrator to end");
-						 System::Threading::Thread::Sleep(10);
-					 }
-					 this->myThreadShell.myThread->Abort();
-					 this->myThreadShell.myThread->Join();
-					 this->DialogResult = System::Windows::Forms::DialogResult::OK;
-					 this->Close();
 					 return;
 				 }
 
 				 // to iterate to next piece, tell calibrator thread to move to next piece, and then move to the next piece in this thread as well
-				 // NEXT will stay true forever; the calibration will cut out when the last piece is placed. 
-				 if (NEXT) {
+				 if (this->puzzle->getPieceList()->Count != 0) {
 					 this->calibrator.Next();
 					 this->piece = this->puzzle->getPieceList()[this->pieceIndex];
 					 this->currentPieceLabel->Text = this->piece->getName();
@@ -210,15 +228,25 @@ namespace ConsoleApplication4 {
 
 			 }
 
-// if the form is closed prematurely, stop the calibrator thread and close the form
+// if the form is closed prematurely, stop the calibrator thread
 			 // already calibrated pieces will retain the new calibration information
  private: System::Void ColorCalibrationForm_FormClosing(System::Object^  sender, System::Windows::Forms::FormClosingEventArgs^  e) {
-			  if (!this->calibrator.IS_STOPPED) {
-				  this->calibrator.Stop();
-			  }
-			  this->DialogResult = System::Windows::Forms::DialogResult::Cancel;
-			  this->Close();
-		  }
+
+		// if the calibrator is already stopped, don't have to do anything
+		if (!this->calibrator.IS_STOPPED) {
+			Console::WriteLine("ColorCalibrationForm.h: this form is ending prematurely");
+			// if it isn't, go ahead and stop it
+			this->calibrator.Stop();
+			while (!this->calibrator.IS_STOPPED) {
+				 Console::WriteLine("Waiting for calibrator thread to end");
+				 System::Threading::Thread::Sleep(5);
+			 }
+			 // now abort the calibration thread and join it to the current one
+			 this->myThreadShell.myThread->Abort();
+			 this->myThreadShell.myThread->Join();
+			 this->DialogResult = System::Windows::Forms::DialogResult::Cancel;
+		}
+	}
 };
 }
 

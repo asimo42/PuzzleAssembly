@@ -2,6 +2,7 @@
 
 #include "PuzzlePiece.h"
 
+
 using namespace System;
 
 PuzzlePiece::PuzzlePiece(void)
@@ -18,7 +19,7 @@ void PuzzlePiece::Initialize()
 	List<int>^ HSVmaxtmp = gcnew List<int>((IEnumerable<int>^) input);
 	setHSVmin(HSVmintmp);
 	setHSVmax(HSVmaxtmp);
-	timePlaced = -1; // value of -1 means piece was not placed
+	//timePlaced = gcnew DateTime(); 
 	shape_point_x = 0; 
 	shape_point_y = 0;
 	shape_width = 0;
@@ -53,6 +54,12 @@ PuzzlePiece::PuzzlePiece(System::String^ piece_name, List<int>^ HSVmin, List<int
 	setHSVmax(HSVmax);
 	setXDest(xdest);
 	setYDest(ydest);
+}
+
+void PuzzlePiece::setTimePlacedToNow()
+{
+	//this->timePlaced = gcnew System::DateTime;
+	this->timePlaced = this->timePlaced.Now;
 }
 
 	//Set Shape Drawing Data

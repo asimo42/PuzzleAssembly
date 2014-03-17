@@ -101,7 +101,7 @@ public:
 
 	void clearStatus();
 	void setTurnOff(bool value) {turn_off = value;}
-	void setDimmed(bool value) {dimmed = dimmed;}
+	void setDimmed(bool value) {dimmed = value;}
 
 	int getXPos() {return x_pos;}
 	void setXPos(int x) {x_pos = x;}

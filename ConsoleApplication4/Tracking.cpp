@@ -26,6 +26,11 @@
 #include <Windows.h>	// for timer
 #include <WinBase.h>	//for sleep()
 
+
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+
 using namespace cv;
 using namespace std;
 
@@ -195,17 +200,10 @@ void RunTracking::drawPuzzleBoard(Mat &image)
 	//Shape shapes(&image);
 	shapes.setImage(&image);
 	shapes.Clear_To_Black();	// Must clear to black first, otherwise get exception
-	// Magic numbers below are coordinates from trail and error on 1280x1024 screen
-	shapes.setColor(Scalar(0, 0, 255));
-	shapes.Draw_Circle(Point(383, 244), 125, -1);
-	shapes.setColor(Scalar(255, 0, 0));
-	shapes.Draw_Square(Point(748, 128), 238, -1);
-	shapes.setColor(Scalar(255, 0, 255));
-	shapes.Draw_Triangle(Point(220, 600), 266, -1);
-	shapes.setColor(Scalar(0, 255, 0));
-	shapes.Draw_Rectangle(Point(483, 634), 287, 175, -1);
-	shapes.setColor(Scalar(0, 255, 255));
-	shapes.Draw_Pentagon(Point(1056, 585), 173, -1);
+	for (unsigned int i = 0; i < pieces.size(); i++)
+	{
+		shapes.Draw_Shape(pieces[i], 1);
+	}
 }
 //----------------------------------------------------------------------------------------------------------
 
@@ -237,23 +235,31 @@ VOID CALLBACK timerTick(  _In_  HWND hwnd, _In_  UINT uMsg, _In_  UINT_PTR idEve
 
 		//Depending of the status returned above, this will change 
 		//if all the other pieces are turned off, turned on, etc...
-		if (status == 1)
+		if (status == 1 || status == 0)
 		{
 			for(int j = 0; j < pieces.size(); j++)
 				if (i != j)
-					pieces[j].setTurnOff(false);
+				{
+					pieces[j].clearStatus();
+				}
 		}
 		else if (status == 2)
 		{
 			for(int j = 0; j < pieces.size(); j++)
 				if (i != j)
+				{
+					pieces[j].clearStatus();
 					pieces[j].setDimmed(true);
+				}
 		}
 		else if (status == 3)
 		{
 			for(int j = 0; j < pieces.size(); j++)
 				if (i != j)
+				{
+					pieces[j].clearStatus();
 					pieces[j].setTurnOff(true);
+				}
 		}
 	}
 
@@ -302,14 +308,17 @@ VOID CALLBACK RunTracking::static_timerTick(  _In_  HWND hwnd, _In_  UINT uMsg, 
 //----------------------------------------------------------------------------------------------------------
 int RunTracking::startTrack()
 {
+
 	// set timer to periodically check piece movement
 	UINT timer_ms = 500;
-	SetTimer(NULL, 1, timer_ms, timerTick);
+	HWND hwnd1 = NULL;
+	UINT_PTR myTimer = SetTimer(hwnd1, 1, timer_ms, timerTick);
 
 	// set timer to flash shapes
-	UINT timer_flash = 200;
-	SetTimer(NULL, 1, timer_flash, timerFlash);
-	
+	UINT timer_flash = 600;
+	HWND hwnd2 = NULL;
+	UINT_PTR myTimer2 = SetTimer(hwnd2, 1, timer_flash, timerFlash);
+	//SetTimer(NULL, 1, timer_flash, 2timerFlash);
 
 	// TRYING TO IMPORT CALIBRATED PIECES HERE::
 	this->loadTrackedPieces();
@@ -319,7 +328,7 @@ int RunTracking::startTrack()
 
 	//
 
-	bool calibrate_mode = false;
+	//bool calibrate_mode = false;
 
 	VideoCapture capture;
 	capture.open(1);	//0 is default video device, 1 is other/USB camera
@@ -339,10 +348,10 @@ int RunTracking::startTrack()
 	Mat threshold_image;	//image after HSV is filtered and processed
 	
 
-	if (calibrate_mode)
-	{
-		createTrackbarWindow();
-	}
+	//if (calibrate_mode)
+	//{
+	//	createTrackbarWindow();
+	//}
 
 	// Moved to member variables of RunTracking class
 //	TrackedPiece yellow = TrackedPiece("Tennis Ball", Scalar(25,44,160), Scalar(77,95,256));
@@ -353,7 +362,7 @@ int RunTracking::startTrack()
 
 	//Mat puzzle;				//Puzzle board image for drawing shapes on
 
-	namedWindow(puzzle_window);
+	//namedWindow(puzzle_window);
 	//	namedWindow(puzzle_window, CV_WINDOW_NORMAL);
 	//	cvSetWindowProperty(puzzle_window.c_str(), CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);	// Makes full screen
 	drawPuzzleBoard(puzzle_board);
@@ -366,22 +375,22 @@ int RunTracking::startTrack()
 	{
 		capture.read(camera_feed);
 
-		namedWindow(original_window);
+		//namedWindow(original_window);
 //		imshow(original_window, camera_feed);
 
-		namedWindow(filtered_window);
+		//namedWindow(filtered_window);
 		cvtColor(camera_feed, HSV_image, CV_BGR2HSV);
 
-		if(calibrate_mode)
-		{
-			// Track temp puzzle piece with values from slider
-			TrackedPiece tmp = TrackedPiece("temp", Scalar(H_min, S_min, V_min), Scalar(H_max, S_max, V_max));
-			trackTrackedPiece(tmp, camera_feed, HSV_image, threshold_image);
-			imshow(filtered_window, threshold_image);
-		}
+		//if(calibrate_mode)
+		//{
+		//	// Track temp puzzle piece with values from slider
+		//	TrackedPiece tmp = TrackedPiece("temp", Scalar(H_min, S_min, V_min), Scalar(H_max, S_max, V_max));
+		//	trackTrackedPiece(tmp, camera_feed, HSV_image, threshold_image);
+		//	imshow(filtered_window, threshold_image);
+		//}
 
-		else
-		{
+		//else
+		//{
 //			trackTrackedPiece(yellow, camera_feed, HSV_image, threshold_image);
 			for (int i = 0; i < pieces.size(); ++i)
 			{
@@ -389,17 +398,23 @@ int RunTracking::startTrack()
 			}
 //			trackTrackedPiece(white_square, camera_feed, HSV_image, threshold_image);
 			imshow(filtered_window, threshold_image);
-		}
+		//}
 		
 		imshow(original_window, camera_feed);
 
 		waitKey(30);
+		
+
 		if (this->Game->isEndGame()) {
+			KillTimer(hwnd1, myTimer); // kill the timers
+			KillTimer(hwnd2, myTimer2);
+			//puzzle_board.release();
+			destroyAllWindows();
 			endTrack();
+			_CrtDumpMemoryLeaks();
 			return 0;
 		}
 	}
-	destroyAllWindows();
 	return 0;
 }
 

@@ -62,8 +62,9 @@ void CalibrationTracking::Initialize() {
 }
 //----------------------------------------------------------------------------------------------------------
 
-// start running opencv
+// start color tracking algorithm
 void CalibrationTracking::Start() {
+	// lets lock onto this thread just for safety sake
 	startTrackColor();
 }
 
@@ -72,15 +73,12 @@ void CalibrationTracking::Start() {
 
 // start location tracking algorithm
 void CalibrationTracking::startLocationCalibration() {
+	// lets lock onto this thread just for safety sake
 	startTrackLocation();
 }
 //----------------------------------------------------------------------------------------------------------
 
-// move to the next piece for calibration
-void CalibrationTracking::nextPiece() {
-
-		//destroy old trackbar window
-		destroyWindow(systemStringToStdString(trackbar_window));
+void CalibrationTracking::savePieceInformation() {
 
 		// changing global data here, so lock down thread
 		WaitForSingleObject(myMutex, INFINITE);
@@ -92,14 +90,22 @@ void CalibrationTracking::nextPiece() {
 		HSV_max_list->Add(this->calibrate_H_max); HSV_max_list->Add(this->calibrate_S_max); HSV_max_list->Add(this->calibrate_V_max); 
 		this->Game->getPieceList()[this->iterator]->setHSVmin(HSV_min_list);
 		this->Game->getPieceList()[this->iterator]->setHSVmax(HSV_max_list);
-
+		
 		// done changing global vars; release mutex
 		ReleaseMutex(myMutex);
+}
+
+// move to the next piece for calibration
+void CalibrationTracking::nextPiece() {
+
+		//destroy old trackbar window
+		destroyWindow(systemStringToStdString(trackbar_window));
 
 		// update iterator. If iterator has passed the # of pieces, end calibration
 		this->iterator = this->iterator + 1;
 		if (this->iterator >= this->Game->getPieceList()->Count) {
 			endTrack();
+			return;
 		}
 
 		// pull new piece and convert to trackedpiece
@@ -302,10 +308,14 @@ int CalibrationTracking::startTrackLocation()
 	
 	if (!capture.isOpened())
 	{
-		cout << "Cannot open camera." << endl;
+		Console::WriteLine("CalibrationTracking::startTrackLocation():: Error - Cannot open camera.");
 		return 1;
 	}
-	cout << "Camera opened" << endl;
+	Console::WriteLine("CalibrationTracking::startTrackLocation():: Camera Opened");
+
+	//// set up filtered and original windows
+	namedWindow(systemStringToStdString(original_window));
+	namedWindow(systemStringToStdString(filtered_window));
 
 	Mat camera_feed;		//raw camera image
 	Mat HSV_image;			//camera image converted to HSV
@@ -320,15 +330,11 @@ int CalibrationTracking::startTrackLocation()
 		Xcoords = gcnew List<int>();
 		Ycoords = gcnew List<int>();
 		
-		// for each puzzle piece, find location coordinates 10 times
+		// for each puzzle piece, find location coordinates 20 times
 		for (int i = 0; i < 20; i++) 
 		{
 			capture.read(camera_feed);
 
-			// set up filtered and original windows
-			namedWindow(systemStringToStdString(original_window));
-
-			namedWindow(systemStringToStdString(filtered_window));
 			cvtColor(camera_feed, HSV_image, CV_BGR2HSV);
 
 			// track for calibration
@@ -338,35 +344,33 @@ int CalibrationTracking::startTrackLocation()
 				Xcoords->Add(tmpList[0]);
 				Ycoords->Add(tmpList[1]);
 			}
+			
+			// show updated windows
 			imshow(systemStringToStdString(filtered_window), threshold_image);
-		
 			imshow(systemStringToStdString(original_window), camera_feed);
 
 			waitKey(30);
 		}
-		// average those 10 (or less, depending on how successful the tracking was) coordinates
+		// average those coordinates
 		// if no coordinates were found, will return (0,0)
 		if (Xcoords->Count !=0 && Ycoords->Count != 0) {
 			double x = averageListOfInts(Xcoords);
 			double y = averageListOfInts(Ycoords);
 			// now set the X and Y destinations of that piece using these averaged coordinates
-			currentPiece->setXDest(x);
-			currentPiece->setYDest(y);
+			currentPiece->setDestPos(x,y);
 		}
 		else {
-			currentPiece->setXDest(0);
-			currentPiece->setYDest(0);
+			currentPiece->setDestPos(0,0);
 		}
 	}
 
-	// test, check resulting coordinates
-	System::String^ printString = "";
-	for each (PuzzlePiece^ currentPiece in this->Game->getPieceList()) {
-		System::String^ nameStr = currentPiece->getName();
-		printString = printString + nameStr + ":   X = " + currentPiece->getXDest() + ",  Y = " + currentPiece->getYDest() + "\n";
-	}
-	System::Windows::Forms::MessageBox::Show(printString);
+	// release unmanaged components (I'm not sure if this actually works)
 	cv::destroyAllWindows();
+	camera_feed.release();
+	HSV_image.release();
+	threshold_image.release();
+	capture.release();
+
 	return 0;
 }
 
@@ -397,6 +401,8 @@ int CalibrationTracking::startTrackColor()
 	TrackedPiece tmp = puzzlePieceToTrackedPiece(this->Game->getPieceList()[this->iterator]);
 	createTrackbarWindow(tmp);
 
+	this->iterator = 0;
+
 	while(1)
 	{
 		capture.read(camera_feed);
@@ -416,14 +422,20 @@ int CalibrationTracking::startTrackColor()
 
 		waitKey(30);
 		if (STOP) {
+			savePieceInformation();
 			endTrack();
 			return 0;
 		}
 		if (NEXT) {
+			savePieceInformation();
 			nextPiece();
 		}
 	}
-	destroyAllWindows();
+	cv::destroyAllWindows();
+	camera_feed.release();
+	HSV_image.release();
+	threshold_image.release();
+	capture.release();
 	return 0;
 }
 
