@@ -7,8 +7,8 @@
 #include <opencv2/highgui/highgui.hpp>
 #include "TrackedPiece.h"
 
-#define SCREEN_WIDTH 1280
-#define SCREEN_HEIGHT 1024
+#define SCREEN_WIDTH 1600
+#define SCREEN_HEIGHT 900
 
 using namespace cv;
 using namespace std;

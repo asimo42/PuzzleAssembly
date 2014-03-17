@@ -38,7 +38,8 @@ void Shape::Draw_Shape(TrackedPiece piece, double dim_factor)
 {
 	std::string shapeType = piece.getName();
 	if (shapeType == "Circle") {
-		setColor(Scalar(0, 0, 255 * dim_factor));
+		// Making circle slightly orange so it is not mistaken for puzzle piece
+		setColor(Scalar(0, 63, 255 * dim_factor));
 		Draw_Circle(Point(piece.getShapePointX(),piece.getShapePointY()), piece.getShapeRadius(), -1);
 	}
 	else if (shapeType == "Rectangle") {

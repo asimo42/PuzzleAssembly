@@ -17,6 +17,7 @@ TrackedPiece::TrackedPiece(void)
 	setName("N/A");
 	setHSVmin(Scalar(0,0,0));
 	setHSVmax(Scalar(0,0,0));
+	isMoving = false;
 }
 
 
@@ -28,6 +29,7 @@ TrackedPiece::~TrackedPiece(void)
 TrackedPiece::TrackedPiece(std::string piece_name)
 {
 	setName(piece_name);
+	isMoving = false;
 }
 
 TrackedPiece::TrackedPiece(std::string piece_name, Scalar HSVmin, Scalar HSVmax)
@@ -35,6 +37,7 @@ TrackedPiece::TrackedPiece(std::string piece_name, Scalar HSVmin, Scalar HSVmax)
 	setName(piece_name);
 	setHSVmin(HSVmin);
 	setHSVmax(HSVmax);
+	isMoving = false;
 }
 
 TrackedPiece::TrackedPiece(std::string piece_name, Scalar HSVmin, Scalar HSVmax, int xdest, int ydest)
@@ -44,6 +47,7 @@ TrackedPiece::TrackedPiece(std::string piece_name, Scalar HSVmin, Scalar HSVmax,
 	setHSVmax(HSVmax);
 	setXDest(xdest);
 	setYDest(ydest);
+	isMoving = false;
 }
 
 int TrackedPiece::checkForMovement(bool justMoved)
@@ -104,11 +108,11 @@ bool TrackedPiece::checkIfPlacedCorrectly()
 		placementHistory.push_back(false);
 
 	// check if max size reached
-	if(movementHistory.size() > MAX_PLACEMENT_DEQUE_SIZE)
-		movementHistory.pop_front();
+	if(placementHistory.size() > MAX_PLACEMENT_DEQUE_SIZE)
+		placementHistory.pop_front();
 
 	// check for consistent placement in correct position
-	int numTrues = count(movementHistory.begin(), movementHistory.end(), true);
+	int numTrues = count(placementHistory.begin(), placementHistory.end(), true);
 	if (numTrues >= 5) {
 		isPlacedCorrectly = true;
 		cout << name << " placed correctly!" << endl;

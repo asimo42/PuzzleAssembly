@@ -52,7 +52,7 @@ private:
 	static const unsigned int MAX_DEQUE_SIZE = 5;
 	static const unsigned int MAX_PLACEMENT_DEQUE_SIZE = 8;
 
-	static const unsigned int PLACED_THRESH = 10;
+	static const unsigned int PLACED_THRESH = 20;
 
 	// Holds movement history of pieces each time the timer checks for movement.
 	// Holds a max of MAX_DEQUE_SIZE elements
