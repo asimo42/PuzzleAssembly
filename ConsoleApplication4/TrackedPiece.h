@@ -87,6 +87,8 @@ public:
 	// Checks if piece has consistently been sitting in correct x,y position. If so, sets isPlacedCorrectly boolean to true.
 	bool checkIfPlacedCorrectly();
 
+	bool getIsPlacedCorrectly() {return isPlacedCorrectly;}
+
 	void toggle(Mat &image);
 	void dim(Mat &image);
 	void turnOff(Mat &image);

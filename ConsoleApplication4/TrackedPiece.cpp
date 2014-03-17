@@ -130,6 +130,7 @@ void TrackedPiece::toggle(Mat &image)
 	Shape shapes(&image);
 	if(isOn())
 	{
+		// turn off
 		shapes.Draw_Shape(*this, 0);
 		on = false;
 	}
