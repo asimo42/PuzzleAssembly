@@ -104,7 +104,7 @@ bool TrackedPiece::checkIfPlacedCorrectly()
 		placementHistory.push_back(false);
 
 	// check if max size reached
-	if(movementHistory.size() > MAX_DEQUE_SIZE)
+	if(movementHistory.size() > MAX_PLACEMENT_DEQUE_SIZE)
 		movementHistory.pop_front();
 
 	// check for consistent placement in correct position

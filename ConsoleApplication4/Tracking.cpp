@@ -359,6 +359,7 @@ int RunTracking::startTrack()
 	drawPuzzleBoard(puzzle_board);
 	imshow(puzzle_window, puzzle_board);
 
+	// See if pausing here stops unhandled exception...
 	Sleep(500);
 	cout << "Done sleeping." << endl;
 	while(1)

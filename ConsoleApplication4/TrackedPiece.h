@@ -50,6 +50,7 @@ private:
 
 	// max number of values allowed in movementHistory deque
 	static const unsigned int MAX_DEQUE_SIZE = 5;
+	static const unsigned int MAX_PLACEMENT_DEQUE_SIZE = 8;
 
 	static const unsigned int PLACED_THRESH = 10;
 
