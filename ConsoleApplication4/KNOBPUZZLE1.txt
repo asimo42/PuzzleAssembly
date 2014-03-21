@@ -1,0 +1,17 @@
+KNOBPUZZLE1
+Difficulty 1
+LOC 319 239 COLOR 0 0 0 256 256 256 Square 748 128 238
+LOC 0 0 COLOR 0 0 146 256 256 256 Rectangle 483 634 287 175
+LOC 0 0 COLOR 0 0 0 0 0 0 Circle 383 244 125
+LOC 0 0 COLOR 0 0 0 0 256 0 Triangle 220 600 266
+LOC 442 405 COLOR 0 89 51 63 153 167 Pentagon 1056 585 173
+
+----------------------------------------------------------------
+
+** note: LOC xloc yloc COLOR Hmin Smin Vmin Hmax Smax Vmax name (shapedrawing specifics)
+*** Shapedrawing data will vary as follows:
+Circle: middle_x, middle_y, radius
+Rectangle: corner_x, corner_y, width, height
+Square: corner_x, corner_y, width
+Triangle: top_x, top_y, length
+Pentagon: top_x, top_y, length
