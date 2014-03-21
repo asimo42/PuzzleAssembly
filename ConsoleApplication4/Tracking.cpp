@@ -24,6 +24,7 @@
 #include "Shape.h"
 #include "RunTracking.h"
 #include <Windows.h>	// for timer
+#include <WinBase.h>	//for sleep()
 
 
 #define _CRTDBG_MAP_ALLOC
@@ -206,6 +207,18 @@ void RunTracking::drawPuzzleBoard(Mat &image)
 }
 //----------------------------------------------------------------------------------------------------------
 
+// This should probably be a member function of some class, but I wasn't sure where it should go.
+bool checkIfAllCorrect()
+{
+	for(int i = 0; i < pieces.size(); i++)
+	{
+		// If a piece is found that isn't placed correctly, return false
+		if(!pieces[i].getIsPlacedCorrectly())
+			return false;
+	}
+	return true;
+}
+
 VOID CALLBACK timerTick(  _In_  HWND hwnd, _In_  UINT uMsg, _In_  UINT_PTR idEvent, _In_  DWORD dwTime)
 {
 	int thresh = 40;
@@ -227,8 +240,13 @@ VOID CALLBACK timerTick(  _In_  HWND hwnd, _In_  UINT uMsg, _In_  UINT_PTR idEve
 			//cout << pieces[i].getName() << ": Y movement." << endl;
 		}
 
-		else 
+		else { // No movement
 			status = pieces[i].checkForMovement(false);
+			pieces[i].checkIfPlacedCorrectly();
+			bool allCorrect = checkIfAllCorrect();
+			if (allCorrect)
+				cout << "All pieces placed correctly!" << endl;
+		}
 
 		//Depending of the status returned above, this will change 
 		//if all the other pieces are turned off, turned on, etc...
@@ -365,7 +383,9 @@ int RunTracking::startTrack()
 	drawPuzzleBoard(puzzle_board);
 	imshow(puzzle_window, puzzle_board);
 
-
+	// See if pausing here stops unhandled exception...
+	Sleep(500);
+	cout << "Done sleeping." << endl;
 	while(1)
 	{
 		capture.read(camera_feed);

@@ -36,6 +36,7 @@ class RunTracking
         virtual void Stop() { STOP = true; }
         virtual void setGame(KnobPuzzle^ game) {this->Game = game; this->gameRecord->setGame(game);}
         gcroot<GamePlayed^> returnScore();
+		bool checkIfAllPiecesCorrect();
 
 
 protected:
