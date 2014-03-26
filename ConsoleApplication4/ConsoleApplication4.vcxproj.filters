@@ -66,6 +66,12 @@
     <ClInclude Include="CalibrationTracking.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="displayResultsForm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="selectOldResultsForm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -123,6 +129,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CalibrationTracking.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="displayResultsForm.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="selectOldResultsForm.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

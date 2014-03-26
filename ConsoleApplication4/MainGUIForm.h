@@ -7,6 +7,7 @@
 #include  <stdio.h>
 #include <vcclr.h>
 #include "Functions.h"
+#include "displayResultsForm.h"
 #include "CalibrationMainPrompt.h"
 #include "RunTracking.h"
 
@@ -36,6 +37,17 @@ namespace PuzzleAssembly {
 			this->loadButton->Enabled = true;
 			this->gameRunning = false;
 			this->calibrating = false;
+			this->sessionDataSaved = false;
+
+			//see if the results directory for the patient results data exists yet. If not, create it. 
+			if (!System::IO::Directory::Exists(Constants::RESULTS_DIRECTORY)) {
+				// * I don't know how to error check this yet.
+				System::IO::Directory::CreateDirectory(Constants::RESULTS_DIRECTORY);
+				Console::WriteLine("MainGuiForm.h::Initialize(): Created results directory " + Constants::RESULTS_DIRECTORY);
+			}
+			else {
+				Console::WriteLine("MainGuiForm.h::Initialize(): Results Directory already exists: " + Constants::RESULTS_DIRECTORY);
+			}
 			//******
 
 			// For me, CameraPrefs folder is located 2 folders above the consolepplication4.exe file
@@ -67,6 +79,7 @@ namespace PuzzleAssembly {
 	// My Variables
 	public: bool gameRunning;
 	public: bool calibrating;
+	public: bool sessionDataSaved;
 	private: System::Windows::Forms::TextBox^  textBox1;
 	private: System::Windows::Forms::Label^  label1;
 	private: System::ComponentModel::IContainer^  components;
@@ -86,6 +99,11 @@ namespace PuzzleAssembly {
 	private: System::Windows::Forms::CheckBox^  level2CheckBox;
 	private: System::Windows::Forms::CheckBox^  level3CheckBox;
 	private: System::Windows::Forms::Button^  levelDescriptionsButton;
+
+	private: System::Windows::Forms::Label^  label5;
+	private: System::Windows::Forms::ComboBox^  playerNameComboBox;
+
+	private: System::Windows::Forms::Label^  label6;
 	private: System::Windows::Forms::Label^  label4;
 
 	protected: 
@@ -118,6 +136,9 @@ namespace PuzzleAssembly {
 			this->level3CheckBox = (gcnew System::Windows::Forms::CheckBox());
 			this->levelDescriptionsButton = (gcnew System::Windows::Forms::Button());
 			this->label4 = (gcnew System::Windows::Forms::Label());
+			this->label5 = (gcnew System::Windows::Forms::Label());
+			this->playerNameComboBox = (gcnew System::Windows::Forms::ComboBox());
+			this->label6 = (gcnew System::Windows::Forms::Label());
 			this->SuspendLayout();
 			// 
 			// runGameButton
@@ -126,7 +147,7 @@ namespace PuzzleAssembly {
 			this->runGameButton->AutoSizeMode = System::Windows::Forms::AutoSizeMode::GrowAndShrink;
 			this->runGameButton->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 24, static_cast<System::Drawing::FontStyle>((System::Drawing::FontStyle::Bold | System::Drawing::FontStyle::Italic)), 
 				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
-			this->runGameButton->Location = System::Drawing::Point(597, 207);
+			this->runGameButton->Location = System::Drawing::Point(597, 298);
 			this->runGameButton->Name = L"runGameButton";
 			this->runGameButton->Size = System::Drawing::Size(247, 142);
 			this->runGameButton->TabIndex = 0;
@@ -138,7 +159,7 @@ namespace PuzzleAssembly {
 			// 
 			this->textBox1->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 20.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, 
 				static_cast<System::Byte>(0)));
-			this->textBox1->Location = System::Drawing::Point(17, 141);
+			this->textBox1->Location = System::Drawing::Point(17, 219);
 			this->textBox1->Name = L"textBox1";
 			this->textBox1->Size = System::Drawing::Size(350, 38);
 			this->textBox1->TabIndex = 6;
@@ -150,7 +171,7 @@ namespace PuzzleAssembly {
 			this->label1->AutoSize = true;
 			this->label1->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 15.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, 
 				static_cast<System::Byte>(0)));
-			this->label1->Location = System::Drawing::Point(12, 113);
+			this->label1->Location = System::Drawing::Point(12, 191);
 			this->label1->Name = L"label1";
 			this->label1->Size = System::Drawing::Size(132, 25);
 			this->label1->TabIndex = 7;
@@ -162,7 +183,7 @@ namespace PuzzleAssembly {
 			this->scoresButton->AutoSizeMode = System::Windows::Forms::AutoSizeMode::GrowAndShrink;
 			this->scoresButton->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 20.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, 
 				static_cast<System::Byte>(0)));
-			this->scoresButton->Location = System::Drawing::Point(12, 235);
+			this->scoresButton->Location = System::Drawing::Point(12, 326);
 			this->scoresButton->Name = L"scoresButton";
 			this->scoresButton->Size = System::Drawing::Size(277, 114);
 			this->scoresButton->TabIndex = 8;
@@ -177,7 +198,7 @@ namespace PuzzleAssembly {
 			this->calibrateButton->Enabled = false;
 			this->calibrateButton->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 20.25F, System::Drawing::FontStyle::Regular, 
 				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
-			this->calibrateButton->Location = System::Drawing::Point(322, 235);
+			this->calibrateButton->Location = System::Drawing::Point(322, 326);
 			this->calibrateButton->Name = L"calibrateButton";
 			this->calibrateButton->Size = System::Drawing::Size(256, 114);
 			this->calibrateButton->TabIndex = 9;
@@ -190,7 +211,7 @@ namespace PuzzleAssembly {
 			this->loadButton->Enabled = false;
 			this->loadButton->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 15.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, 
 				static_cast<System::Byte>(0)));
-			this->loadButton->Location = System::Drawing::Point(368, 141);
+			this->loadButton->Location = System::Drawing::Point(368, 219);
 			this->loadButton->Name = L"loadButton";
 			this->loadButton->Size = System::Drawing::Size(172, 38);
 			this->loadButton->TabIndex = 10;
@@ -205,7 +226,7 @@ namespace PuzzleAssembly {
 			this->stopGameButton->Enabled = false;
 			this->stopGameButton->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 24, static_cast<System::Drawing::FontStyle>((System::Drawing::FontStyle::Bold | System::Drawing::FontStyle::Italic)), 
 				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
-			this->stopGameButton->Location = System::Drawing::Point(595, 40);
+			this->stopGameButton->Location = System::Drawing::Point(595, 131);
 			this->stopGameButton->Name = L"stopGameButton";
 			this->stopGameButton->Size = System::Drawing::Size(247, 139);
 			this->stopGameButton->TabIndex = 11;
@@ -242,7 +263,7 @@ namespace PuzzleAssembly {
 			this->level1CheckBox->CheckState = System::Windows::Forms::CheckState::Checked;
 			this->level1CheckBox->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 15.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, 
 				static_cast<System::Byte>(0)));
-			this->level1CheckBox->Location = System::Drawing::Point(166, 190);
+			this->level1CheckBox->Location = System::Drawing::Point(166, 268);
 			this->level1CheckBox->Name = L"level1CheckBox";
 			this->level1CheckBox->Size = System::Drawing::Size(79, 29);
 			this->level1CheckBox->TabIndex = 14;
@@ -255,7 +276,7 @@ namespace PuzzleAssembly {
 			this->level2CheckBox->AutoSize = true;
 			this->level2CheckBox->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 15.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, 
 				static_cast<System::Byte>(0)));
-			this->level2CheckBox->Location = System::Drawing::Point(255, 192);
+			this->level2CheckBox->Location = System::Drawing::Point(255, 270);
 			this->level2CheckBox->Name = L"level2CheckBox";
 			this->level2CheckBox->Size = System::Drawing::Size(107, 29);
 			this->level2CheckBox->TabIndex = 15;
@@ -268,7 +289,7 @@ namespace PuzzleAssembly {
 			this->level3CheckBox->AutoSize = true;
 			this->level3CheckBox->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 15.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, 
 				static_cast<System::Byte>(0)));
-			this->level3CheckBox->Location = System::Drawing::Point(368, 192);
+			this->level3CheckBox->Location = System::Drawing::Point(368, 270);
 			this->level3CheckBox->Name = L"level3CheckBox";
 			this->level3CheckBox->Size = System::Drawing::Size(77, 29);
 			this->level3CheckBox->TabIndex = 16;
@@ -281,7 +302,7 @@ namespace PuzzleAssembly {
 			this->levelDescriptionsButton->BackColor = System::Drawing::Color::Linen;
 			this->levelDescriptionsButton->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 12, System::Drawing::FontStyle::Regular, 
 				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
-			this->levelDescriptionsButton->Location = System::Drawing::Point(451, 185);
+			this->levelDescriptionsButton->Location = System::Drawing::Point(451, 263);
 			this->levelDescriptionsButton->Name = L"levelDescriptionsButton";
 			this->levelDescriptionsButton->Size = System::Drawing::Size(127, 44);
 			this->levelDescriptionsButton->TabIndex = 17;
@@ -294,18 +315,55 @@ namespace PuzzleAssembly {
 			this->label4->AutoSize = true;
 			this->label4->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 14.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, 
 				static_cast<System::Byte>(0)));
-			this->label4->Location = System::Drawing::Point(8, 192);
+			this->label4->Location = System::Drawing::Point(8, 270);
 			this->label4->Name = L"label4";
 			this->label4->Size = System::Drawing::Size(152, 24);
 			this->label4->TabIndex = 18;
 			this->label4->Text = L"Level of Difficulty:";
+			// 
+			// label5
+			// 
+			this->label5->AutoSize = true;
+			this->label5->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 18, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, 
+				static_cast<System::Byte>(0)));
+			this->label5->Location = System::Drawing::Point(17, 108);
+			this->label5->Name = L"label5";
+			this->label5->Size = System::Drawing::Size(181, 29);
+			this->label5->TabIndex = 20;
+			this->label5->Text = L"Who\'s Playing\?:";
+			// 
+			// playerNameComboBox
+			// 
+			this->playerNameComboBox->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 14.25F, System::Drawing::FontStyle::Regular, 
+				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
+			this->playerNameComboBox->FormattingEnabled = true;
+			this->playerNameComboBox->Location = System::Drawing::Point(22, 140);
+			this->playerNameComboBox->Name = L"playerNameComboBox";
+			this->playerNameComboBox->Size = System::Drawing::Size(357, 32);
+			this->playerNameComboBox->TabIndex = 21;
+			this->playerNameComboBox->Text = L"<enter name>";
+			this->playerNameComboBox->Click += gcnew System::EventHandler(this, &MainGUIForm::playerNameComboBox_Click);
+			// 
+			// label6
+			// 
+			this->label6->AutoSize = true;
+			this->label6->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, 
+				static_cast<System::Byte>(0)));
+			this->label6->Location = System::Drawing::Point(380, 143);
+			this->label6->Name = L"label6";
+			this->label6->Size = System::Drawing::Size(174, 32);
+			this->label6->TabIndex = 22;
+			this->label6->Text = L"* Enter new name or choose\r\n   from dropdown list";
 			// 
 			// MainGUIForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->BackColor = System::Drawing::Color::Beige;
-			this->ClientSize = System::Drawing::Size(854, 353);
+			this->ClientSize = System::Drawing::Size(854, 444);
+			this->Controls->Add(this->label6);
+			this->Controls->Add(this->playerNameComboBox);
+			this->Controls->Add(this->label5);
 			this->Controls->Add(this->label4);
 			this->Controls->Add(this->levelDescriptionsButton);
 			this->Controls->Add(this->level3CheckBox);
@@ -327,7 +385,6 @@ namespace PuzzleAssembly {
 			this->Text = L"Puzzle Assembly Assistant";
 			this->HelpButtonClicked += gcnew System::ComponentModel::CancelEventHandler(this, &MainGUIForm::MainGUIForm_HelpButtonClicked);
 			this->FormClosing += gcnew System::Windows::Forms::FormClosingEventHandler(this, &MainGUIForm::MainGUIForm_FormClosing);
-			this->Load += gcnew System::EventHandler(this, &MainGUIForm::MainGUIForm_Load);
 			this->ResumeLayout(false);
 			this->PerformLayout();
 
@@ -339,6 +396,31 @@ private: System::Void runGameButton_Click(System::Object^  sender, System::Event
 			 // Lock down thread while loading puzzle, so that only one thread is accessing it (I'm not actually sure this is doing anything)
 			 HANDLE myMutex = CreateMutex(NULL, FALSE, (LPCWSTR) "runGameButton_Click : loading game");
 			 WaitForSingleObject(myMutex, INFINITE);
+
+			 System::String^ userName = playerNameComboBox->Text;
+			 // if player is not recognized, ask if want to save new player, then do so. 
+			 if (!playerNameComboBox->Items->Contains(userName) && !userName->Equals("") && !userName->Equals("<enter name>")) 
+			 {
+				 System::String^ messageString = "Do you want to save new user " + userName + "?";
+				 System::Windows::Forms::DialogResult result = MessageBox::Show(messageString, "Warning", MessageBoxButtons::YesNo, MessageBoxIcon::Warning);
+				 // if user says yes, save the settings to the hardcoded location (user doesn't select)
+				 if(result == System::Windows::Forms::DialogResult::Yes)
+				 {
+					 System::String^ fileStr = Constants::RESULTS_DIRECTORY + userName;
+					System::IO::Directory::CreateDirectory(fileStr);	
+					Console::WriteLine("MainGuiForm.h::runGameButton_Click(): Created results directory " + fileStr);
+				 }
+				 // if user says no, then return. 
+				 else if (result == System::Windows::Forms::DialogResult::No) {
+					 MessageBox::Show("Please select a valid username and try running again.");
+					 return;
+				 }
+			 }
+			 // if no player has been entered, return
+			 else if (userName->Equals("") || userName->Equals("<enter name>"))  {
+				 MessageBox::Show("Please enter a username and try running again!");
+				 return;
+			 }
 
 			 // load up puzzle if not already loaded (make sure it's the same puzzle that the user has entered in the text box too). 
 			 if (!this->currentPuzzle.checkIsInitialized(this->getCodeStringFromGUI())) {
@@ -376,7 +458,7 @@ private: System::Void runGameButton_Click(System::Object^  sender, System::Event
 			 this->stopGameButton->Enabled = true;
 
 			 // now start the game by initializing the tracking. Pass in the puzzle. It will return the game stats for that game
-			 GamePlayed^ gameResults = initializeTracking( this->currentPuzzle.returnHandle());
+			 GamePlayed^ gameResults = initializeTracking( this->currentPuzzle.returnHandle(), userName);
 			 
 			 //add new game results to the ScoreKeeper
 			 this->ScoreKeeper.AddNewGame(gameResults);
@@ -407,7 +489,12 @@ private: System::Void scoresButton_Click(System::Object^  sender, System::EventA
 			 // scores should probably be a tabbed display, e.g. this session's games, Progress to-date
 			 // we'll keep it a simple message box for now - We'll want a scrolling form later
 			System::String^ results = ScoreKeeper.showFinalResults();
-			MessageBox::Show(results);
+			//MessageBox::Show(results);
+			ConsoleApplication4::displayResultsForm^ displayResults = gcnew ConsoleApplication4::displayResultsForm();
+			displayResults->initialPlayer = this->playerNameComboBox->Text;
+			displayResults->initialGame = this->textBox1->Text;
+			System::Windows::Forms::DialogResult dialogResult = displayResults->ShowDialog(); 
+
 		 }
 
 private: System::Void turnAllButtonsOff() {
@@ -600,9 +687,19 @@ private: System::Void MainGUIForm_FormClosing(System::Object^  sender, System::W
 				 Console::WriteLine("MainGUIForm.h: MainGUIForm_FormClosing(): attempted to exit main gui during calibration. Cancelled exit.");
 				 e->Cancel = true;
 			 } 
+			 if (!this->sessionDataSaved) {			 
+				 // ask user if they want to save the session results
+				System::Windows::Forms::DialogResult result = MessageBox::Show("Do you want to save the game results for this session?", "Warning", MessageBoxButtons::YesNo, MessageBoxIcon::Warning);
+
+				// if user says yes, save the settings to the hardcoded location (user doesn't select)
+				 if(result == System::Windows::Forms::DialogResult::Yes)
+				 {
+					 // here I need to let the user select the childs name
+				 }
+
+			 }
 		 }
 
-// minor button click events
 //----------------------------------------------------------------------------------------------------------
 // help functionality under construction
 private: System::Void MainGUIForm_HelpButtonClicked(System::Object^  sender, System::ComponentModel::CancelEventArgs^  e) {
@@ -652,8 +749,24 @@ private: int getLevelOfDifficulty() {
 			else if (level3CheckBox->Checked == true) { return 3; }
 			return level;
 		 }
-private: System::Void MainGUIForm_Load(System::Object^  sender, System::EventArgs^  e) {
-		 }
 
+//----------------------------------------------------------------------------------------------------------
+// handle user clicking on the username text box. First click triggers generation of drop-down menu for already-used names
+private: System::Void playerNameComboBox_Click(System::Object^  sender, System::EventArgs^  e) {
+
+			 // This will be called the first time the box is clicked (when the initial prompt <enter name> is still displayed)
+			 if (playerNameComboBox->Text->Equals("<enter name>")) {
+
+				 // get rid of <enter name> prompt
+				 playerNameComboBox->Text = "";
+
+				 // find add list of kids that currently have records to drop down list. Each kid should have their own folder in the patient results mother-folder
+				 array<System::String^>^ patientNames = System::IO::Directory::GetDirectories( Constants::RESULTS_DIRECTORY );
+				 for (int i = 0; i < patientNames->Length; i++) {
+					 patientNames[i] = System::IO::Path::GetFileNameWithoutExtension(patientNames[i]);
+				 }
+				 playerNameComboBox->Items->AddRange(patientNames);
+			 }
+		 }
 };
 }

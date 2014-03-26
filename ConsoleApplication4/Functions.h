@@ -17,7 +17,7 @@ using namespace System::Collections::Generic;
 // Define any constants that will be repeated or that may be changed. EX) int x = Constants::CONSTANT_X
 ref class Constants {
 public:
-	static const int TESTNUMBER = 0;	// chose a test number to run. 0 = not a test
+	static const int TESTNUMBER = 1;	// chose a test number to run. 0 = not a test
 
 	//OPENCV related defaults ---
 
@@ -39,13 +39,14 @@ public:
     static const int DEFAULT_V_MAX= 256;
 
 	static System::String^ GAME_INPUT_DIRECTORY = System::Windows::Forms::Application::StartupPath + "/../";
+	static System::String^ RESULTS_DIRECTORY = System::Windows::Forms::Application::StartupPath + "/PatientPerformanceData/";
 };
 
 
 //--- FROM FUNCTIONS.CPP----
 
 // Starting OpenCV tracking
-GamePlayed^ initializeTracking(KnobPuzzle^ %Game);
+GamePlayed^ initializeTracking(KnobPuzzle^ %Game, System::String^ userName);
 
 // Unmanaged <--> Managed Conversions
 List<int>^ scalarToList(cv::Scalar scalar);
@@ -55,7 +56,10 @@ PuzzlePiece^ trackedPieceToPuzzlePiece(TrackedPiece trackedPiece);
 // Game code input/puzzle class functions
 System::String^ searchPuzzleType(System::String^ code);
 array<System::String^>^ getStringArrayFromFile(System::String^ inputFile); 
+int checkOrCreateFile(System::String^ fileName);
 int writeStringArrayToFile(array<System::String^>^ inputArrray, System::String^ fileName);
+int appendStringArrayToFile(array<System::String^>^ inputArray, System::String^ fileName);
+
 int getCodeLocation(array<System::String^>^ lines, System::String^ code);
 System::String^ getCalibratedInputPath(System::String^ code);
 System::String^ getDefaultInputPath(System::String^ code);
@@ -69,6 +73,9 @@ double averageListOfInts(List<int>^ inputList);
 //bool checkBools(bool val, ...);
 int secondsBetweenTwoDateTimes(DateTime time1, DateTime time2);
 
+// performance data IO
+List<System::String^>^ findRecordFiles(System::String^ player, System::String^ game, array<System::String^>^ days);
+GamePlayed^ fileLinesToGamePlayed(array<System::String^>^ fileLines);
 
 // workaround hack to declare a thread as a global variable in a form
 ref class ThreadShell {

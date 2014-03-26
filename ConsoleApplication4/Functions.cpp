@@ -11,13 +11,14 @@ using namespace cv;
 //----------------------------------------------------------------------------------------------------------
 
 // Start tracking via a RunTracking instance, and then return the results of the game. Currently only designed for a KnobPuzzle game
-GamePlayed^ initializeTracking(KnobPuzzle^ %Game)
+GamePlayed^ initializeTracking(KnobPuzzle^ %Game, System::String^ userName)
 {
 	GamePlayed^ gameResults = gcnew GamePlayed();
 	// Initialize OpenCV running class (RunTracking) and load with puzzle
 	{
 		RunTracking* newTracker = new RunTracking();
 		newTracker->setGame(Game);
+		newTracker->setPlayer(userName);
 		newTracker->Start();
 
 		// Once game is over, pull the game results
@@ -26,6 +27,15 @@ GamePlayed^ initializeTracking(KnobPuzzle^ %Game)
 		// add game results to main scorekeeper instance. Show game results.
 		System::String^ results = gameResults->printData();	
 		MessageBox::Show(results);
+
+		// see if user wants to save results
+		System::Windows::Forms::DialogResult result = MessageBox::Show("Save game results for " + userName + "?", "Warning", MessageBoxButtons::YesNo, MessageBoxIcon::Warning);
+		// if user says yes, save the settings to the hardcoded location (user doesn't select)
+		if(result == System::Windows::Forms::DialogResult::Yes)
+		{
+			gameResults->Save();
+		}
+
 		delete newTracker;
 	}
 	return gameResults;
@@ -104,19 +114,41 @@ array<System::String^>^ getStringArrayFromFile(System::String^ inputFile) {
 	}
 	return lines;
 }
+//---------------------------------------------------------------------------------------------------------
+int checkOrCreateFile(System::String^ fileName) {
+	// if file doesn't exist yet, create it
+	if (!System::IO::File::Exists(fileName)) {
+		try { 
+			System::IO::FileStream^ fs = System::IO::File::Create(fileName); 
+			fs->Close();
+		}
+
+		catch (System::Exception^ e) {
+			Console::WriteLine("checkOrCreateFile(): Error creating file " + fileName);
+			return -1; 
+		}
+	}
+	return 0;
+}
 //----------------------------------------------------------------------------------------------------------
 // write an array of strings to a file **** Currently file is harcoded here - pass as argument in future.
-int writeStringArrayToFile(array<System::String^>^ inputArray, System::String^ fileName) {
+int appendStringArrayToFile(array<System::String^>^ inputArray, System::String^ fileName) {
 
-    // This text is added only once to the file. 
+	// make sure file is created
+	if (checkOrCreateFile(fileName) != 0) {
+		Console::WriteLine("writeStringArrayToFile(): file was not created : " + fileName);
+		return -1;
+	}
+
+    // Add all new text onto end of file
     try 
     {
-         System::IO::File::WriteAllLines(fileName, inputArray);
+         System::IO::File::AppendAllLines(fileName, inputArray);
     }
 	catch (System::Exception^ e)
 	{
 		System::Diagnostics::Debug::WriteLine(e);
-		Console::WriteLine("Error - can't write to file:");
+		Console::WriteLine("writeStringArrayToFile(): Error - can't write lines to file:");
 		Console::WriteLine(e);
 		return -1;
 	}
@@ -124,13 +156,39 @@ int writeStringArrayToFile(array<System::String^>^ inputArray, System::String^ f
 	//System::String^ appendText = "This is extra text";
  //   System::IO::File::AppendAllText(path, appendText);
 
-    // Open the file to read from. 
-    array<System::String^>^ lines = System::IO::File::ReadAllLines(fileName);
-    for each (System::String^ s in lines)
+	return 0;
+}
+//----------------------------------------------------------------------------------------------------------
+// write an array of strings to a file **** Currently file is harcoded here - pass as argument in future.
+int writeStringArrayToFile(array<System::String^>^ inputArray, System::String^ fileName) {
+
+	// make sure file is created
+	if (checkOrCreateFile(fileName) != 0) {
+		Console::WriteLine("writeStringArrayToFile(): file was not created : " + fileName);
+		return -1;
+	}
+
+    // Write all lines to file
+    try 
     {
-		Console::WriteLine("The following was written to file " + fileName + " : ");
-        Console::WriteLine(s);
+         System::IO::File::WriteAllLines(fileName, inputArray);
     }
+	catch (System::Exception^ e)
+	{
+		System::Diagnostics::Debug::WriteLine(e);
+		Console::WriteLine("writeStringArrayToFile(): Error - can't write lines to file:");
+		Console::WriteLine(e);
+		return -1;
+	}
+
+
+    // Open the file to read from. 
+  //  array<System::String^>^ lines = System::IO::File::ReadAllLines(fileName);
+  //  for each (System::String^ s in lines)
+  //  {
+		//Console::WriteLine("The following was written to file " + fileName + " : ");
+  //      Console::WriteLine(s);
+  //  }
 
 	return 0;
 }
@@ -301,8 +359,101 @@ PuzzlePiece^ trackedPieceToPuzzlePiece(TrackedPiece trackedPiece) {
 	return result;
 }
 //----------------------------------------------------------------------------------------------------------
+// find all files matching the given player, game, and date
+List<System::String^>^ findRecordFiles(System::String^ player, System::String^ game, array<System::String^>^ days) {
 
+	List<System::String^>^ results = gcnew List<System::String^>();
+	System::String^ dirPath = Constants::RESULTS_DIRECTORY + player;
+	if (!System::IO::Directory::Exists(dirPath)) {
+		Console::WriteLine("Functions::findRecordFiles():: could not find directory for " + player);
+		return results;
+	}
+
+	System::String^ delimStr = "_.";
+	array<Char>^ delimiter = delimStr->ToCharArray( );
+	System::String^ month; System::String^ da; System::String^ year;
+
+	// construct each file path for each date and check if the file exists
+	for each (System::String^ day in days) {
+		array<System::String^>^ tokens = day->Split(delimiter); // break up date string
+		if (tokens->Length < 3) { continue; }  // if there aren't 3 parts (month day year) to date, continue
+		month = tokens[0];
+		da = tokens[1];
+		year = tokens[2];
+		
+		// reconstruct file path
+		System::String^ finalPath = player + "_" + game + "_" + month + "_" + day + "_" + year + ".txt"; 
+
+		// check if it exists
+		if (System::IO::File::Exists(finalPath)) {   // check if it exists
+			Console::WriteLine("Functions::findRecordFiles():: found file " + finalPath);
+			results->Add(finalPath);
+		}
+	}
+	return results;
+}
 //----------------------------------------------------------------------------------------------------------
+// Parse given file lines into a GamePlayed^ instance
+GamePlayed^ fileLinesToGamePlayed(array<System::String^>^ fileLines) {
+
+	GamePlayed^ result = gcnew GamePlayed();
+
+		System::String^ line = fileLines[0];
+		System::String^ gameName = "";
+		System::String^ playerName = "";
+		System::String^ timeForCompletion;
+		System::String^ averageTimeForPieces;
+		System::String^ month;
+		System::String^ year;
+		System::String^ day;
+		System::String^ tim;
+		List<System::String^>^ pieceNames = gcnew List<System::String^>();
+		List<System::String^>^ timesToPlace = gcnew List<System::String^>();
+		List<System::String^>^ timesOfPlacement = gcnew List<System::String^>();
+
+		int index = 0;
+		while(index < fileLines->Length) {
+			line = fileLines[index++]; 
+			Console::WriteLine(line);
+			if (line->Contains("Game:")) {
+				array<System::String^>^ tokens = line->Split();
+				gameName = tokens[-1];
+			}
+			if (line->Contains("Player:") ) {
+				array<System::String^>^ tokens = line->Split();
+				playerName = tokens[-1];
+			}
+			if (line->Contains("Time for Completion (s):")) {
+				array<System::String^>^ tokens = line->Split();
+				timeForCompletion = tokens[-1];
+			}
+			if (line->Contains("Average Time")) {
+				array<System::String^>^ tokens = line->Split();
+				averageTimeForPieces = tokens[-1];
+			}
+			if (line->Contains("Time Started:")) {
+				array<System::String^>^ tokens = line->Split();
+				tim = tokens[-1];
+				year = tokens[-2];
+				day = tokens[-3];
+				month = tokens[-4];
+			}
+			if (line->Contains("Piece")) {
+				// pull piece name
+				array<System::String^>^ tokens = line->Split();
+				pieceNames->Add(tokens[-1]);
+				// move ot next line and pull time of placement
+				line = fileLines[index++]; 
+				tokens = line->Split();
+				timesOfPlacement->Add(tokens[-1]);
+				// move to next line and pull time to place
+				line = fileLines[index++]; 
+				tokens = line->Split();
+				timesToPlace->Add(tokens[-1]);
+			}
+		}
+		return result;
+}
 //----------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------

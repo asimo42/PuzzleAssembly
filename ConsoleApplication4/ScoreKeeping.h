@@ -18,8 +18,14 @@ public:
 	GamePlayed(KnobPuzzle^ Puzzle);
 
 	void setGame(KnobPuzzle^ Puzzle);
+	void setPlayer(System::String^ name) { this->player = name; }
 
 	System::String^ getType() { return this->gameType; }
+	System::String^ getName() { return this->gameName; }
+	System::String^ getPlayer() { return this->player; }
+
+	int Save();
+	
 
 	void setStartTimeToNow(); // tell GamePlayed to pull the current date/time to record as start time
 	void setTimeCompletedToNow(); // tell GamePlayed to pull the current date/time to record as end time
@@ -30,13 +36,19 @@ public:
 	DateTime^ getTimeStarted() { return this->timeStarted; }
 	List<int>^ getTimesOfPlacement() { return this->timesOfPlacement; }
 	List<System::String^>^ getOrderOfPiecesPlayed() { return this->orderOfPiecesPlayed; }
+	int getLevelOfDifficulty() { return this->levelOfDifficulty; }
 
 	int compileData(); // pull information from puzzle pieces to fill arrays. Can only do this once
-	System::String^ printData() {return "GamePlayed::printData() currently obsolete";}
+	System::String^ printData();
+
 private:
 
-	KnobPuzzle^ game;
-	System::String^ gameType;
+	KnobPuzzle^ game;		   // class holding all the puzzle data. ONLY HAS KNOBPUZZLE RIGHT NOW
+	System::String^ gameType;  // type of game, e.g. knobpuzzle, blockpuzzle, snake...
+	System::String^ gameName;  // name of the game. e.g. KNOBPUZZLE1
+	System::String^ player;    // this is the name of the player
+	int levelOfDifficulty;
+
 	bool ALREADY_COMPILED;
 
 	DateTime timeStarted; // datetime object with time that the puzzle was started
@@ -70,7 +82,9 @@ public:
 	ScoreKeeping();
 	ScoreKeeping^ returnHandle() { return this; }
 	void AddNewGame(GamePlayed^ newGame) { this->individualGamesList->Add(newGame); }
-	System::String^ showFinalResults();    
+	System::String^ showFinalResults();  
+	int saveSessionResultsToFile(System::String^ fileName);
+	int loadSessionResultsFromFile(System::String^ fileName);
 
 private:
 	GamePlayed^ calculateAverageForGame(System::String^ gameName);

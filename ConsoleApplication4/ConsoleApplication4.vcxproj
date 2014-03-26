@@ -35,7 +35,6 @@
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="OpenCV.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -54,10 +53,12 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(OPENCV_DIR)\..\..\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(OPENCV_DIR)\lib</AdditionalLibraryDirectories>
       <AdditionalDependencies>opencv_core246d.lib;opencv_imgproc246d.lib;opencv_highgui246d.lib;opencv_ml246d.lib;opencv_video246d.lib;opencv_features2d246d.lib;opencv_calib3d246d.lib;opencv_objdetect246d.lib;opencv_contrib246d.lib;opencv_legacy246d.lib;opencv_flann246d.lib;opencv_gpu246d.lib;opencv_haartraining_engined.lib;opencv_nonfree246d.lib;opencv_photo246d.lib;opencv_stitching246d.lib;opencv_superres246d.lib;opencv_ts246d.lib;opencv_videostab246d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <ProjectReference>
@@ -92,6 +93,9 @@
     <ClInclude Include="ColorCalibrationForm.h">
       <FileType>CppForm</FileType>
     </ClInclude>
+    <ClInclude Include="displayResultsForm.h">
+      <FileType>CppForm</FileType>
+    </ClInclude>
     <ClInclude Include="Functions.h" />
     <ClInclude Include="GameBoard.h" />
     <ClInclude Include="HandleVariables.h" />
@@ -103,6 +107,9 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="RunTracking.h" />
     <ClInclude Include="ScoreKeeping.h" />
+    <ClInclude Include="selectOldResultsForm.h">
+      <FileType>CppForm</FileType>
+    </ClInclude>
     <ClInclude Include="Shape.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
@@ -112,6 +119,7 @@
     <ClCompile Include="CalibrationMainPrompt.cpp" />
     <ClCompile Include="CalibrationTracking.cpp" />
     <ClCompile Include="ColorCalibrationForm.cpp" />
+    <ClCompile Include="displayResultsForm.cpp" />
     <ClCompile Include="Functions.cpp" />
     <ClCompile Include="GameBoard.cpp" />
     <ClCompile Include="HandleVariables.cpp" />
@@ -120,6 +128,7 @@
     <ClCompile Include="MainGUIForm.cpp" />
     <ClCompile Include="RunTracking.cpp" />
     <ClCompile Include="ScoreKeeping.cpp" />
+    <ClCompile Include="selectOldResultsForm.cpp" />
     <ClCompile Include="Shape.cpp" />
     <ClCompile Include="StartTracking.cpp" />
     <ClCompile Include="TrackedPiece.cpp" />
@@ -149,9 +158,15 @@
     <EmbeddedResource Include="ColorCalibrationForm.resx">
       <DependentUpon>ColorCalibrationForm.h</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="displayResultsForm.resx">
+      <DependentUpon>displayResultsForm.h</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="MainGUIForm.resx">
       <DependentUpon>MainGUIForm.h</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="selectOldResultsForm.resx">
+      <DependentUpon>selectOldResultsForm.h</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

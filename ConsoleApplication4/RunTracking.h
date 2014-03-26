@@ -35,6 +35,7 @@ class RunTracking
         virtual void Start();
         virtual void Stop() { STOP = true; }
         virtual void setGame(KnobPuzzle^ game) {this->Game = game; this->gameRecord->setGame(game);}
+		virtual void setPlayer(System::String^ name) { this->gameRecord->setPlayer(name); }
         gcroot<GamePlayed^> returnScore();
 		bool checkIfAllPiecesCorrect();
 
