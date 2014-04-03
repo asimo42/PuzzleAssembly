@@ -301,7 +301,7 @@ int CalibrationTracking::startTrackLocation()
 	this->LOCATION_CALIBRATION = true;
 
 	VideoCapture capture;
-	capture.open(1);	//0 is default video device, 1 is other/USB camera
+	capture.open(0);	//0 is default video device, 1 is other/USB camera
 	//set height and width of capture frame
 	capture.set(CV_CAP_PROP_FRAME_WIDTH,FRAME_WIDTH);
 	capture.set(CV_CAP_PROP_FRAME_HEIGHT,FRAME_HEIGHT);
@@ -382,7 +382,7 @@ int CalibrationTracking::startTrackColor()
 	this->COLOR_CALIBRATION = true;
 
 	VideoCapture capture;
-	capture.open(1);	//0 is default video device, 1 is other/USB camera
+	capture.open(0);	//0 is default video device, 1 is other/USB camera
 	//set height and width of capture frame
 	capture.set(CV_CAP_PROP_FRAME_WIDTH,FRAME_WIDTH);
 	capture.set(CV_CAP_PROP_FRAME_HEIGHT,FRAME_HEIGHT);
@@ -424,7 +424,7 @@ int CalibrationTracking::startTrackColor()
 		if (STOP) {
 			savePieceInformation();
 			endTrack();
-			return 0;
+			break;
 		}
 		if (NEXT) {
 			savePieceInformation();

@@ -1,11 +1,12 @@
+
 #include "stdafx.h"
+#include <Windows.h>
 #include "TrackedPiece.h"
 #include <string>
 #include <stack>
 #include <process.h>
 #using <System.dll>
 #include <stdio.h>
-#include <Windows.h>
 #include <algorithm>
 #include "Shape.h"
 #include <cmath>
@@ -18,6 +19,7 @@ TrackedPiece::TrackedPiece(void)
 	setHSVmin(Scalar(0,0,0));
 	setHSVmax(Scalar(0,0,0));
 	isMoving = false;
+	timeLock = false;
 }
 
 

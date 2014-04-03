@@ -11,9 +11,9 @@ using namespace cv;
 //----------------------------------------------------------------------------------------------------------
 
 // Start tracking via a RunTracking instance, and then return the results of the game. Currently only designed for a KnobPuzzle game
-GamePlayed^ initializeTracking(KnobPuzzle^ %Game, System::String^ userName)
+GamePlayedData^ initializeTracking(KnobPuzzle^ %Game, System::String^ userName)
 {
-	GamePlayed^ gameResults = gcnew GamePlayed();
+	GamePlayedData^ gameResults = gcnew GamePlayedData();
 	// Initialize OpenCV running class (RunTracking) and load with puzzle
 	{
 		RunTracking* newTracker = new RunTracking();
@@ -22,16 +22,16 @@ GamePlayed^ initializeTracking(KnobPuzzle^ %Game, System::String^ userName)
 		newTracker->Start();
 
 		// Once game is over, pull the game results
-		gameResults = newTracker->returnScore();
+		gameResults = newTracker->returnScore()->getGameData();
 
 		// add game results to main scorekeeper instance. Show game results.
-		System::String^ results = gameResults->printData();	
+		System::String^ results = gameResults->writeOut();	
 		MessageBox::Show(results);
 
 		// see if user wants to save results
-		System::Windows::Forms::DialogResult result = MessageBox::Show("Save game results for " + userName + "?", "Warning", MessageBoxButtons::YesNo, MessageBoxIcon::Warning);
+		System::Windows::Forms::DialogResult dialogResult = MessageBox::Show("Save game results for " + userName + "?", "Warning", MessageBoxButtons::YesNo, MessageBoxIcon::Warning);
 		// if user says yes, save the settings to the hardcoded location (user doesn't select)
-		if(result == System::Windows::Forms::DialogResult::Yes)
+		if(dialogResult == System::Windows::Forms::DialogResult::Yes)
 		{
 			gameResults->Save();
 		}
@@ -92,27 +92,9 @@ array<System::String^>^ getStringArrayFromFile(System::String^ inputFile) {
 		lines = gcnew array<System::String^>(1);
 		lines[0] = gcnew System::String("ERROR");
 		return lines;
-
-		// for now, we will just hardcode a fake file so we don't get screwed over. CHANGE THIS LATER
-		// we aren't actually technically using these values yet anyway
-		//List<System::String^>^ tmpList = gcnew List<System::String^>();
-		//System::Windows::Forms::MessageBox::Show("getStringArrayFromFile(): Error finding input file \n" + inputFile + "\n using hardcoded backup in code instead"); 
-		//tmpList->Add( "KNOBPUZZLE1");
-		//tmpList->Add( "NO.PIECES 5"); 
-		//tmpList->Add( "LOC 1 1 COLOR 165 107 25 185 233 256 Circle" );
-		//tmpList->Add( "LOC 2 2 COLOR 65 23 200 200 200 255 Rectangle" );
-		//tmpList->Add( "LOC 3 4 COLOR 10 10 10 100 100 100 Square" );
-		//tmpList->Add( "LOC 5 3 COLOR 90 55 100 100 100 150 Star" );
-		//tmpList->Add( "LOC 6 7 COLOR 18 130 75 30 256 256 Pentagon" );
-		//tmpList->Add( "----------------------------------------------------------------");
-		//tmpList->Add( "** note: LOC xloc yloc COLOR Hmin Smin Vmin Hmax Smax Vmax name");
-		//lines = gcnew array<System::String^>(tmpList->Count);
-		//for (int i = 0; i < tmpList->Count; i++) {
-		//	lines[i] = tmpList[i];
-		//}
-		//return lines; 
 	}
 	return lines;
+
 }
 //---------------------------------------------------------------------------------------------------------
 int checkOrCreateFile(System::String^ fileName) {
@@ -359,6 +341,15 @@ PuzzlePiece^ trackedPieceToPuzzlePiece(TrackedPiece trackedPiece) {
 	return result;
 }
 //----------------------------------------------------------------------------------------------------------
+System::String^ buildOutputFileName(System::String^ player, System::String^ game, System::String^ month, System::String^ day, System::String^ year) {
+	// build path
+	System::String^ pathStr = Constants::RESULTS_DIRECTORY + player + "\\";
+	// build filename
+	System::String^ fileStr = player + "_" + game + "_" + year + "_" + month + "_" + day + ".txt";
+	System::String^ mainString = pathStr + fileStr;
+	return mainString;
+}
+//----------------------------------------------------------------------------------------------------------
 // find all files matching the given player, game, and date
 List<System::String^>^ findRecordFiles(System::String^ player, System::String^ game, array<System::String^>^ days) {
 
@@ -369,21 +360,23 @@ List<System::String^>^ findRecordFiles(System::String^ player, System::String^ g
 		return results;
 	}
 
-	System::String^ delimStr = "_.";
+	System::String^ delimStr = "_";
 	array<Char>^ delimiter = delimStr->ToCharArray( );
 	System::String^ month; System::String^ da; System::String^ year;
 
 	// construct each file path for each date and check if the file exists
 	for each (System::String^ day in days) {
-		array<System::String^>^ tokens = day->Split(delimiter); // break up date string
-		if (tokens->Length < 3) { continue; }  // if there aren't 3 parts (month day year) to date, continue
+		array<System::String^>^ tokens = day->Split(); // break up date string
+		if (tokens->Length < 3) { 
+			Console::WriteLine("Functions::findRecordFiles():: date incorrectly formatted : " + day);
+			continue; }  // if there aren't 3 parts (month day year) to date, continue
 		month = tokens[0];
 		da = tokens[1];
 		year = tokens[2];
 		
 		// reconstruct file path
-		System::String^ finalPath = player + "_" + game + "_" + month + "_" + day + "_" + year + ".txt"; 
-
+		System::String^ finalPath = buildOutputFileName(player, game, month, da, year); 
+			Console::WriteLine("Functions::findRecordFiles():: looking for file " + finalPath);
 		// check if it exists
 		if (System::IO::File::Exists(finalPath)) {   // check if it exists
 			Console::WriteLine("Functions::findRecordFiles():: found file " + finalPath);
@@ -454,8 +447,3 @@ GamePlayed^ fileLinesToGamePlayed(array<System::String^>^ fileLines) {
 		}
 		return result;
 }
-//----------------------------------------------------------------------------------------------------------
-//----------------------------------------------------------------------------------------------------------
-//----------------------------------------------------------------------------------------------------------
-//----------------------------------------------------------------------------------------------------------
-//----------------------------------------------------------------------------------------------------------

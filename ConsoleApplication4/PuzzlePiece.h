@@ -1,7 +1,7 @@
 #pragma once
 
-#using <System.dll>
 #include <Windows.h>
+#using <System.dll>
 
 using namespace System;
 using namespace System::Collections::Generic;
@@ -29,6 +29,7 @@ private:
 public:
 
 	DateTime timePlaced;
+	bool isPlaced;
 	System::String^ name;
 
 	PuzzlePiece(void);
@@ -42,6 +43,7 @@ public:
 
 	void setTimePlacedToNow();
 	DateTime getTimePlaced() { return timePlaced; }
+	void setTimePlaced(DateTime tim) { this->timePlaced = tim; } 
 
 
 	// Get and Set Tracking Data

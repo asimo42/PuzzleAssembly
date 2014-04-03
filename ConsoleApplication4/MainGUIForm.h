@@ -1,3 +1,4 @@
+
 #include <Windows.h>
 #include "stdafx.h"
 #include <WinBase.h>
@@ -34,10 +35,10 @@ namespace PuzzleAssembly {
 
 			// ** THESE ARE INITIALIZED FOR TESTING PURPOSES ONLY - REMOVE FOR FINAL VERSION
 			turnAllButtonsOnExceptStop();
-			this->loadButton->Enabled = true;
 			this->gameRunning = false;
 			this->calibrating = false;
 			this->sessionDataSaved = false;
+			this->puzzleComboBox->Text = "KNOBPUZZLE1";
 
 			//see if the results directory for the patient results data exists yet. If not, create it. 
 			if (!System::IO::Directory::Exists(Constants::RESULTS_DIRECTORY)) {
@@ -80,7 +81,7 @@ namespace PuzzleAssembly {
 	public: bool gameRunning;
 	public: bool calibrating;
 	public: bool sessionDataSaved;
-	private: System::Windows::Forms::TextBox^  textBox1;
+
 	private: System::Windows::Forms::Label^  label1;
 	private: System::ComponentModel::IContainer^  components;
 	private: KnobPuzzle currentPuzzle;
@@ -90,7 +91,7 @@ namespace PuzzleAssembly {
 	private: System::Windows::Forms::Button^  runGameButton;
 	private: System::Windows::Forms::Button^  scoresButton;
 	private: System::Windows::Forms::Button^  calibrateButton;
-	private: System::Windows::Forms::Button^  loadButton;
+
 	private: System::Windows::Forms::Button^  stopGameButton;
 	private: System::Windows::Forms::Label^  label2;
 	private: System::Windows::Forms::Label^  label3;
@@ -104,6 +105,8 @@ namespace PuzzleAssembly {
 	private: System::Windows::Forms::ComboBox^  playerNameComboBox;
 
 	private: System::Windows::Forms::Label^  label6;
+	private: System::Windows::Forms::ComboBox^  puzzleComboBox;
+	private: System::Windows::Forms::Button^  helpButton;
 	private: System::Windows::Forms::Label^  label4;
 
 	protected: 
@@ -122,11 +125,9 @@ namespace PuzzleAssembly {
 		void InitializeComponent(void)
 		{
 			this->runGameButton = (gcnew System::Windows::Forms::Button());
-			this->textBox1 = (gcnew System::Windows::Forms::TextBox());
 			this->label1 = (gcnew System::Windows::Forms::Label());
 			this->scoresButton = (gcnew System::Windows::Forms::Button());
 			this->calibrateButton = (gcnew System::Windows::Forms::Button());
-			this->loadButton = (gcnew System::Windows::Forms::Button());
 			this->stopGameButton = (gcnew System::Windows::Forms::Button());
 			this->label2 = (gcnew System::Windows::Forms::Label());
 			this->label3 = (gcnew System::Windows::Forms::Label());
@@ -139,6 +140,8 @@ namespace PuzzleAssembly {
 			this->label5 = (gcnew System::Windows::Forms::Label());
 			this->playerNameComboBox = (gcnew System::Windows::Forms::ComboBox());
 			this->label6 = (gcnew System::Windows::Forms::Label());
+			this->puzzleComboBox = (gcnew System::Windows::Forms::ComboBox());
+			this->helpButton = (gcnew System::Windows::Forms::Button());
 			this->SuspendLayout();
 			// 
 			// runGameButton
@@ -154,17 +157,6 @@ namespace PuzzleAssembly {
 			this->runGameButton->Text = L"Run Game";
 			this->runGameButton->UseVisualStyleBackColor = true;
 			this->runGameButton->Click += gcnew System::EventHandler(this, &MainGUIForm::runGameButton_Click);
-			// 
-			// textBox1
-			// 
-			this->textBox1->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 20.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, 
-				static_cast<System::Byte>(0)));
-			this->textBox1->Location = System::Drawing::Point(17, 219);
-			this->textBox1->Name = L"textBox1";
-			this->textBox1->Size = System::Drawing::Size(350, 38);
-			this->textBox1->TabIndex = 6;
-			this->textBox1->Text = L"KNOBPUZZLE1";
-			this->textBox1->TextChanged += gcnew System::EventHandler(this, &MainGUIForm::textBox1_TextChanged);
 			// 
 			// label1
 			// 
@@ -205,19 +197,6 @@ namespace PuzzleAssembly {
 			this->calibrateButton->Text = L"Calibrate";
 			this->calibrateButton->UseVisualStyleBackColor = true;
 			this->calibrateButton->Click += gcnew System::EventHandler(this, &MainGUIForm::calibrateButton_Click);
-			// 
-			// loadButton
-			// 
-			this->loadButton->Enabled = false;
-			this->loadButton->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 15.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, 
-				static_cast<System::Byte>(0)));
-			this->loadButton->Location = System::Drawing::Point(368, 219);
-			this->loadButton->Name = L"loadButton";
-			this->loadButton->Size = System::Drawing::Size(172, 38);
-			this->loadButton->TabIndex = 10;
-			this->loadButton->Text = L"Load";
-			this->loadButton->UseVisualStyleBackColor = true;
-			this->loadButton->Click += gcnew System::EventHandler(this, &MainGUIForm::loadButton_Click);
 			// 
 			// stopGameButton
 			// 
@@ -355,12 +334,38 @@ namespace PuzzleAssembly {
 			this->label6->TabIndex = 22;
 			this->label6->Text = L"* Enter new name or choose\r\n   from dropdown list";
 			// 
+			// puzzleComboBox
+			// 
+			this->puzzleComboBox->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 18, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, 
+				static_cast<System::Byte>(0)));
+			this->puzzleComboBox->FormattingEnabled = true;
+			this->puzzleComboBox->Location = System::Drawing::Point(22, 225);
+			this->puzzleComboBox->Name = L"puzzleComboBox";
+			this->puzzleComboBox->Size = System::Drawing::Size(357, 37);
+			this->puzzleComboBox->TabIndex = 23;
+			this->puzzleComboBox->Text = L"<enter game>";
+			this->puzzleComboBox->Click += gcnew System::EventHandler(this, &MainGUIForm::puzzleComboBox_Click);
+			// 
+			// helpButton
+			// 
+			this->helpButton->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, 
+				static_cast<System::Byte>(0)));
+			this->helpButton->Location = System::Drawing::Point(816, 12);
+			this->helpButton->Name = L"helpButton";
+			this->helpButton->Size = System::Drawing::Size(26, 25);
+			this->helpButton->TabIndex = 24;
+			this->helpButton->Text = L"\?";
+			this->helpButton->UseVisualStyleBackColor = true;
+			this->helpButton->Click += gcnew System::EventHandler(this, &MainGUIForm::helpButton_Click);
+			// 
 			// MainGUIForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->BackColor = System::Drawing::Color::Beige;
 			this->ClientSize = System::Drawing::Size(854, 444);
+			this->Controls->Add(this->helpButton);
+			this->Controls->Add(this->puzzleComboBox);
 			this->Controls->Add(this->label6);
 			this->Controls->Add(this->playerNameComboBox);
 			this->Controls->Add(this->label5);
@@ -372,18 +377,12 @@ namespace PuzzleAssembly {
 			this->Controls->Add(this->label3);
 			this->Controls->Add(this->label2);
 			this->Controls->Add(this->stopGameButton);
-			this->Controls->Add(this->loadButton);
 			this->Controls->Add(this->calibrateButton);
 			this->Controls->Add(this->scoresButton);
 			this->Controls->Add(this->label1);
-			this->Controls->Add(this->textBox1);
 			this->Controls->Add(this->runGameButton);
-			this->HelpButton = true;
-			this->MaximizeBox = false;
-			this->MinimizeBox = false;
 			this->Name = L"MainGUIForm";
 			this->Text = L"Puzzle Assembly Assistant";
-			this->HelpButtonClicked += gcnew System::ComponentModel::CancelEventHandler(this, &MainGUIForm::MainGUIForm_HelpButtonClicked);
 			this->FormClosing += gcnew System::Windows::Forms::FormClosingEventHandler(this, &MainGUIForm::MainGUIForm_FormClosing);
 			this->ResumeLayout(false);
 			this->PerformLayout();
@@ -407,8 +406,8 @@ private: System::Void runGameButton_Click(System::Object^  sender, System::Event
 				 if(result == System::Windows::Forms::DialogResult::Yes)
 				 {
 					 System::String^ fileStr = Constants::RESULTS_DIRECTORY + userName;
-					System::IO::Directory::CreateDirectory(fileStr);	
-					Console::WriteLine("MainGuiForm.h::runGameButton_Click(): Created results directory " + fileStr);
+					 System::IO::Directory::CreateDirectory(fileStr);	
+					 Console::WriteLine("MainGuiForm.h::runGameButton_Click(): Created results directory " + fileStr);
 				 }
 				 // if user says no, then return. 
 				 else if (result == System::Windows::Forms::DialogResult::No) {
@@ -458,7 +457,7 @@ private: System::Void runGameButton_Click(System::Object^  sender, System::Event
 			 this->stopGameButton->Enabled = true;
 
 			 // now start the game by initializing the tracking. Pass in the puzzle. It will return the game stats for that game
-			 GamePlayed^ gameResults = initializeTracking( this->currentPuzzle.returnHandle(), userName);
+			 GamePlayedData^ gameResults = initializeTracking( this->currentPuzzle.returnHandle(), userName);
 			 
 			 //add new game results to the ScoreKeeper
 			 this->ScoreKeeper.AddNewGame(gameResults);
@@ -485,41 +484,44 @@ private: System::Void stopGameButton_Click(System::Object^  sender, System::Even
 		 }
 
 //----------------------------------------------------------------------------------------------------------
+// User clicks the "Performance" button
 private: System::Void scoresButton_Click(System::Object^  sender, System::EventArgs^  e) {
-			 // scores should probably be a tabbed display, e.g. this session's games, Progress to-date
-			 // we'll keep it a simple message box for now - We'll want a scrolling form later
-			System::String^ results = ScoreKeeper.showFinalResults();
-			//MessageBox::Show(results);
+
+			 // set up the form to display the results, and load it with the necessary data
 			ConsoleApplication4::displayResultsForm^ displayResults = gcnew ConsoleApplication4::displayResultsForm();
-			displayResults->initialPlayer = this->playerNameComboBox->Text;
-			displayResults->initialGame = this->textBox1->Text;
+			displayResults->currentPlayer = this->playerNameComboBox->Text;
+			displayResults->currentGame = this->puzzleComboBox->Text;
+			displayResults->recordKeeper = this->ScoreKeeper.returnHandle();
+			// show it as a dialog, so that it pulls focus and ends when the user clicks ok or cancel.
 			System::Windows::Forms::DialogResult dialogResult = displayResults->ShowDialog(); 
+			// don't need to do anything with the dialog result
 
 		 }
 
+// mini function to disable all buttons on the main GUI
 private: System::Void turnAllButtonsOff() {
 			 this->runGameButton->Enabled = false;
-			 this->loadButton->Enabled = false;
 			 this->calibrateButton->Enabled = false;
 			 this->scoresButton->Enabled = false;
 			 this->stopGameButton->Enabled = false;
 		 }
 
+// mini function to enable all buttons except the stop button (this is used whenever a game is running)
 private: System::Void turnAllButtonsOnExceptStop() {
 			 this->runGameButton->Enabled = true;
-			 this->loadButton->Enabled = true;
 			 this->calibrateButton->Enabled = true;
 			 this->scoresButton->Enabled = true;
 			 this->stopGameButton->Enabled = false;
 		 }
 //----------------------------------------------------------------------------------------------------------
+		 // Handle a user clicking the "Calibrate" button
 private: System::Void calibrateButton_Click(System::Object^  sender, System::EventArgs^  e) {
 
-			 // Lock down thread for entire calibration process to minimize conflicts
+			 // Lock down thread for entire calibration process to minimize conflicts. I don't know if this does anything
 			 HANDLE myMutex = CreateMutex(NULL, FALSE, (LPCWSTR) "calibrateButton_Click : loading and calibrating");
 			 WaitForSingleObject(myMutex, INFINITE);
 
-			 // load up puzzle if not already loaded (compare current KnobPuzzle to the textbox input)
+			 // load up puzzle if not already loaded (compare current KnobPuzzle to the combobox input)
 			 if (!this->currentPuzzle.checkIsInitialized(this->getCodeStringFromGUI())) {
 				 MessageBox::Show("Loading Puzzle");
 				 System::Console::WriteLine("MainGUIForm.h : calibrateButton_Click() : Loading Puzzle");
@@ -597,34 +599,18 @@ private: System::Void calibrateButton_Click(System::Object^  sender, System::Eve
 			 return;
 		 }
 
-//----------------------------------------------------------------------------------------------------------
-private: System::Void loadButton_Click(System::Object^  sender, System::EventArgs^  e) {
-
-			 // load puzzle from puzzle code box text and enable calibrate/run buttons.
-			 this->calibrateButton->Enabled = true;
-			 this->runGameButton->Enabled = true;
-			 int success = this->loadPuzzleFromCode();
-			 if (success == -1) {
-				 System::Console::WriteLine("MainGUIForm.h : loadButton_Click(): Error loading puzzle. \nPlease check code string");
-				 return;
-			 }
-			 // disable load button - to signify puzzle successfully loaded
-			 this->loadButton->Enabled = false;
-		 }
 
 //----------------------------------------------------------------------------------------------------------
 private: System::Void textBox1_TextChanged(System::Object^  sender, System::EventArgs^  e) {
 
 			 // if puzzle code box is blank, de-enable all buttons (because there is obviously no game to play)
-			 if (this->textBox1->Text->Length == 0) {
-				 this->loadButton->Enabled = false;
+			 if (this->puzzleComboBox->Text->Length == 0) {
 				 this->calibrateButton->Enabled = false;
 				 this->runGameButton->Enabled = false;
 			 }
 
 			 // otherwise enable load and run button (assumes a game has been entered)
 			 else {
-				 this->loadButton->Enabled = true; 
 				 this->calibrateButton->Enabled = true;
 				 this->runGameButton->Enabled = true;
 			 }
@@ -663,14 +649,6 @@ private: int loadPuzzleFromCode() {
 				 return success;
 			 }
 
-			 // test code for importing drawing info::
-			 //int Xpos = this->currentPuzzle.getPieceList()[0]->getShapePointX();
-			 //int Ypos = this->currentPuzzle.getPieceList()[0]->getShapePointY();
-			 //System::String^ name = this->currentPuzzle.getPieceList()[0]->getName();
-			 //System::String^ str = "Shape Drawing location for Piece: " + name + " : XPos = " + Xpos + "  Ypos = " + Ypos;
-			 //System::Windows::Forms::MessageBox::Show(str);
-			 // :: end test code
-
 			 return success;
 		 }
 
@@ -687,24 +665,19 @@ private: System::Void MainGUIForm_FormClosing(System::Object^  sender, System::W
 				 Console::WriteLine("MainGUIForm.h: MainGUIForm_FormClosing(): attempted to exit main gui during calibration. Cancelled exit.");
 				 e->Cancel = true;
 			 } 
-			 if (!this->sessionDataSaved) {			 
-				 // ask user if they want to save the session results
-				System::Windows::Forms::DialogResult result = MessageBox::Show("Do you want to save the game results for this session?", "Warning", MessageBoxButtons::YesNo, MessageBoxIcon::Warning);
+			 //if (!this->sessionDataSaved) {			 
+				// // ask user if they want to save the session results
+				//System::Windows::Forms::DialogResult result = MessageBox::Show("Do you want to save the game results for this session?", "Warning", MessageBoxButtons::YesNo, MessageBoxIcon::Warning);
 
-				// if user says yes, save the settings to the hardcoded location (user doesn't select)
-				 if(result == System::Windows::Forms::DialogResult::Yes)
-				 {
-					 // here I need to let the user select the childs name
-				 }
+				//// if user says yes, save the settings to the hardcoded location (user doesn't select)
+				// if(result == System::Windows::Forms::DialogResult::Yes)
+				// {
+				//	 // here I need to let the user select the Players name
+				// }
 
-			 }
+			 //}
 		 }
 
-//----------------------------------------------------------------------------------------------------------
-// help functionality under construction
-private: System::Void MainGUIForm_HelpButtonClicked(System::Object^  sender, System::ComponentModel::CancelEventArgs^  e) {
-			 MessageBox::Show("You Clicked the Help Button! Help functionality under construction.");
-		 }
 
 // if user selects a level of difficulty box, set that box to check and uncheck the other difficulty boxes. 
 private: System::Void level2CheckBox_CheckedChanged(System::Object^  sender, System::EventArgs^  e) {
@@ -737,7 +710,7 @@ private: System::Void levelDescriptionsButton_Click(System::Object^  sender, Sys
 //----------------------------------------------------------------------------------------------------------
 // mini function that pulls the game code from the GUI (isolated in case text input method changes
 private: System::String^ getCodeStringFromGUI() {
-			 System::String^ resultString = this->textBox1->Text;
+			 System::String^ resultString = this->puzzleComboBox->Text;
 			 return resultString;
 		 }
 //----------------------------------------------------------------------------------------------------------
@@ -751,7 +724,7 @@ private: int getLevelOfDifficulty() {
 		 }
 
 //----------------------------------------------------------------------------------------------------------
-// handle user clicking on the username text box. First click triggers generation of drop-down menu for already-used names
+// handle user clicking on the username text box. Generates drop down menu options
 private: System::Void playerNameComboBox_Click(System::Object^  sender, System::EventArgs^  e) {
 
 			 // This will be called the first time the box is clicked (when the initial prompt <enter name> is still displayed)
@@ -759,14 +732,71 @@ private: System::Void playerNameComboBox_Click(System::Object^  sender, System::
 
 				 // get rid of <enter name> prompt
 				 playerNameComboBox->Text = "";
-
-				 // find add list of kids that currently have records to drop down list. Each kid should have their own folder in the patient results mother-folder
-				 array<System::String^>^ patientNames = System::IO::Directory::GetDirectories( Constants::RESULTS_DIRECTORY );
-				 for (int i = 0; i < patientNames->Length; i++) {
-					 patientNames[i] = System::IO::Path::GetFileNameWithoutExtension(patientNames[i]);
-				 }
-				 playerNameComboBox->Items->AddRange(patientNames);
 			 }
+			 playerNameComboBox->Items->Clear();
+			 // find add list of kids that currently have records to drop down list. Each kid should have their own folder in the patient results mother-folder
+			 array<System::String^>^ patientNames = System::IO::Directory::GetDirectories( Constants::RESULTS_DIRECTORY );
+			 for (int i = 0; i < patientNames->Length; i++) {
+				patientNames[i] = System::IO::Path::GetFileNameWithoutExtension(patientNames[i]);
+			 }
+			 playerNameComboBox->Items->AddRange(patientNames);
+		 }
+
+// handle user clicking on the game text box. Generates drop down menu options
+private: System::Void puzzleComboBox_Click(System::Object^  sender, System::EventArgs^  e) {
+
+			 // This will be called the first time the box is clicked (when the initial prompt <enter name> is still displayed)
+			 if (puzzleComboBox->Text->Equals("<enter game>") || puzzleComboBox->Text->Equals("KNOBPUZZLE1")) { //CHANGEME
+
+				 // get rid of <enter name> prompt
+				 puzzleComboBox->Text = "";
+
+				 // clear out current drop down items
+				 puzzleComboBox->Items->Clear();
+
+				 // find all files that contain the word "KNOBPUZZLE"
+				 array<System::String^>^ fileNames = System::IO::Directory::GetFiles( Constants::GAME_INPUT_DIRECTORY );
+				 List<System::String^>^ matches = gcnew List<System::String^>();
+				 for (int i = 0; i < fileNames->Length; i++) {
+					 System::String^ tmp = System::IO::Path::GetFileNameWithoutExtension(fileNames[i]);
+					 // find knobpuzzle files, and pull the name from them
+					 if (tmp->Contains("KNOBPUZZLE")) {   /// CHANGE THIS ONCE I CREATE A FOLDER FOR GAME INPUTS
+						System::String^ delimStr = "_";
+						array<Char>^ delimiter = delimStr->ToCharArray();
+					    array<System::String^>^ tokens = tmp->Split(delimiter);
+						tmp = tokens[0];
+						if (!matches->Contains(tmp)) {
+							matches->Add(tmp);
+						}
+					 }
+				 }
+				 // Now need to convert list back to an array
+				 array<System::String^>^ result = gcnew array<System::String^>(matches->Count);
+				 for (int i = 0; i < matches->Count; i++) {
+					 result[i] = matches[i];
+				 }
+
+				 // add puzzles to drop down list
+				 puzzleComboBox->Items->AddRange(result);
+			 }
+		 }
+private: System::Void helpButton_Click(System::Object^  sender, System::EventArgs^  e) {
+			
+			 // pull all text from the help file into string array
+			 array<System::String^>^ fileStrings = getStringArrayFromFile(Constants::HELP_FILE);
+
+			// if that didn't work, return an error
+			 if (fileStrings[0]->Equals("Error")) {
+				 MessageBox::Show("Error: can't find help information :(");
+				 return;
+			 }
+
+			// now cat all the strings together and show
+			 System::String^ final = "";
+			 for each (System::String^ line in fileStrings) {
+				 final = final + line + Environment::NewLine;  
+			 }
+			 MessageBox::Show(final);
 		 }
 };
 }

@@ -61,6 +61,7 @@ protected:
 
 			//handling placement of pieces (in progress)
 		void processPlacementOfPiece(TrackedPiece trackedpiece);
+		//void allPiecesPlacedCorrectly();
 
 
 		// test cases

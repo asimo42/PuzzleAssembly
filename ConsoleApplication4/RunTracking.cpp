@@ -79,7 +79,11 @@ void RunTracking::endTrack() {
 		// destroy tracking windows
 		cv::destroyAllWindows();
 
-		// compile record for game
+		// if game was exited early, tell gameRecord to handle what we have
+		if (this->Game->isEndGame()) {
+			this->gameRecord->gameEndedEarly();
+		}
+		// if game was completed, compile record for game
 		this->gameRecord->setTimeCompletedToNow();
 		this->gameRecord->compileData();
 
@@ -87,7 +91,7 @@ void RunTracking::endTrack() {
 }
 
 //----------------------------------------------------------------------------------------------------------
-
+// return the gamePlayed^ instance that holds the scorekeeping data
 gcroot<GamePlayed^> RunTracking::returnScore() {
         return this->gameRecord;
 }
@@ -96,9 +100,13 @@ gcroot<GamePlayed^> RunTracking::returnScore() {
 // once you've identified which piece was placed, and that it was placed, handle it (IN PROGRESS!!!)
 void RunTracking::processPlacementOfPiece(TrackedPiece trackedpiece) 
 {
-	// first, get the current time
-	double placeTime = getElapsedSeconds(this->gameRecord->getTimeStarted()->Ticks);
-	// then match the tracked piece to it's corresponding PuzzlePiece
-	// probably by name
-	// then pull the time of placement and give it to the PuzzlePiece
+	// find corresponding PuzzlePiece^ in KnobPuzzleInstance, and set it's time placed to now.
+	for each (PuzzlePiece^ piece in this->Game->getPieceList()) {
+		if (piece->getName()->Equals(stdStringToSystemString(trackedpiece.getName()))) {
+			piece->setTimePlacedToNow();
+			Console::WriteLine("RunTracking.cpp: processPlacementOfPiece() : piece placed!! - " + piece->getName());
+		}
+	}
 }
+
+////----------------------------------------------------------------------------------------------------------

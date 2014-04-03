@@ -94,7 +94,7 @@ namespace ConsoleApplication4 {
 			this->okButton->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Right));
 			this->okButton->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 14.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, 
 				static_cast<System::Byte>(0)));
-			this->okButton->Location = System::Drawing::Point(322, 214);
+			this->okButton->Location = System::Drawing::Point(401, 214);
 			this->okButton->Name = L"okButton";
 			this->okButton->Size = System::Drawing::Size(110, 60);
 			this->okButton->TabIndex = 0;
@@ -116,9 +116,11 @@ namespace ConsoleApplication4 {
 			// label2
 			// 
 			this->label2->AutoSize = true;
-			this->label2->Location = System::Drawing::Point(16, 44);
+			this->label2->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, 
+				static_cast<System::Byte>(0)));
+			this->label2->Location = System::Drawing::Point(12, 42);
 			this->label2->Name = L"label2";
-			this->label2->Size = System::Drawing::Size(411, 78);
+			this->label2->Size = System::Drawing::Size(505, 96);
 			this->label2->TabIndex = 2;
 			this->label2->Text = resources->GetString(L"label2.Text");
 			// 
@@ -146,7 +148,7 @@ namespace ConsoleApplication4 {
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-			this->ClientSize = System::Drawing::Size(444, 286);
+			this->ClientSize = System::Drawing::Size(523, 286);
 			this->Controls->Add(this->currentPieceLabel);
 			this->Controls->Add(this->label3);
 			this->Controls->Add(this->label2);
@@ -239,7 +241,7 @@ namespace ConsoleApplication4 {
 			this->calibrator.Stop();
 			while (!this->calibrator.IS_STOPPED) {
 				 Console::WriteLine("Waiting for calibrator thread to end");
-				 System::Threading::Thread::Sleep(5);
+				 System::Threading::Thread::Sleep(10);
 			 }
 			 // now abort the calibration thread and join it to the current one
 			 this->myThreadShell.myThread->Abort();

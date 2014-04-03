@@ -1,4 +1,5 @@
 #pragma once
+#include <Windows.h>
 #include <string>
 #include <opencv2\opencv.hpp>
 #include <string>
@@ -6,14 +7,18 @@
 #include <process.h>
 #using <System.dll>
 #include <stdio.h>
-#include <Windows.h>
 #include <deque>
+#include <vcclr.h>
+
 
 using namespace std;
 using namespace cv;
 
 class TrackedPiece
 {
+public: bool timeLock;
+		bool isTimeLocked() { return timeLock; }
+		void setTimeLock() { timeLock = true; }
 private:
 
 	HANDLE myMutex;

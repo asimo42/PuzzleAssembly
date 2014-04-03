@@ -324,7 +324,7 @@ private: System::Void findDatesFromUserAndGame() {
 
 				 // if the game doesn't match, move on
 				 if (!gameToken->Equals(game)) { continue; }
-				 System::String^ dateStr = tokens[2] + " " + tokens[3] + " " + tokens[4];
+				 System::String^ dateStr = tokens[3] + " " + tokens[4] + " " + tokens[2];
 				 dateListBox->Items->Add(dateStr);
 			 }
 		 }

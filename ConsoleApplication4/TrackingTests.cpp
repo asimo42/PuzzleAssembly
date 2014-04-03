@@ -55,7 +55,7 @@ void RunTracking::Test2() {
 	int placeTime;
 	for each (PuzzlePiece^ piece in this->Game->getPieceList())
 	{
-		placeTime = getElapsedSeconds(this->gameRecord->getTimeStarted()->Ticks);
+		placeTime = getElapsedSeconds(this->gameRecord->getTimeStarted().Ticks);
 		piece->setTimePlacedToNow();
 		Debug::WriteLine("time is " + placeTime);
 		System::Threading::Thread::Sleep(1); // wait for 1 ms

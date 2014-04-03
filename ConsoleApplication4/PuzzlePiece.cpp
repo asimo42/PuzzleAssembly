@@ -26,6 +26,7 @@ void PuzzlePiece::Initialize()
 	shape_height = 0;
 	shape_length = 0;
 	shape_radius = 0;
+	isPlaced = false;
 }
 
 PuzzlePiece::~PuzzlePiece(void)
@@ -58,7 +59,7 @@ PuzzlePiece::PuzzlePiece(System::String^ piece_name, List<int>^ HSVmin, List<int
 
 void PuzzlePiece::setTimePlacedToNow()
 {
-	//this->timePlaced = gcnew System::DateTime;
+	this->isPlaced = true;
 	this->timePlaced = this->timePlaced.Now;
 }
 

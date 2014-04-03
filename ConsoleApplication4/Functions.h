@@ -8,6 +8,8 @@
 #include "GameBoard.h"
 #include "ScoreKeeping.h"
 
+
+
 #ifndef GUARD_J
 #define GUARD_J
 
@@ -17,7 +19,7 @@ using namespace System::Collections::Generic;
 // Define any constants that will be repeated or that may be changed. EX) int x = Constants::CONSTANT_X
 ref class Constants {
 public:
-	static const int TESTNUMBER = 1;	// chose a test number to run. 0 = not a test
+	static const int TESTNUMBER = 0;	// chose a test number to run. 0 = not a test
 
 	//OPENCV related defaults ---
 
@@ -39,14 +41,16 @@ public:
     static const int DEFAULT_V_MAX= 256;
 
 	static System::String^ GAME_INPUT_DIRECTORY = System::Windows::Forms::Application::StartupPath + "/../";
+	static System::String^ HELP_FILE = System::Windows::Forms::Application::StartupPath + "/../Help.txt";
 	static System::String^ RESULTS_DIRECTORY = System::Windows::Forms::Application::StartupPath + "/PatientPerformanceData/";
+
 };
 
 
 //--- FROM FUNCTIONS.CPP----
 
 // Starting OpenCV tracking
-GamePlayed^ initializeTracking(KnobPuzzle^ %Game, System::String^ userName);
+GamePlayedData^ initializeTracking(KnobPuzzle^ %Game, System::String^ userName);
 
 // Unmanaged <--> Managed Conversions
 List<int>^ scalarToList(cv::Scalar scalar);
@@ -76,6 +80,7 @@ int secondsBetweenTwoDateTimes(DateTime time1, DateTime time2);
 // performance data IO
 List<System::String^>^ findRecordFiles(System::String^ player, System::String^ game, array<System::String^>^ days);
 GamePlayed^ fileLinesToGamePlayed(array<System::String^>^ fileLines);
+System::String^ buildOutputFileName(System::String^ player, System::String^ game, System::String^ month, System::String^ day, System::String^ year);
 
 // workaround hack to declare a thread as a global variable in a form
 ref class ThreadShell {
@@ -93,5 +98,6 @@ void on_trackbar( int, void* );  // this one won't compile as part of RunTrackin
 // from LOGGING.CPP (not currently used)----
 
 void writeToLog(System::String^ myMessage);
+
 
 #endif

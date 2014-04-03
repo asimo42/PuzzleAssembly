@@ -15,6 +15,8 @@
 
 #include "stdafx.h"
 
+#include <Windows.h>	// for timer
+#include <WinBase.h>	//for sleep()
 #include <vcclr.h>
 #include <iostream>
 #include <string>
@@ -23,8 +25,7 @@
 #include "Functions.h"
 #include "Shape.h"
 #include "RunTracking.h"
-#include <Windows.h>	// for timer
-#include <WinBase.h>	//for sleep()
+
 
 
 #define _CRTDBG_MAP_ALLOC
@@ -244,8 +245,9 @@ VOID CALLBACK timerTick(  _In_  HWND hwnd, _In_  UINT uMsg, _In_  UINT_PTR idEve
 			status = pieces[i].checkForMovement(false);
 			pieces[i].checkIfPlacedCorrectly();
 			bool allCorrect = checkIfAllCorrect();
-			if (allCorrect)
+			if (allCorrect) {
 				cout << "All pieces placed correctly!" << endl;
+			}
 		}
 
 		//Depending of the status returned above, this will change 
@@ -418,12 +420,28 @@ int RunTracking::startTrack()
 		imshow(original_window, camera_feed);
 
 		waitKey(30);
-		
 
-		if (this->Game->isEndGame()) {
+		// check if all pieces are placed correctly
+		bool allCorrect = checkIfAllCorrect();
+		if (allCorrect) {
+			System::Console::WriteLine("Tracking.cpp::startTrack() : All pieces placed correctly!");
+		}
+		// check if individual pieces are placed correctly
+		for(int i = 0; i < pieces.size(); ++i)
+		{	
+			// if piece is already placed, continue
+			if (pieces[i].isTimeLocked()) { continue; }
+			// otherwise check. If this is the first time finding it's correct, then process placement
+			bool correct = pieces[i].checkIfPlacedCorrectly();
+			if (correct && !pieces[i].isTimeLocked()) {
+				processPlacementOfPiece(pieces[i]);
+				pieces[i].setTimeLock();
+			}
+		}
+
+		if (this->Game->isEndGame() || allCorrect) {
 			KillTimer(hwnd1, myTimer); // kill the timers
 			KillTimer(hwnd2, myTimer2);
-			//puzzle_board.release();
 			destroyAllWindows();
 			endTrack();
 			_CrtDumpMemoryLeaks();
