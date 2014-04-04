@@ -11,7 +11,6 @@ e.g. initializing, starting, ending.  Tracking functions are located in "Trackin
 // initialize all variables upon creation of class 
 void RunTracking::Initialize() {
 
-		// SET THIS VARIABLE FOR TEST CASES. 0 = NOT TEST. 1,2,3,4... for different tests. 
 		this->TestCase = Constants::TESTNUMBER;
 
         this->original_window = "Original Capture";
@@ -45,6 +44,10 @@ void RunTracking::Initialize() {
 
 
 		this->STOP = false;
+/*
+		string soundfile = "C:\\success.wav";
+		playSound(soundfile);
+		*/
 }
 //----------------------------------------------------------------------------------------------------------
 

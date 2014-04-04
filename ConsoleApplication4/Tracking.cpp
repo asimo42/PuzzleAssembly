@@ -40,7 +40,11 @@ using namespace std;
 vector<TrackedPiece> pieces;
 
 Mat puzzle_board;				//Puzzle board image for drawing shapes on
-
+/*
+int RunTracking::playSound(string filename) {
+	sound_player.playSound(filename);
+}
+*/
 void on_trackbar( int, void* )
 {//This function gets called whenever a
 	// trackbar position is changed
@@ -427,10 +431,12 @@ int RunTracking::startTrack()
 			System::Console::WriteLine("Tracking.cpp::startTrack() : All pieces placed correctly!");
 		}
 		// check if individual pieces are placed correctly
+		allCorrect = true;
 		for(int i = 0; i < pieces.size(); ++i)
 		{	
 			// if piece is already placed, continue
 			if (pieces[i].isTimeLocked()) { continue; }
+			if (!pieces[i].isTimeLocked()) { allCorrect = false; }
 			// otherwise check. If this is the first time finding it's correct, then process placement
 			bool correct = pieces[i].checkIfPlacedCorrectly();
 			if (correct && !pieces[i].isTimeLocked()) {

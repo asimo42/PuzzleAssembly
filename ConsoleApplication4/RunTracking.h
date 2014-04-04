@@ -8,6 +8,7 @@ the Run button on the GUI
 #include <vcclr.h>
 #include <opencv2\opencv.hpp>        //includes all OpenCV headers
 #include "Shape.h"
+#include "SoundPlayer.h"
 
 #define _CRTDBG_MAP_ALLOC
 
@@ -38,6 +39,7 @@ class RunTracking
 		virtual void setPlayer(System::String^ name) { this->gameRecord->setPlayer(name); }
         gcroot<GamePlayed^> returnScore();
 		bool checkIfAllPiecesCorrect();
+//		int playSound(string filename);
 
 
 protected:
@@ -113,5 +115,8 @@ private:
 
         RunTracking(const RunTracking&);  // Not implemented.
         void operator=(const RunTracking&);  // Not implemented.
+
+		// Used to play sounds.
+//		SoundPlayer sound_player;
 
 };

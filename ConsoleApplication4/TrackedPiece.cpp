@@ -32,6 +32,7 @@ TrackedPiece::TrackedPiece(std::string piece_name)
 {
 	setName(piece_name);
 	isMoving = false;
+	timeLock = false;
 }
 
 TrackedPiece::TrackedPiece(std::string piece_name, Scalar HSVmin, Scalar HSVmax)
@@ -40,6 +41,7 @@ TrackedPiece::TrackedPiece(std::string piece_name, Scalar HSVmin, Scalar HSVmax)
 	setHSVmin(HSVmin);
 	setHSVmax(HSVmax);
 	isMoving = false;
+	timeLock = false;
 }
 
 TrackedPiece::TrackedPiece(std::string piece_name, Scalar HSVmin, Scalar HSVmax, int xdest, int ydest)
@@ -50,6 +52,7 @@ TrackedPiece::TrackedPiece(std::string piece_name, Scalar HSVmin, Scalar HSVmax,
 	setXDest(xdest);
 	setYDest(ydest);
 	isMoving = false;
+	timeLock = false;
 }
 
 int TrackedPiece::checkForMovement(bool justMoved)
