@@ -25,7 +25,7 @@
 #include "Functions.h"
 #include "Shape.h"
 #include "RunTracking.h"
-
+#include <msclr\marshal_cppstd.h> //to convert managed string to std::string
 
 
 #define _CRTDBG_MAP_ALLOC
@@ -34,6 +34,7 @@
 
 using namespace cv;
 using namespace std;
+using namespace msclr::interop;
 
 //
 // Global for now, should not be though
@@ -42,7 +43,10 @@ vector<TrackedPiece> pieces;
 Mat puzzle_board;				//Puzzle board image for drawing shapes on
 
 int RunTracking::playSoundEffect(string filename) {
-	sound_player->play_Sound(filename);
+	System::String^ soundfile = System::Windows::Forms::Application::StartupPath + "/../../Sounds/";
+	string stdsoundfile = marshal_as<string>(soundfile);
+	stdsoundfile += filename;
+	sound_player->play_Sound(stdsoundfile);
 	return 0;
 }
 
@@ -447,7 +451,8 @@ int RunTracking::startTrack()
 			bool correct = pieces[i].checkIfPlacedCorrectly();
 			if (correct && !pieces[i].isTimeLocked()) {
 				// Play placed correctly sound here
-//				sound_player->play_Sound("
+				playSoundEffect(sound_piece_placed1);
+
 				processPlacementOfPiece(pieces[i]);
 				pieces[i].setTimeLock();
 			}
@@ -457,6 +462,7 @@ int RunTracking::startTrack()
 			if(allCorrect)
 			{
 				//play game completed sound
+				playSoundEffect(sound_game_completed);
 			}
 			KillTimer(hwnd1, myTimer); // kill the timers
 			KillTimer(hwnd2, myTimer2);

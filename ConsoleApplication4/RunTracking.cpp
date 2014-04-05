@@ -7,9 +7,6 @@ e.g. initializing, starting, ending.  Tracking functions are located in "Trackin
 #include <opencv2\opencv.hpp>        
 #include "Functions.h"
 #include "RunTracking.h"
-#include <msclr\marshal_cppstd.h> //to convert managed string to std::string
-
-using namespace msclr::interop;
 
 // initialize all variables upon creation of class 
 void RunTracking::Initialize() {
@@ -45,17 +42,17 @@ void RunTracking::Initialize() {
 		//// set up the start time to now. All scores will be measured against this start time
 		//DateTime tim = DateTime::Now;
 
+		// sound file names
+		sound_piece_placed1 = "pieceplaced1.wav";
+		sound_game_start = "level_complete.wav";
+		sound_game_completed = "level_complete.wav";
 
 		this->STOP = false;
 
 		sound_player = new SoundEffectPlayer();
 
 		//Can play game start sound here
-//		string soundfile = "C:\\success.wav";
-		System::String^ soundfile = System::Windows::Forms::Application::StartupPath + "/../../Sounds/pieceplaced1.wav";
-		string stdsoundfile = marshal_as<string>(soundfile);
-//		string soundfile = "/../../Sounds/pieceplaced1.wav";
-		sound_player->play_Sound(stdsoundfile);
+		playSoundEffect(sound_game_start);
 		
 }
 //----------------------------------------------------------------------------------------------------------

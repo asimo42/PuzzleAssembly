@@ -6,9 +6,11 @@
 #include <string>
 #include <vector>
 #include "MainGUIForm.h"
+#include <msclr\marshal_cppstd.h> //to convert managed string to std::string
 //#include <opencv2\opencv.hpp>	//includes all OpenCV headers
 
 using namespace PuzzleAssembly;
+using namespace msclr::interop;
 
 [STAThreadAttribute]
 int _tmain(int argc, _TCHAR* argv[]) 
@@ -28,8 +30,11 @@ int _tmain(int argc, _TCHAR* argv[])
 	Application::SetCompatibleTextRenderingDefault(false); 
 
 	// Run external executable to set camera settings
-	// TODO: Can't get this to work... have to run the CameraPrefs.exe manually
-	//system("C:/Users/Casey/Documents/Visual Studio 2012/Projects/PuzzleAssembly/CameraPrefs/CameraPrefs.exe");
+	// path can't have spaces in it or it won't work
+	System::String^ cameraprefs = System::Windows::Forms::Application::StartupPath + "/../../CameraPrefs/CameraPrefs.exe";
+	string stdcameraprefs = marshal_as<string>(cameraprefs);
+//	System::Console::WriteLine(cameraprefs);
+	system(stdcameraprefs.c_str());
 
 	// Create the main window and run it
 	Application::Run(gcnew PuzzleAssembly::MainGUIForm());

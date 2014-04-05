@@ -119,4 +119,9 @@ private:
 		// Used to play sounds.
 		SoundEffectPlayer* sound_player;
 
+		// sound filenames
+		string sound_piece_placed1;
+		string sound_game_start;
+		string sound_game_completed;
+
 };
