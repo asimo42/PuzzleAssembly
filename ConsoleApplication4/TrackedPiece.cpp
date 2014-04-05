@@ -75,14 +75,14 @@ int TrackedPiece::checkForMovement(bool justMoved)
 	int numTrues = count(movementHistory.begin(), movementHistory.end(), true);
 	//cout << "Num trues " << name << ": " << numTrues << endl;
 
-	if (numTrues >= 4  //&& EASY)
+	if (numTrues >= 4  )//&& EASY)
 	{
 		//clearStatus();
 		cout << name << " **TURN OFF**" << endl;
 		flashing = true;
 		return 3;
 	}
-	else if (numTrues >= 3 //&& (EASY || MEDIUM))
+	else if (numTrues >= 3 )//&& (EASY || MEDIUM))
 	{
 		//clearStatus();
 		cout << name << " **DIM**" << endl;
