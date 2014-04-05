@@ -69,7 +69,7 @@
     <ClInclude Include="selectOldResultsForm.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SoundPlayer.h">
+    <ClInclude Include="SoundEffectPlayer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -134,7 +134,7 @@
     <ClCompile Include="selectOldResultsForm.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SoundPlayer.cpp">
+    <ClCompile Include="SoundEffectPlayer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

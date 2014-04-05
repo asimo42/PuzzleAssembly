@@ -3,12 +3,11 @@ OpenCV down once the game is completed or stopped.  An instance of this class is
 the Run button on the GUI
 */
 #pragma once
-
+//#include "SoundEffectPlayer.h"
 #include "stdafx.h"
 #include <vcclr.h>
 #include <opencv2\opencv.hpp>        //includes all OpenCV headers
 #include "Shape.h"
-#include "SoundPlayer.h"
 
 #define _CRTDBG_MAP_ALLOC
 
