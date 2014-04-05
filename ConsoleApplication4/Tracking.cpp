@@ -224,9 +224,10 @@ VOID CALLBACK timerTick(  _In_  HWND hwnd, _In_  UINT uMsg, _In_  UINT_PTR idEve
 {
 	int thresh = 40;
 
-	int status = 0;
+	
 	for(int i = 0; i < pieces.size(); ++i)
 	{	
+		int status = 0;
 		if(pieces[i].getXPos() > (pieces[i].getLastxPos() + thresh) || pieces[i].getXPos() < (pieces[i].getLastxPos() - thresh))
 		{
 			pieces[i].setLastxPos(pieces[i].getXPos());
@@ -252,8 +253,9 @@ VOID CALLBACK timerTick(  _In_  HWND hwnd, _In_  UINT uMsg, _In_  UINT_PTR idEve
 
 		//Depending of the status returned above, this will change 
 		//if all the other pieces are turned off, turned on, etc...
-		if (status == 1 || status == 0)
+		if (status == 1 /*|| status == 0*/)
 		{
+			//Turn on all other pieces
 			for(int j = 0; j < pieces.size(); j++)
 				if (i != j)
 				{
@@ -262,6 +264,7 @@ VOID CALLBACK timerTick(  _In_  HWND hwnd, _In_  UINT uMsg, _In_  UINT_PTR idEve
 		}
 		else if (status == 2)
 		{
+			//Dim all other pieces
 			for(int j = 0; j < pieces.size(); j++)
 				if (i != j)
 				{
@@ -271,6 +274,7 @@ VOID CALLBACK timerTick(  _In_  HWND hwnd, _In_  UINT uMsg, _In_  UINT_PTR idEve
 		}
 		else if (status == 3)
 		{
+			//Turn off all other pieces
 			for(int j = 0; j < pieces.size(); j++)
 				if (i != j)
 				{
@@ -301,6 +305,7 @@ VOID CALLBACK timerFlash(  _In_  HWND hwnd, _In_  UINT uMsg, _In_  UINT_PTR idEv
 		//Then check if it should be turned off
 		else if (pieces[i].isTurnedOff())
 		{
+			cout << "TURNING OFF " << pieces[i].getName() << endl;
 			pieces[i].turnOff(puzzle_board);
 		}
 		//If its not doing anything special, then make sure that it is turned on

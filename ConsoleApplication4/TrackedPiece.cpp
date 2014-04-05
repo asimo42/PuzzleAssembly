@@ -72,14 +72,14 @@ int TrackedPiece::checkForMovement(bool justMoved)
 	int numTrues = count(movementHistory.begin(), movementHistory.end(), true);
 	//cout << "Num trues " << name << ": " << numTrues << endl;
 
-	if (numTrues >= 8)
+	if (numTrues >= 4  //&& EASY)
 	{
 		//clearStatus();
 		cout << name << " **TURN OFF**" << endl;
 		flashing = true;
 		return 3;
 	}
-	else if (numTrues >= 3)
+	else if (numTrues >= 3 //&& (EASY || MEDIUM))
 	{
 		//clearStatus();
 		cout << name << " **DIM**" << endl;
@@ -95,7 +95,6 @@ int TrackedPiece::checkForMovement(bool justMoved)
 	}
 	else
 	{
-		clearStatus();
 		flashing = false;	// stops flashing
 		return 0;
 	}
@@ -148,11 +147,8 @@ void TrackedPiece::toggle(Mat &image)
 void TrackedPiece::turnOff(Mat &image)
 {
 	Shape shapes(&image);
-	if(isOn())
-	{
-		shapes.Draw_Shape(*this, 0);
-		on = false;
-	}
+	shapes.Draw_Shape(*this, 0);
+	on = false;
 	imshow("Puzzle Board Window", image);
 }
 
