@@ -204,6 +204,24 @@ namespace ConsoleApplication4 {
 					 // make the main calibration form invisible
 					 this->Visible = false;
 
+					 // display the puzzle board
+					Mat puzzle_board;
+					Shape shapes(&puzzle_board);
+					shapes.setImage(&puzzle_board);
+					shapes.Clear_To_Black();	// Must clear to black first, otherwise get exception
+					// Magic numbers below are coordinates from trail and error on 1280x1024 screen
+					shapes.setColor(Scalar(0, 0, 255));
+					shapes.Draw_Circle(cv::Point(383, 244), 125, -1);
+					shapes.setColor(cv::Scalar(255, 0, 0));
+					shapes.Draw_Square(cv::Point(748, 128), 238, -1);
+					shapes.setColor(Scalar(255, 0, 255));
+					shapes.Draw_Triangle(cv::Point(220, 600), 266, -1);
+					shapes.setColor(Scalar(0, 255, 0));
+					shapes.Draw_Rectangle(cv::Point(483, 634), 287, 175, -1);
+					shapes.setColor(Scalar(0, 255, 255));
+					shapes.Draw_Pentagon(cv::Point(1056, 585), 173, -1);
+					imshow("game board", puzzle_board);
+
 					 //pass puzzle class over to color form, launch it, and wait for it to return a dialogresult
 					 this->colorForm->puzzle = this->puzzle;
 					 System::Windows::Forms::DialogResult dialogResult = colorForm->ShowDialog(); 
@@ -227,25 +245,6 @@ namespace ConsoleApplication4 {
 					 // change current status from 'calibrating colors' to 'waiting for user to place pieces'
  					 this->calibratingColors = false;
 					 this->waitingToPlacePieces = true;
-
-
-					Mat puzzle_board;
-					Shape shapes(&puzzle_board);
-					shapes.setImage(&puzzle_board);
-					shapes.Clear_To_Black();	// Must clear to black first, otherwise get exception
-					// Magic numbers below are coordinates from trail and error on 1280x1024 screen
-					shapes.setColor(Scalar(0, 0, 255));
-					shapes.Draw_Circle(cv::Point(383, 244), 125, -1);
-					shapes.setColor(cv::Scalar(255, 0, 0));
-					shapes.Draw_Square(cv::Point(748, 128), 238, -1);
-					shapes.setColor(Scalar(255, 0, 255));
-					shapes.Draw_Triangle(cv::Point(220, 600), 266, -1);
-					shapes.setColor(Scalar(0, 255, 0));
-					shapes.Draw_Rectangle(cv::Point(483, 634), 287, 175, -1);
-					shapes.setColor(Scalar(0, 255, 255));
-					shapes.Draw_Pentagon(cv::Point(1056, 585), 173, -1);
-					imshow("game board", puzzle_board);
-
 
 					//re enable the next button
 					this->calibNextButton->Enabled = true;
@@ -285,6 +284,10 @@ namespace ConsoleApplication4 {
 
 // If this form is closed prematurely, close the spawned ColorCalibrationForm, which should stop any threads running there. 
 private: System::Void CalibrationMainPrompt_FormClosing(System::Object^  sender, System::Windows::Forms::FormClosingEventArgs^  e) {
+
+			 // get rid of gameboard picture
+			 cv::destroyAllWindows();
+
 			 if (this->colorForm->Enabled) {
 				 this->colorForm->Close();
 				 delete colorForm;
