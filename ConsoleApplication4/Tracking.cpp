@@ -40,11 +40,12 @@ using namespace std;
 vector<TrackedPiece> pieces;
 
 Mat puzzle_board;				//Puzzle board image for drawing shapes on
-/*
-int RunTracking::playSound(string filename) {
-	sound_player.playSound(filename);
+
+int RunTracking::playSoundEffect(string filename) {
+	sound_player->play_Sound(filename);
+	return 0;
 }
-*/
+
 void on_trackbar( int, void* )
 {//This function gets called whenever a
 	// trackbar position is changed
@@ -395,8 +396,8 @@ int RunTracking::startTrack()
 	imshow(puzzle_window, puzzle_board);
 
 	// See if pausing here stops unhandled exception...
-	Sleep(500);
-	cout << "Done sleeping." << endl;
+//	Sleep(500);
+//	cout << "Done sleeping." << endl;
 	while(1)
 	{
 		capture.read(camera_feed);
@@ -445,12 +446,18 @@ int RunTracking::startTrack()
 			// otherwise check. If this is the first time finding it's correct, then process placement
 			bool correct = pieces[i].checkIfPlacedCorrectly();
 			if (correct && !pieces[i].isTimeLocked()) {
+				// Play placed correctly sound here
+//				sound_player->play_Sound("
 				processPlacementOfPiece(pieces[i]);
 				pieces[i].setTimeLock();
 			}
 		}
 
 		if (this->Game->isEndGame() || allCorrect) {
+			if(allCorrect)
+			{
+				//play game completed sound
+			}
 			KillTimer(hwnd1, myTimer); // kill the timers
 			KillTimer(hwnd2, myTimer2);
 			destroyAllWindows();

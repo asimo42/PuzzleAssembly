@@ -7,6 +7,9 @@ e.g. initializing, starting, ending.  Tracking functions are located in "Trackin
 #include <opencv2\opencv.hpp>        
 #include "Functions.h"
 #include "RunTracking.h"
+#include <msclr\marshal_cppstd.h> //to convert managed string to std::string
+
+using namespace msclr::interop;
 
 // initialize all variables upon creation of class 
 void RunTracking::Initialize() {
@@ -44,10 +47,16 @@ void RunTracking::Initialize() {
 
 
 		this->STOP = false;
-/*
-		string soundfile = "C:\\success.wav";
-		playSound(soundfile);
-		*/
+
+		sound_player = new SoundEffectPlayer();
+
+		//Can play game start sound here
+//		string soundfile = "C:\\success.wav";
+		System::String^ soundfile = System::Windows::Forms::Application::StartupPath + "/../../Sounds/pieceplaced1.wav";
+		string stdsoundfile = marshal_as<string>(soundfile);
+//		string soundfile = "/../../Sounds/pieceplaced1.wav";
+		sound_player->play_Sound(stdsoundfile);
+		
 }
 //----------------------------------------------------------------------------------------------------------
 
@@ -81,6 +90,7 @@ void RunTracking::endTrack() {
 		System::Console::WriteLine("RunTracking::EndTrack() : Exiting RunTracking");
 		// destroy tracking windows
 		cv::destroyAllWindows();
+		delete sound_player;
 
 		// if game was exited early, tell gameRecord to handle what we have
 		if (this->Game->isEndGame()) {

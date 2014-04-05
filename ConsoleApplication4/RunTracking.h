@@ -39,7 +39,7 @@ class RunTracking
 		virtual void setPlayer(System::String^ name) { this->gameRecord->setPlayer(name); }
         gcroot<GamePlayed^> returnScore();
 		bool checkIfAllPiecesCorrect();
-//		int playSound(string filename);
+		int playSoundEffect(string filename);
 
 
 protected:
@@ -117,6 +117,6 @@ private:
         void operator=(const RunTracking&);  // Not implemented.
 
 		// Used to play sounds.
-//		SoundEffectPlayer sound_player;
+		SoundEffectPlayer* sound_player;
 
 };
