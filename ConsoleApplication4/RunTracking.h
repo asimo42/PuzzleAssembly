@@ -4,6 +4,7 @@ the Run button on the GUI
 */
 #pragma once
 //#include "SoundEffectPlayer.h"
+//#include <dshow.h>
 #include "stdafx.h"
 #include <vcclr.h>
 #include <opencv2\opencv.hpp>        //includes all OpenCV headers
@@ -116,6 +117,6 @@ private:
         void operator=(const RunTracking&);  // Not implemented.
 
 		// Used to play sounds.
-//		SoundPlayer sound_player;
+//		SoundEffectPlayer sound_player;
 
 };
