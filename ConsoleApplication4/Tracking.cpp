@@ -42,6 +42,7 @@ vector<TrackedPiece> pieces;
 
 Mat puzzle_board;				//Puzzle board image for drawing shapes on
 
+// Plays the audio file 'filename.' The file must be in Sounds which is two levels up from execution directory.
 int RunTracking::playSoundEffect(string filename) {
 	System::String^ soundfile = System::Windows::Forms::Application::StartupPath + "/../../Sounds/";
 	string stdsoundfile = marshal_as<string>(soundfile);
@@ -448,6 +449,8 @@ int RunTracking::startTrack()
 			if (pieces[i].isTimeLocked()) { continue; }
 			if (!pieces[i].isTimeLocked()) { allCorrect = false; }
 			// otherwise check. If this is the first time finding it's correct, then process placement
+			//TODO: This checkIfPlacedCorrectly should not be called every loop iteration.
+			//		It needs to run only on a regular timer to be consistent with how fast it responds.
 			bool correct = pieces[i].checkIfPlacedCorrectly();
 			if (correct && !pieces[i].isTimeLocked()) {
 				// Play placed correctly sound here

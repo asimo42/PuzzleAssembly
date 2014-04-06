@@ -30,7 +30,7 @@ class RunTracking
 
 
 		RunTracking() { Initialize(); }
-		~RunTracking() {}
+		~RunTracking() {delete sound_player;}
   
         virtual void Initialize();
         virtual void Start();

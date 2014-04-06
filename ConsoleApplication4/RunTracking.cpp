@@ -87,7 +87,6 @@ void RunTracking::endTrack() {
 		System::Console::WriteLine("RunTracking::EndTrack() : Exiting RunTracking");
 		// destroy tracking windows
 		cv::destroyAllWindows();
-		delete sound_player;
 
 		// if game was exited early, tell gameRecord to handle what we have
 		if (this->Game->isEndGame()) {
