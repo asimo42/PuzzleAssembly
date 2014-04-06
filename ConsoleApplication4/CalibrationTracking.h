@@ -23,7 +23,8 @@ ref class CalibrationTracking
         virtual void Initialize();
         virtual void Start();
 		virtual void startLocationCalibration();
-        virtual void Stop() { STOP = true; }
+		Mat displayPuzzleBoard();
+        virtual void Stop();
 		virtual void Next() { NEXT = true; }
         virtual void setGame(KnobPuzzle^ game) {this->Game = game;}
 		virtual void setPieceToTrack(PuzzlePiece^ piece) {this->pieceBeingTracked = piece; }
@@ -31,6 +32,7 @@ ref class CalibrationTracking
 protected:
 
         bool STOP;
+		bool STARTED;
 		bool NEXT;
 		int iterator;
 		bool COLOR_CALIBRATION;

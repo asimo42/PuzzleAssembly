@@ -12,6 +12,7 @@ e.g. initializing, starting, ending.  Tracking functions are located in "Trackin
 #include "TrackedPiece.h"
 #include "Functions.h"
 #include "CalibrationTracking.h"
+#include "Shape.h"
 
 using namespace cv;
 using namespace std;
@@ -53,6 +54,7 @@ void CalibrationTracking::Initialize() {
 
 		// management variables
 		this->STOP = false;
+		this->STARTED = false;
 		this->NEXT = false;
 		this->COLOR_CALIBRATION = false;
 		this->LOCATION_CALIBRATION = false;
@@ -65,15 +67,26 @@ void CalibrationTracking::Initialize() {
 // start color tracking algorithm
 void CalibrationTracking::Start() {
 	// lets lock onto this thread just for safety sake
+	STARTED = true;
 	startTrackColor();
 }
+//----------------------------------------------------------------------------------------------------------
 
+// start color tracking algorithm
+void CalibrationTracking::Stop() {
+
+	this->STOP == true;
+	if (!this->STARTED) {
+		this->IS_STOPPED = true;
+	}
+}
 
 //----------------------------------------------------------------------------------------------------------
 
 // start location tracking algorithm
 void CalibrationTracking::startLocationCalibration() {
 	// lets lock onto this thread just for safety sake
+	STARTED = true;
 	startTrackLocation();
 }
 //----------------------------------------------------------------------------------------------------------
@@ -120,6 +133,7 @@ void CalibrationTracking::nextPiece() {
 void CalibrationTracking::endTrack() {
 		System::Console::WriteLine("CalibrationTracking::EndTrack() : Exiting CalibrationTracking");
 		cv::destroyAllWindows();
+		this->STARTED = false;
 		this->IS_STOPPED = true;
 }
 
@@ -321,6 +335,7 @@ int CalibrationTracking::startTrackLocation()
 	Mat HSV_image;			//camera image converted to HSV
 	Mat threshold_image;	//image after HSV is filtered and processed
 
+	Mat puzzle_board = displayPuzzleBoard();
 
 	List<int>^ Xcoords;
 	List<int>^ Ycoords;
@@ -398,6 +413,8 @@ int CalibrationTracking::startTrackColor()
 	Mat HSV_image;			//camera image converted to HSV
 	Mat threshold_image;	//image after HSV is filtered and processed
 	
+	Mat puzzle_board = displayPuzzleBoard();
+
 	TrackedPiece tmp = puzzlePieceToTrackedPiece(this->Game->getPieceList()[this->iterator]);
 	createTrackbarWindow(tmp);
 
@@ -440,4 +457,23 @@ int CalibrationTracking::startTrackColor()
 }
 
 
-
+Mat CalibrationTracking::displayPuzzleBoard() {
+					 // display the puzzle board
+					Mat puzzle_board;
+					Shape shapes(&puzzle_board);
+					shapes.setImage(&puzzle_board);
+					shapes.Clear_To_Black();	// Must clear to black first, otherwise get exception
+					// Magic numbers below are coordinates from trail and error on 1280x1024 screen
+					shapes.setColor(Scalar(0, 0, 255));
+					shapes.Draw_Circle(cv::Point(383, 244), 125, -1);
+					shapes.setColor(cv::Scalar(255, 0, 0));
+					shapes.Draw_Square(cv::Point(748, 128), 238, -1);
+					shapes.setColor(Scalar(255, 0, 255));
+					shapes.Draw_Triangle(cv::Point(220, 600), 266, -1);
+					shapes.setColor(Scalar(0, 255, 0));
+					shapes.Draw_Rectangle(cv::Point(483, 634), 287, 175, -1);
+					shapes.setColor(Scalar(0, 255, 255));
+					shapes.Draw_Pentagon(cv::Point(1056, 585), 173, -1);
+					imshow("game board", puzzle_board);
+					return puzzle_board;
+}

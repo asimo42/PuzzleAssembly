@@ -401,7 +401,12 @@ int RunTracking::startTrack()
 //		imshow(original_window, camera_feed);
 
 		//namedWindow(filtered_window);
-		cvtColor(camera_feed, HSV_image, CV_BGR2HSV);
+		try {
+			cvtColor(camera_feed, HSV_image, CV_BGR2HSV);
+		} catch (System::Exception ^e){
+		  System::Windows::Forms::MessageBox::Show("We are encountering a " + e->GetType()->ToString() + " exception!!! at Tracking.cpp::StartTrack() - cvtColor()");
+		  return -1;
+		}
 
 		//if(calibrate_mode)
 		//{

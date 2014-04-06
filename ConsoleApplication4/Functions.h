@@ -85,6 +85,8 @@ System::String^ buildOutputFileName(System::String^ player, System::String^ game
 // workaround hack to declare a thread as a global variable in a form
 ref class ThreadShell {
 public: 
+	ThreadShell() { Started = false; }
+	bool Started;
 	System::Threading::Thread^ myThread;
 };
 
@@ -99,5 +101,9 @@ void on_trackbar( int, void* );  // this one won't compile as part of RunTrackin
 
 void writeToLog(System::String^ myMessage);
 
+
+
+
+Mat displayPuzzleBoard();
 
 #endif
