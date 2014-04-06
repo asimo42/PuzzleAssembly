@@ -3,7 +3,8 @@ OpenCV down once the game is completed or stopped.  An instance of this class is
 the Run button on the GUI
 */
 #pragma once
-
+//#include "SoundEffectPlayer.h"
+//#include <dshow.h>
 #include "stdafx.h"
 #include <vcclr.h>
 #include <opencv2\opencv.hpp>        //includes all OpenCV headers
@@ -29,7 +30,7 @@ class RunTracking
 
 
 		RunTracking() { Initialize(); }
-		~RunTracking() {}
+		~RunTracking() {delete sound_player;}
   
         virtual void Initialize();
         virtual void Start();
@@ -38,6 +39,7 @@ class RunTracking
 		virtual void setPlayer(System::String^ name) { this->gameRecord->setPlayer(name); }
         gcroot<GamePlayed^> returnScore();
 		bool checkIfAllPiecesCorrect();
+		int playSoundEffect(string filename);
 
 
 protected:
@@ -113,5 +115,13 @@ private:
 
         RunTracking(const RunTracking&);  // Not implemented.
         void operator=(const RunTracking&);  // Not implemented.
+
+		// Used to play sounds.
+		SoundEffectPlayer* sound_player;
+
+		// sound filenames
+		string sound_piece_placed1;
+		string sound_game_start;
+		string sound_game_completed;
 
 };

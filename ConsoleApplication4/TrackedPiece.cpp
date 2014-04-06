@@ -32,6 +32,7 @@ TrackedPiece::TrackedPiece(std::string piece_name)
 {
 	setName(piece_name);
 	isMoving = false;
+	timeLock = false;
 }
 
 TrackedPiece::TrackedPiece(std::string piece_name, Scalar HSVmin, Scalar HSVmax)
@@ -40,6 +41,7 @@ TrackedPiece::TrackedPiece(std::string piece_name, Scalar HSVmin, Scalar HSVmax)
 	setHSVmin(HSVmin);
 	setHSVmax(HSVmax);
 	isMoving = false;
+	timeLock = false;
 }
 
 TrackedPiece::TrackedPiece(std::string piece_name, Scalar HSVmin, Scalar HSVmax, int xdest, int ydest)
@@ -50,6 +52,7 @@ TrackedPiece::TrackedPiece(std::string piece_name, Scalar HSVmin, Scalar HSVmax,
 	setXDest(xdest);
 	setYDest(ydest);
 	isMoving = false;
+	timeLock = false;
 }
 
 int TrackedPiece::checkForMovement(bool justMoved)
@@ -72,14 +75,22 @@ int TrackedPiece::checkForMovement(bool justMoved)
 	int numTrues = count(movementHistory.begin(), movementHistory.end(), true);
 	//cout << "Num trues " << name << ": " << numTrues << endl;
 
+<<<<<<< HEAD
 	if (numTrues >= 4 ) //&& EASY)
+=======
+	if (numTrues >= 4  )//&& EASY)
+>>>>>>> af11b4540f12a7fb708bb736cea91cd72955996f
 	{
 		//clearStatus();
 		cout << name << " **TURN OFF**" << endl;
 		flashing = true;
 		return 3;
 	}
+<<<<<<< HEAD
 	else if (numTrues >= 3) //&& (EASY || MEDIUM))
+=======
+	else if (numTrues >= 3 )//&& (EASY || MEDIUM))
+>>>>>>> af11b4540f12a7fb708bb736cea91cd72955996f
 	{
 		//clearStatus();
 		cout << name << " **DIM**" << endl;

@@ -25,7 +25,7 @@
 #include "Functions.h"
 #include "Shape.h"
 #include "RunTracking.h"
-
+#include <msclr\marshal_cppstd.h> //to convert managed string to std::string
 
 
 #define _CRTDBG_MAP_ALLOC
@@ -34,12 +34,22 @@
 
 using namespace cv;
 using namespace std;
+using namespace msclr::interop;
 
 //
 // Global for now, should not be though
 vector<TrackedPiece> pieces;
 
 Mat puzzle_board;				//Puzzle board image for drawing shapes on
+
+// Plays the audio file 'filename.' The file must be in Sounds which is two levels up from execution directory.
+int RunTracking::playSoundEffect(string filename) {
+	System::String^ soundfile = System::Windows::Forms::Application::StartupPath + "/../../Sounds/";
+	string stdsoundfile = marshal_as<string>(soundfile);
+	stdsoundfile += filename;
+	sound_player->play_Sound(stdsoundfile);
+	return 0;
+}
 
 void on_trackbar( int, void* )
 {//This function gets called whenever a
@@ -391,8 +401,8 @@ int RunTracking::startTrack()
 	imshow(puzzle_window, puzzle_board);
 
 	// See if pausing here stops unhandled exception...
-	Sleep(500);
-	cout << "Done sleeping." << endl;
+//	Sleep(500);
+//	cout << "Done sleeping." << endl;
 	while(1)
 	{
 		capture.read(camera_feed);
@@ -437,19 +447,31 @@ int RunTracking::startTrack()
 			System::Console::WriteLine("Tracking.cpp::startTrack() : All pieces placed correctly!");
 		}
 		// check if individual pieces are placed correctly
+		allCorrect = true;
 		for(int i = 0; i < pieces.size(); ++i)
 		{	
 			// if piece is already placed, continue
 			if (pieces[i].isTimeLocked()) { continue; }
+			if (!pieces[i].isTimeLocked()) { allCorrect = false; }
 			// otherwise check. If this is the first time finding it's correct, then process placement
+			//TODO: This checkIfPlacedCorrectly should not be called every loop iteration.
+			//		It needs to run only on a regular timer to be consistent with how fast it responds.
 			bool correct = pieces[i].checkIfPlacedCorrectly();
 			if (correct && !pieces[i].isTimeLocked()) {
+				// Play placed correctly sound here
+				playSoundEffect(sound_piece_placed1);
+
 				processPlacementOfPiece(pieces[i]);
 				pieces[i].setTimeLock();
 			}
 		}
 
 		if (this->Game->isEndGame() || allCorrect) {
+			if(allCorrect)
+			{
+				//play game completed sound
+				playSoundEffect(sound_game_completed);
+			}
 			KillTimer(hwnd1, myTimer); // kill the timers
 			KillTimer(hwnd2, myTimer2);
 			destroyAllWindows();
