@@ -1,4 +1,5 @@
 #include <Windows.h>
+#include <atlstr.h>
 #include "stdafx.h"
 #include <WinBase.h>
 #include <WinUser.h>
@@ -33,12 +34,19 @@ namespace ConsoleApplication4 {
 		CalibrationMainPrompt(void)
 		{
 			InitializeComponent();
+			this->STARTED = false;
 			this->calibratingColors = true;
 			this->calibratingLocations = false;
 			this->waitingToPlacePieces = false;
 			this->puzzle = gcnew KnobPuzzle();
 			this->calibNextButton->Focus();
 			this->colorForm = gcnew ConsoleApplication4::ColorCalibrationForm();
+			this->myCalibrator = gcnew CalibrationTracking();
+
+			// this thread will show the gameboard through the duration of calibration
+			//showBoard^ myBoard = gcnew showBoard();
+			//this->myThreadShell.myThread = gcnew System::Threading::Thread(gcnew System::Threading::ThreadStart(myBoard, &showBoard::display));
+			//this->myThreadShell.myThread->Start(); 
 			//
 			//TODO: Add the constructor code here
 			//
@@ -65,8 +73,11 @@ namespace ConsoleApplication4 {
 	private: bool calibratingColors;
 	private: bool calibratingLocations;
 	private: bool waitingToPlacePieces;
+	private: bool STARTED;
 	public: KnobPuzzle^ puzzle;
 	private: ConsoleApplication4::ColorCalibrationForm^ colorForm;
+	private: CalibrationTracking^ myCalibrator;
+	private: ThreadShell myThreadShell;
 
 	protected: 
 
@@ -189,7 +200,7 @@ namespace ConsoleApplication4 {
 
 				 if (this->puzzle->getPieceList()->Count <= 0) {
 					 System::Windows::Forms::MessageBox::Show("Error: cannot find puzzle piece information. Please check game ID and try again");
-					 Console::WriteLine("CalibrationMainPrompt.h::calibNextButton_Click() : Error- puzzle has no pieces. Exiting calibration");
+					 System::Console::WriteLine("CalibrationMainPrompt.h::calibNextButton_Click() : Error- puzzle has no pieces. Exiting calibration");
 					 this->DialogResult = System::Windows::Forms::DialogResult::Cancel;
 					 this->Close();
 					 return;
@@ -204,17 +215,19 @@ namespace ConsoleApplication4 {
 					 // make the main calibration form invisible
 					 this->Visible = false;
 
+
 					 //pass puzzle class over to color form, launch it, and wait for it to return a dialogresult
 					 this->colorForm->puzzle = this->puzzle;
 					 System::Windows::Forms::DialogResult dialogResult = colorForm->ShowDialog(); 
 					 if (dialogResult == System::Windows::Forms::DialogResult::OK) {
-						 Console::WriteLine("CalibrationMainPrompt.h::calibNextButton_Click() : colorFrom returned dialogue result OK");
+						 System::Console::WriteLine("CalibrationMainPrompt.h::calibNextButton_Click() : colorFrom returned dialogue result OK");
 						 delete colorForm;
 					 }
 					 else if (dialogResult == System::Windows::Forms::DialogResult::Cancel) {
-						 Console::WriteLine("CalibrationMainPrompt.h::calibNextButton_Click() : colorFrom returned dialogue result Cancel");
+						 System::Console::WriteLine("CalibrationMainPrompt.h::calibNextButton_Click() : colorFrom returned dialogue result Cancel");
 						 delete colorForm;
 						 this->Close(); // cancel calibration; close form. This will result in DialogResult::Cancel
+						 return;
 					 }
 
 					 // make this form visible again
@@ -228,15 +241,29 @@ namespace ConsoleApplication4 {
  					 this->calibratingColors = false;
 					 this->waitingToPlacePieces = true;
 
+
+					 // since the calibrator will be running and running, set STARTED to true so we can be sure to close it down.
+					 this->STARTED = true;
+
 					//re enable the next button
 					this->calibNextButton->Enabled = true;
+
+					 // set up the calibrator running. For now it will just show the gameboard.
+					 // when waitingForUserToPlacePieces becomes false, it will start the location calibration.
+					 this->myCalibrator = gcnew CalibrationTracking();
+					 myCalibrator->setGame(this->puzzle);
+					 myCalibrator->waitingForUserToPlacePieces = true;
+					 // running it on a separate thread so we can still process the callbacks here.
+					 //myCalibrator->startLocationCalibration();
+					 this->myThreadShell.myThread = gcnew System::Threading::Thread(gcnew System::Threading::ThreadStart(myCalibrator, &CalibrationTracking::startLocationCalibration));
+					 this->myThreadShell.myThread->Start();
+
 					return;
 				 }
 
 				 // if we are currently waiting for the user to place pieces, and the user clicks the next button, then start to calibrate locations:
 				 if (this->waitingToPlacePieces) {
 
-					 destroyAllWindows();
 					 // change instructions from 'please place pieces' to 'please wait for locations to be calibrated'
 					 this->placePiecesLabel->Visible = false; 
 					 this->pleaseWaitLabel->Visible = true;
@@ -246,9 +273,13 @@ namespace ConsoleApplication4 {
 					 this->calibratingLocations = true; 
 
 					 // set up a new CalibrationTracking^, pass it our puzzle, and ask it to find the locations
-					 CalibrationTracking^ locationTracker = gcnew CalibrationTracking();
-					 locationTracker->setGame(this->puzzle);
-					 locationTracker->startLocationCalibration();
+					 //CalibrationTracking^ locationTracker = gcnew CalibrationTracking();
+					 //locationTracker->setGame(this->puzzle);
+					 //locationTracker->startLocationCalibration();
+					 myCalibrator->waitingForUserToPlacePieces = false;
+					 while (!myCalibrator->IS_STOPPED) {
+						 System::Threading::Thread::Sleep(30);
+					 }
 
 					 // here the user waits while it calibrates location
 
@@ -267,7 +298,23 @@ namespace ConsoleApplication4 {
 // If this form is closed prematurely, close the spawned ColorCalibrationForm, which should stop any threads running there. 
 private: System::Void CalibrationMainPrompt_FormClosing(System::Object^  sender, System::Windows::Forms::FormClosingEventArgs^  e) {
 
-			 // get rid of gameboard picture
+			if (this->STARTED == false) {
+				 cv::destroyAllWindows();
+				 this->DialogResult = System::Windows::Forms::DialogResult::Cancel;
+				 return;
+			}
+
+			 // end thread showing gameboard picture
+
+			 if (!myCalibrator->IS_STOPPED) {
+				 myCalibrator->Stop();
+				 while (!this->myCalibrator->IS_STOPPED) {
+					Console::WriteLine("calibrationMainPrompt::FormClosing():: Waiting for calibrator thread to end");
+					System::Threading::Thread::Sleep(5);
+				 }
+			 }
+			 this->myThreadShell.myThread->Abort();
+			 this->myThreadShell.myThread->Join();
 			 cv::destroyAllWindows();
 
 			 if (this->colorForm->Enabled) {
@@ -277,6 +324,8 @@ private: System::Void CalibrationMainPrompt_FormClosing(System::Object^  sender,
 			 if (this->DialogResult != System::Windows::Forms::DialogResult::OK) {
 				this->DialogResult = System::Windows::Forms::DialogResult::Cancel;
 			 }
+			 delete myCalibrator;
+			 cv::destroyAllWindows();
 		}
 };
 }

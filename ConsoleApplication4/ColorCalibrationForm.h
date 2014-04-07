@@ -35,6 +35,7 @@ namespace ConsoleApplication4 {
 			this->puzzle = gcnew KnobPuzzle(); // this holds our puzzle, which will be passed in by CalibrationMainPrompt.h
 			this->pieceIndex = 0; // this tells us which piece we are currently calibrating
 			this->piece = gcnew PuzzlePiece(); // this is the piece we are currently calibrating
+			this->STARTED = false;
 			//
 			//TODO: Add the constructor code here
 			//
@@ -58,6 +59,7 @@ namespace ConsoleApplication4 {
 	private: int pieceIndex;
 	private: PuzzlePiece^ piece;
 	private: bool NEXT;
+	private: bool STARTED;
 	private: CalibrationTracking calibrator;
 	private: ThreadShell myThreadShell;
 	private: System::Windows::Forms::Label^  label1;
@@ -94,7 +96,7 @@ namespace ConsoleApplication4 {
 			this->okButton->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Right));
 			this->okButton->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 14.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, 
 				static_cast<System::Byte>(0)));
-			this->okButton->Location = System::Drawing::Point(401, 214);
+			this->okButton->Location = System::Drawing::Point(322, 214);
 			this->okButton->Name = L"okButton";
 			this->okButton->Size = System::Drawing::Size(110, 60);
 			this->okButton->TabIndex = 0;
@@ -116,11 +118,9 @@ namespace ConsoleApplication4 {
 			// label2
 			// 
 			this->label2->AutoSize = true;
-			this->label2->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, 
-				static_cast<System::Byte>(0)));
-			this->label2->Location = System::Drawing::Point(12, 42);
+			this->label2->Location = System::Drawing::Point(16, 44);
 			this->label2->Name = L"label2";
-			this->label2->Size = System::Drawing::Size(505, 96);
+			this->label2->Size = System::Drawing::Size(411, 78);
 			this->label2->TabIndex = 2;
 			this->label2->Text = resources->GetString(L"label2.Text");
 			// 
@@ -148,7 +148,7 @@ namespace ConsoleApplication4 {
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-			this->ClientSize = System::Drawing::Size(523, 286);
+			this->ClientSize = System::Drawing::Size(444, 286);
 			this->Controls->Add(this->currentPieceLabel);
 			this->Controls->Add(this->label3);
 			this->Controls->Add(this->label2);
@@ -169,6 +169,7 @@ namespace ConsoleApplication4 {
 
 	private: System::Void okButton_Click(System::Object^  sender, System::EventArgs^  e) {
 
+				 this->STARTED = true;
 				// make sure the puzzle has been properly assigned first 
 				 if (!this->puzzle->checkIsInitialized()) {
 					 Console::WriteLine("ColorCalibrationForm.h::okButton_Click: Error - this form was not properly initialized with a puzzle. Please give it a puzzle.");
@@ -188,7 +189,7 @@ namespace ConsoleApplication4 {
 					 this->calibrator.Stop();
 					 while (!this->calibrator.IS_STOPPED) {
 						 Console::WriteLine("Waiting for calibrator thread to end");
-						 System::Threading::Thread::Sleep(5);
+						 System::Threading::Thread::Sleep(30);
 					 }
 					 // now abort the calibration thread and join it to the current one
 					 this->myThreadShell.myThread->Abort();
@@ -234,6 +235,13 @@ namespace ConsoleApplication4 {
 			 // already calibrated pieces will retain the new calibration information
  private: System::Void ColorCalibrationForm_FormClosing(System::Object^  sender, System::Windows::Forms::FormClosingEventArgs^  e) {
 
+		if (this->STARTED == false) {
+			 // take down the gameboard window
+			 cv::destroyAllWindows();
+			 this->DialogResult = System::Windows::Forms::DialogResult::Cancel;
+			 return;
+		}
+
 		// if the calibrator is already stopped, don't have to do anything
 		if (!this->calibrator.IS_STOPPED) {
 			Console::WriteLine("ColorCalibrationForm.h: this form is ending prematurely");
@@ -241,13 +249,18 @@ namespace ConsoleApplication4 {
 			this->calibrator.Stop();
 			while (!this->calibrator.IS_STOPPED) {
 				 Console::WriteLine("Waiting for calibrator thread to end");
-				 System::Threading::Thread::Sleep(10);
+				 System::Threading::Thread::Sleep(5);
 			 }
-			 // now abort the calibration thread and join it to the current one
-			 this->myThreadShell.myThread->Abort();
-			 this->myThreadShell.myThread->Join();
-			 this->DialogResult = System::Windows::Forms::DialogResult::Cancel;
 		}
+		// now abort the calibration thread and join it to the current one
+		this->myThreadShell.myThread->Abort();
+		this->myThreadShell.myThread->Join();
+		delete calibrator.returnHandle();
+		cv::destroyAllWindows();
+		if (this->DialogResult != System::Windows::Forms::DialogResult::OK) {
+				 this->DialogResult = System::Windows::Forms::DialogResult::Cancel;
+		}
+		cv::destroyAllWindows();
 	}
 };
 }

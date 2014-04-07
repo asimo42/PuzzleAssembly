@@ -350,6 +350,7 @@ int KnobPuzzle::WriteSettingsToFile() {
 	}
 	// write out final string array to calibrated file
 	writeStringArrayToFile(stringArray, getCalibratedInputPath(this->getName()));
+	Console::WriteLine("GameBoard.cpp::WriteSettingsToFile() : writing new settings to file : " + getCalibratedInputPath(this->getName()));
 
 	// unlock thread
 	ReleaseMutex(myMutex);

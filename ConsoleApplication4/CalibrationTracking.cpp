@@ -12,7 +12,6 @@ e.g. initializing, starting, ending.  Tracking functions are located in "Trackin
 #include "TrackedPiece.h"
 #include "Functions.h"
 #include "CalibrationTracking.h"
-#include "Shape.h"
 
 using namespace cv;
 using namespace std;
@@ -54,11 +53,11 @@ void CalibrationTracking::Initialize() {
 
 		// management variables
 		this->STOP = false;
-		this->STARTED = false;
 		this->NEXT = false;
-		this->COLOR_CALIBRATION = false;
-		this->LOCATION_CALIBRATION = false;
 		this->iterator = 0;
+		this->waitingForUserToPlacePieces = false;
+		this->doneWithLocationTracking = false;
+
 
 		this->myMutex = CreateMutex(NULL, FALSE, (LPCWSTR) "calibration");
 }
@@ -67,27 +66,31 @@ void CalibrationTracking::Initialize() {
 // start color tracking algorithm
 void CalibrationTracking::Start() {
 	// lets lock onto this thread just for safety sake
-	STARTED = true;
 	startTrackColor();
 }
-//----------------------------------------------------------------------------------------------------------
 
-// start color tracking algorithm
-void CalibrationTracking::Stop() {
-
-	this->STOP == true;
-	if (!this->STARTED) {
-		this->IS_STOPPED = true;
-	}
-}
 
 //----------------------------------------------------------------------------------------------------------
 
 // start location tracking algorithm
 void CalibrationTracking::startLocationCalibration() {
-	// lets lock onto this thread just for safety sake
-	STARTED = true;
+
+	// display the puzzle board
+	cv::Mat board = displayPuzzleBoard();
+	imshow("game_board", board);
+
+	// wait for user to place pieces (gui form will send signal when done)
+	while (this->waitingForUserToPlacePieces) {
+		waitKey(70);
+		if (this->STOP) {
+			endTrack();
+			return;
+		}
+	}
+
+	// track locations
 	startTrackLocation();
+	cv::destroyAllWindows();
 }
 //----------------------------------------------------------------------------------------------------------
 
@@ -133,7 +136,10 @@ void CalibrationTracking::nextPiece() {
 void CalibrationTracking::endTrack() {
 		System::Console::WriteLine("CalibrationTracking::EndTrack() : Exiting CalibrationTracking");
 		cv::destroyAllWindows();
-		this->STARTED = false;
+		destroyWindow(systemStringToStdString(original_window));
+		destroyWindow(systemStringToStdString(trackbar_window));
+		destroyWindow(systemStringToStdString(filtered_window));
+		destroyWindow(systemStringToStdString(puzzle_window));
 		this->IS_STOPPED = true;
 }
 
@@ -312,7 +318,6 @@ List<int>^ CalibrationTracking::findPieceLocation(TrackedPiece &piece, Mat &came
 
 int CalibrationTracking::startTrackLocation() 
 {
-	this->LOCATION_CALIBRATION = true;
 
 	VideoCapture capture;
 	capture.open(1);	//0 is default video device, 1 is other/USB camera
@@ -335,7 +340,6 @@ int CalibrationTracking::startTrackLocation()
 	Mat HSV_image;			//camera image converted to HSV
 	Mat threshold_image;	//image after HSV is filtered and processed
 
-	Mat puzzle_board = displayPuzzleBoard();
 
 	List<int>^ Xcoords;
 	List<int>^ Ycoords;
@@ -381,6 +385,7 @@ int CalibrationTracking::startTrackLocation()
 
 	// release unmanaged components (I'm not sure if this actually works)
 	cv::destroyAllWindows();
+	endTrack();
 	camera_feed.release();
 	HSV_image.release();
 	threshold_image.release();
@@ -394,7 +399,6 @@ int CalibrationTracking::startTrackLocation()
 
 int CalibrationTracking::startTrackColor()
 {
-	this->COLOR_CALIBRATION = true;
 
 	VideoCapture capture;
 	capture.open(1);	//0 is default video device, 1 is other/USB camera
@@ -413,10 +417,11 @@ int CalibrationTracking::startTrackColor()
 	Mat HSV_image;			//camera image converted to HSV
 	Mat threshold_image;	//image after HSV is filtered and processed
 	
-	Mat puzzle_board = displayPuzzleBoard();
-
 	TrackedPiece tmp = puzzlePieceToTrackedPiece(this->Game->getPieceList()[this->iterator]);
 	createTrackbarWindow(tmp);
+
+	cv::Mat board = displayPuzzleBoard();
+	imshow("game_board", board);
 
 	this->iterator = 0;
 
@@ -441,6 +446,11 @@ int CalibrationTracking::startTrackColor()
 		if (STOP) {
 			savePieceInformation();
 			endTrack();
+			cv::destroyAllWindows();
+			camera_feed.release();
+			HSV_image.release();
+			threshold_image.release();
+			capture.release();
 			break;
 		}
 		if (NEXT) {
@@ -457,23 +467,4 @@ int CalibrationTracking::startTrackColor()
 }
 
 
-Mat CalibrationTracking::displayPuzzleBoard() {
-					 // display the puzzle board
-					Mat puzzle_board;
-					Shape shapes(&puzzle_board);
-					shapes.setImage(&puzzle_board);
-					shapes.Clear_To_Black();	// Must clear to black first, otherwise get exception
-					// Magic numbers below are coordinates from trail and error on 1280x1024 screen
-					shapes.setColor(Scalar(0, 0, 255));
-					shapes.Draw_Circle(cv::Point(383, 244), 125, -1);
-					shapes.setColor(cv::Scalar(255, 0, 0));
-					shapes.Draw_Square(cv::Point(748, 128), 238, -1);
-					shapes.setColor(Scalar(255, 0, 255));
-					shapes.Draw_Triangle(cv::Point(220, 600), 266, -1);
-					shapes.setColor(Scalar(0, 255, 0));
-					shapes.Draw_Rectangle(cv::Point(483, 634), 287, 175, -1);
-					shapes.setColor(Scalar(0, 255, 255));
-					shapes.Draw_Pentagon(cv::Point(1056, 585), 173, -1);
-					imshow("game board", puzzle_board);
-					return puzzle_board;
-}
+

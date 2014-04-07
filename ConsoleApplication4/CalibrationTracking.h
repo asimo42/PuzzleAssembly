@@ -16,6 +16,8 @@ ref class CalibrationTracking
   public:
 
 		bool IS_STOPPED;
+		bool waitingForUserToPlacePieces;
+		bool doneWithLocationTracking;
 
 		CalibrationTracking() { Initialize(); }
   
@@ -23,8 +25,7 @@ ref class CalibrationTracking
         virtual void Initialize();
         virtual void Start();
 		virtual void startLocationCalibration();
-		Mat displayPuzzleBoard();
-        virtual void Stop();
+        virtual void Stop() { STOP = true; cv::destroyAllWindows();}
 		virtual void Next() { NEXT = true; }
         virtual void setGame(KnobPuzzle^ game) {this->Game = game;}
 		virtual void setPieceToTrack(PuzzlePiece^ piece) {this->pieceBeingTracked = piece; }
@@ -32,11 +33,9 @@ ref class CalibrationTracking
 protected:
 
         bool STOP;
-		bool STARTED;
 		bool NEXT;
 		int iterator;
-		bool COLOR_CALIBRATION;
-		bool LOCATION_CALIBRATION;
+
         KnobPuzzle^ Game;
 		PuzzlePiece^ pieceBeingTracked;
 

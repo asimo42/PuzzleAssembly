@@ -536,6 +536,7 @@ private: System::Void calibrateButton_Click(System::Object^  sender, System::Eve
 			 // all buttons off while calibrating
 			 turnAllButtonsOff();
 
+			 //cv::Mat myMat = displayPuzzleBoard();
 			 this->calibrating = true;
 			 // create new calibration main form and pass it the puzzle. User will now enter the calibration process
 			 ConsoleApplication4::CalibrationMainPrompt^ calibForm = gcnew ConsoleApplication4::CalibrationMainPrompt();
@@ -544,6 +545,7 @@ private: System::Void calibrateButton_Click(System::Object^  sender, System::Eve
 			 // wait until the calibration form has exited. 
 			 System::Windows::Forms::DialogResult dialogResult = calibForm->ShowDialog(); 
 
+			 //myMat.release();
 			 this->calibrating = false;
   		 	 ReleaseMutex(myMutex);
 

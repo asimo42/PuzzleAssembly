@@ -450,22 +450,21 @@ GamePlayed^ fileLinesToGamePlayed(array<System::String^>^ fileLines) {
 
 
 Mat displayPuzzleBoard() {
-					 // display the puzzle board
-					Mat puzzle_board;
-					Shape shapes(&puzzle_board);
-					shapes.setImage(&puzzle_board);
-					shapes.Clear_To_Black();	// Must clear to black first, otherwise get exception
-					// Magic numbers below are coordinates from trail and error on 1280x1024 screen
-					shapes.setColor(Scalar(0, 0, 255));
-					shapes.Draw_Circle(cv::Point(383, 244), 125, -1);
-					shapes.setColor(cv::Scalar(255, 0, 0));
-					shapes.Draw_Square(cv::Point(748, 128), 238, -1);
-					shapes.setColor(Scalar(255, 0, 255));
-					shapes.Draw_Triangle(cv::Point(220, 600), 266, -1);
-					shapes.setColor(Scalar(0, 255, 0));
-					shapes.Draw_Rectangle(cv::Point(483, 634), 287, 175, -1);
-					shapes.setColor(Scalar(0, 255, 255));
-					shapes.Draw_Pentagon(cv::Point(1056, 585), 173, -1);
-					imshow("game board", puzzle_board);
-					return puzzle_board;
+		// display the puzzle board
+		Mat puzzle_board;
+		Shape shapes(&puzzle_board);
+		shapes.setImage(&puzzle_board);
+		shapes.Clear_To_Black();	// Must clear to black first, otherwise get exception
+		// Magic numbers below are coordinates from trail and error on 1280x1024 screen
+		shapes.setColor(Scalar(0, 0, 255));
+		shapes.Draw_Circle(cv::Point(383, 244), 125, -1);
+		shapes.setColor(cv::Scalar(255, 0, 0));
+		shapes.Draw_Square(cv::Point(748, 128), 238, -1);
+		shapes.setColor(Scalar(255, 0, 255));
+		shapes.Draw_Triangle(cv::Point(220, 600), 266, -1);
+		shapes.setColor(Scalar(0, 255, 0));
+		shapes.Draw_Rectangle(cv::Point(483, 634), 287, 175, -1);
+		shapes.setColor(Scalar(0, 255, 255));
+		shapes.Draw_Pentagon(cv::Point(1056, 585), 173, -1);
+		return puzzle_board;
 }

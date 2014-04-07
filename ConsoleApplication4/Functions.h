@@ -91,19 +91,35 @@ public:
 };
 
 
+
 // ---FROM TRACKING.CPP----
 
 void on_trackbar( int, void* );  // this one won't compile as part of RunTracking - no idea why
 
+cv::Mat displayPuzzleBoard();
 
-
-// from LOGGING.CPP (not currently used)----
-
-void writeToLog(System::String^ myMessage);
-
-
-
-
-Mat displayPuzzleBoard();
+//ref class showBoard {
+//public:
+//	
+//	showBoard() { this->STOPFLAG = false; this->STOPPED = false;}
+//	~showBoard() { cv::destroyWindow("game_board"); }
+//	void display(){
+//		cv::Mat board = displayPuzzleBoard();
+//		imshow("game_board", board);
+//		while (this->STOPFLAG == false) {
+//			waitKey(30);
+//		}
+//		board.release();
+//		cv::destroyWindow("game_board");
+//		this->STOPPED = true;
+//	}
+//	void stop() {
+//		STOPFLAG = true;
+//		}
+//
+//private : 
+//	bool STOPFLAG; 
+//	bool STOPPED;
+//};
 
 #endif
