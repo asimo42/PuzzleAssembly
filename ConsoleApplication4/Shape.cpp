@@ -39,24 +39,24 @@ void Shape::Draw_Shape(TrackedPiece piece, double dim_factor)
 	std::string shapeType = piece.getName();
 	if (shapeType == "Circle") {
 		// Making circle slightly orange so it is not mistaken for puzzle piece
-		setColor(Scalar(0, 63 * dim_factor, 255 * dim_factor));
-		Draw_Circle(Point(piece.getShapePointX(),piece.getShapePointY()), piece.getShapeRadius(), -1);
+		setColor(Scalar(0, 0 * dim_factor, 255 * dim_factor));
+		Draw_Circle(Point(piece.getShapePointX(),piece.getShapePointY()), piece.getShapeRadius(), Constants::SHAPE_LINE_WIDTH);
 	}
 	else if (shapeType == "Rectangle") {
 		setColor(Scalar(0, 255 * dim_factor, 0));
-		Draw_Rectangle(Point(piece.getShapePointX(),piece.getShapePointY()), piece.getShapeWidth(),piece.getShapeHeight(), -1);
+		Draw_Rectangle(Point(piece.getShapePointX(),piece.getShapePointY()), piece.getShapeWidth(),piece.getShapeHeight(), Constants::SHAPE_LINE_WIDTH);
 	}
 	else if (shapeType == "Square") {
 		setColor(Scalar(255 * dim_factor, 0, 0));
-		Draw_Square(Point(piece.getShapePointX(),piece.getShapePointY()), piece.getShapeWidth(), -1);
+		Draw_Square(Point(piece.getShapePointX(),piece.getShapePointY()), piece.getShapeWidth(), Constants::SHAPE_LINE_WIDTH);
 	}
 	else if (shapeType == "Triangle") {
 		setColor(Scalar(255 * dim_factor, 0, 255 * dim_factor));
-		Draw_Triangle(Point(piece.getShapePointX(),piece.getShapePointY()), piece.getShapeLength(), -1);
+		Draw_Triangle(Point(piece.getShapePointX(),piece.getShapePointY()), piece.getShapeLength(), Constants::SHAPE_LINE_WIDTH);
 	}
 	else if (shapeType == "Pentagon") {
 		setColor(Scalar(0, 255 * dim_factor, 255 * dim_factor));
-		Draw_Pentagon(Point(piece.getShapePointX(),piece.getShapePointY()), piece.getShapeLength(), -1);
+		Draw_Pentagon(Point(piece.getShapePointX(),piece.getShapePointY()), piece.getShapeLength(), Constants::SHAPE_LINE_WIDTH);
 	}
 	else { 
 		System::String^ str = "Error: cannot draw piece \"" + stdStringToSystemString(shapeType) + "\". Not a recognized shape.";

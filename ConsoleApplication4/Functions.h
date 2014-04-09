@@ -40,6 +40,10 @@ public:
     static const int DEFAULT_V_MIN = 0;
     static const int DEFAULT_V_MAX= 256;
 
+	// shape drawing stuff
+	static const int BACKGROUND_COLOR = 60;
+	static const int SHAPE_LINE_WIDTH = 15;
+
 	static System::String^ GAME_INPUT_DIRECTORY = System::Windows::Forms::Application::StartupPath + "/../";
 	static System::String^ HELP_FILE = System::Windows::Forms::Application::StartupPath + "/../Help.txt";
 	static System::String^ RESULTS_DIRECTORY = System::Windows::Forms::Application::StartupPath + "/PatientPerformanceData/";

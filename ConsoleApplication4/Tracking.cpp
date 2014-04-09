@@ -210,7 +210,8 @@ void RunTracking::drawPuzzleBoard(Mat &image)
 {
 	//Shape shapes(&image);
 	shapes.setImage(&image);
-	shapes.Clear_To_Black();	// Must clear to black first, otherwise get exception
+	shapes.Clear_To_Black(); // Must clear to black first, otherwise get exception
+	shapes.Clear_To_Gray();	
 	for (unsigned int i = 0; i < pieces.size(); i++)
 	{
 		shapes.Draw_Shape(pieces[i], 1);
@@ -347,7 +348,7 @@ int RunTracking::startTrack()
 	UINT_PTR myTimer = SetTimer(hwnd1, 1, timer_ms, timerTick);
 
 	// set timer to flash shapes
-	UINT timer_flash = 600;
+	UINT timer_flash = 300;
 	HWND hwnd2 = NULL;
 	UINT_PTR myTimer2 = SetTimer(hwnd2, 1, timer_flash, timerFlash);
 	//SetTimer(NULL, 1, timer_flash, 2timerFlash);
@@ -363,7 +364,7 @@ int RunTracking::startTrack()
 	//bool calibrate_mode = false;
 
 	VideoCapture capture;
-	capture.open(1);	//0 is default video device, 1 is other/USB camera
+	capture.open(0);	//0 is default video device, 1 is other/USB camera
 	//set height and width of capture frame
 	capture.set(CV_CAP_PROP_FRAME_WIDTH,FRAME_WIDTH);
 	capture.set(CV_CAP_PROP_FRAME_HEIGHT,FRAME_HEIGHT);

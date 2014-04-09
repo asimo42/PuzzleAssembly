@@ -6,6 +6,7 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include "TrackedPiece.h"
+#include "Functions.h"
 
 #define SCREEN_WIDTH 1600
 #define SCREEN_HEIGHT 900
@@ -43,6 +44,7 @@ public:
         //-----Mutators-----
         //THIS IS NOT DELETE SHAPE; it delets all images and leaves image black 
         inline void Clear_To_Black() {*image = Mat::zeros(SCREEN_HEIGHT, SCREEN_WIDTH, CV_8UC3);}
+		inline void Clear_To_Gray() {*image = Scalar(Constants::BACKGROUND_COLOR,Constants::BACKGROUND_COLOR,Constants::BACKGROUND_COLOR);}
         inline void set_color(Scalar new_color) {color = new_color;}
 		inline void set_startingPoint(Point strt) {startingPoint = strt;}
 		inline void set_height(int num) {height = num;}
