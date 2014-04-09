@@ -343,12 +343,12 @@ int RunTracking::startTrack()
 {
 
 	// set timer to periodically check piece movement
-	UINT timer_ms = 500;
+	UINT timer_ms = Constants::TIMER_TICK;
 	HWND hwnd1 = NULL;
 	UINT_PTR myTimer = SetTimer(hwnd1, 1, timer_ms, timerTick);
 
 	// set timer to flash shapes
-	UINT timer_flash = 300;
+	UINT timer_flash = Constants::FLASH_DELAY;
 	HWND hwnd2 = NULL;
 	UINT_PTR myTimer2 = SetTimer(hwnd2, 1, timer_flash, timerFlash);
 	//SetTimer(NULL, 1, timer_flash, 2timerFlash);
@@ -395,15 +395,17 @@ int RunTracking::startTrack()
 
 	//Mat puzzle;				//Puzzle board image for drawing shapes on
 
-	//namedWindow(puzzle_window);
-	//	namedWindow(puzzle_window, CV_WINDOW_NORMAL);
-	//	cvSetWindowProperty(puzzle_window.c_str(), CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);	// Makes full screen
+	namedWindow(puzzle_window, WINDOW_NORMAL);
 	drawPuzzleBoard(puzzle_board);
 	imshow(puzzle_window, puzzle_board);
 
-	// See if pausing here stops unhandled exception...
-//	Sleep(500);
-//	cout << "Done sleeping." << endl;
+	// Move puzzle board window to correct position on game board monitor
+	// (Puzzle board monitor needs to be set up to the left of first monitor.)
+	moveWindow(puzzle_window, -1600, 0);
+	cvSetWindowProperty(puzzle_window.c_str(), CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);	// Makes full screen
+	moveWindow(original_window, 640, 0);
+	moveWindow(filtered_window, 640, 512);
+
 	while(1)
 	{
 		capture.read(camera_feed);
@@ -418,25 +420,11 @@ int RunTracking::startTrack()
 		  System::Windows::Forms::MessageBox::Show("We are encountering a " + e->GetType()->ToString() + " exception!!! at Tracking.cpp::StartTrack() - cvtColor()");
 		  return -1;
 		}
-
-		//if(calibrate_mode)
-		//{
-		//	// Track temp puzzle piece with values from slider
-		//	TrackedPiece tmp = TrackedPiece("temp", Scalar(H_min, S_min, V_min), Scalar(H_max, S_max, V_max));
-		//	trackTrackedPiece(tmp, camera_feed, HSV_image, threshold_image);
-		//	imshow(filtered_window, threshold_image);
-		//}
-
-		//else
-		//{
-//			trackTrackedPiece(yellow, camera_feed, HSV_image, threshold_image);
 			for (int i = 0; i < pieces.size(); ++i)
 			{
 				trackTrackedPiece(pieces[i], camera_feed, HSV_image, threshold_image);
 			}
-//			trackTrackedPiece(white_square, camera_feed, HSV_image, threshold_image);
-			imshow(filtered_window, threshold_image);
-		//}
+//			imshow(filtered_window, threshold_image);
 		
 		imshow(original_window, camera_feed);
 

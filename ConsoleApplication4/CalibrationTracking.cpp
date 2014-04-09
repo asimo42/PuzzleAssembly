@@ -148,7 +148,11 @@ void CalibrationTracking::endTrack() {
 
 void CalibrationTracking::createTrackbarWindow(TrackedPiece &tmp)
 {
-	namedWindow(systemStringToStdString(trackbar_window));
+	std::string trackbarwindow = systemStringToStdString(trackbar_window);
+	// Create trackbar window as resizable
+	namedWindow(trackbarwindow, WINDOW_NORMAL);
+	resizeWindow(trackbarwindow, 640, 320);
+	moveWindow(trackbarwindow, 0, 600);
         this->calibrate_H_min = tmp.getHSVmin()[0];
         this->calibrate_H_max = tmp.getHSVmax()[0];
         this->calibrate_S_min = tmp.getHSVmin()[1];
@@ -421,18 +425,28 @@ int CalibrationTracking::startTrackColor()
 	createTrackbarWindow(tmp);
 
 	cv::Mat board = displayPuzzleBoard();
+
+	namedWindow("game_board", WINDOW_NORMAL);
 	imshow("game_board", board);
+	// Move puzzle board window to correct position on game board monitor
+	// (Puzzle board monitor needs to be set up to the left of first monitor.)
+	moveWindow("game_board", -1600, 0);
+	cvSetWindowProperty("game_board", CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);	// Makes full screen
 
 	this->iterator = 0;
+
+	//// set up filtered and original windows
+	std::string originalwindow = systemStringToStdString(original_window);
+	std::string filteredwindow = systemStringToStdString(filtered_window);
+	namedWindow(originalwindow);
+	moveWindow(originalwindow, 640, 0);
+	namedWindow(filteredwindow);
+	moveWindow(filteredwindow, 640, 512);
 
 	while(1)
 	{
 		capture.read(camera_feed);
 
-		// set up filtered and original windows
-		namedWindow(systemStringToStdString(original_window));
-
-		namedWindow(systemStringToStdString(filtered_window));
 		cvtColor(camera_feed, HSV_image, CV_BGR2HSV);
 
 		// track for calibration
