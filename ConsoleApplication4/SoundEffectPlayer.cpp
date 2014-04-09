@@ -48,7 +48,7 @@ int SoundEffectPlayer::play_Sound(std::string filename)
     {
         // Run the graph.
         hr = pControl->Run();
-		
+/*	
         if (SUCCEEDED(hr))
         {
             // Wait for completion.
@@ -58,6 +58,7 @@ int SoundEffectPlayer::play_Sound(std::string filename)
             // Note: Do not use INFINITE in a real application, because it
             // can block indefinitely.
         }
+*/
 		
     }
 	return 0;
