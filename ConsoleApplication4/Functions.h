@@ -16,10 +16,6 @@
 using namespace System;
 using namespace System::Collections::Generic;
 
-enum difficulty_t {
-	EASY, MEDIUM, HARD
-};
-
 // Define any constants that will be repeated or that may be changed. EX) int x = Constants::CONSTANT_X
 ref class Constants {
 public:
@@ -54,7 +50,11 @@ public:
 	static System::String^ GAME_INPUT_DIRECTORY = System::Windows::Forms::Application::StartupPath + "/../";
 	static System::String^ HELP_FILE = System::Windows::Forms::Application::StartupPath + "/../Help.txt";
 	static System::String^ RESULTS_DIRECTORY = System::Windows::Forms::Application::StartupPath + "/PatientPerformanceData/";
-	static difficulty_t difficulty;
+	
+};
+
+ref class Globals {
+  public:
 	static int difficultylevel;
 };
 //--- FROM FUNCTIONS.CPP----

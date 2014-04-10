@@ -446,7 +446,7 @@ private: System::Void runGameButton_Click(System::Object^  sender, System::Event
 					 return;
 			 }
 			 // Set global difficulty level
-			 Constants::difficultylevel = this->getLevelOfDifficulty();
+			 Globals::difficultylevel = this->getLevelOfDifficulty();
 
 			 // release lock
 		 	 ReleaseMutex(myMutex);
