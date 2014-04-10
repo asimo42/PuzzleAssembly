@@ -6,13 +6,15 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include "TrackedPiece.h"
-#include "Functions.h"
+//#include "Functions.h"
 
 #define SCREEN_WIDTH 1600
 #define SCREEN_HEIGHT 900
 
 using namespace cv;
 using namespace std;
+
+ref class Constants;
 
 enum shapeType{        Circle,
                         Square,

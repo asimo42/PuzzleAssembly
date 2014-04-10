@@ -12,6 +12,7 @@ e.g. initializing, starting, ending.  Tracking functions are located in "Trackin
 #include "TrackedPiece.h"
 #include "Functions.h"
 #include "CalibrationTracking.h"
+#include "Shape.h"
 
 using namespace cv;
 using namespace std;
@@ -76,8 +77,7 @@ void CalibrationTracking::Start() {
 void CalibrationTracking::startLocationCalibration() {
 
 	// display the puzzle board
-	cv::Mat board = displayPuzzleBoard();
-	imshow("game_board", board);
+	drawBoard();
 
 	// wait for user to place pieces (gui form will send signal when done)
 	while (this->waitingForUserToPlacePieces) {
@@ -420,8 +420,8 @@ int CalibrationTracking::startTrackColor()
 	TrackedPiece tmp = puzzlePieceToTrackedPiece(this->Game->getPieceList()[this->iterator]);
 	createTrackbarWindow(tmp);
 
-	cv::Mat board = displayPuzzleBoard();
-	imshow("game_board", board);
+	// display the puzzle board
+	drawBoard();
 
 	this->iterator = 0;
 
@@ -431,8 +431,10 @@ int CalibrationTracking::startTrackColor()
 
 		// set up filtered and original windows
 		namedWindow(systemStringToStdString(original_window));
+		cv::moveWindow(systemStringToStdString(original_window), 0, 0);
 
 		namedWindow(systemStringToStdString(filtered_window));
+		cv::moveWindow(systemStringToStdString(filtered_window), 500, 0);
 		cvtColor(camera_feed, HSV_image, CV_BGR2HSV);
 
 		// track for calibration
@@ -466,5 +468,16 @@ int CalibrationTracking::startTrackColor()
 	return 0;
 }
 
-
+void CalibrationTracking::drawBoard() {
+	// display the puzzle board
+	cv::Mat puzzleBoard;
+	vector<TrackedPiece> trackedPieces = vector<TrackedPiece>(this->Game->getPieceList()->Count);
+	for each (PuzzlePiece^ managedPiece in this->Game->getPieceList()) {
+		trackedPieces.push_back(puzzlePieceToTrackedPiece(managedPiece));
+	}
+	puzzleBoard = displayPuzzleBoard2(puzzleBoard, trackedPieces);
+	//cv::Mat board = displayPuzzleBoard();
+	imshow("game_board", puzzleBoard);
+	cv::moveWindow("game_board", 0, 0);
+}
 

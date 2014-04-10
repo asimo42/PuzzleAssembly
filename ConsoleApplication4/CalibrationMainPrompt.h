@@ -266,7 +266,8 @@ namespace ConsoleApplication4 {
 
 					 // change instructions from 'please place pieces' to 'please wait for locations to be calibrated'
 					 this->placePiecesLabel->Visible = false; 
-					 this->pleaseWaitLabel->Visible = true;
+					 //this->pleaseWaitLabel->Visible = true;
+					 System::Threading::Thread::Sleep(100); // wait just a moment so it changes the label before the calibrator takes focus
 
 					 // change current status from 'waiting for user to place pieces' to 'calibrating locations'
  					 this->waitingToPlacePieces = false; 
