@@ -16,6 +16,10 @@
 using namespace System;
 using namespace System::Collections::Generic;
 
+enum difficulty_t {
+	EASY, MEDIUM, HARD
+};
+
 // Define any constants that will be repeated or that may be changed. EX) int x = Constants::CONSTANT_X
 ref class Constants {
 public:
@@ -45,15 +49,14 @@ public:
 	static const int SHAPE_LINE_WIDTH = 15;
 
 	static const int FLASH_DELAY = 400;
-	static const int TIMER_TICK = 500;
+	static const int TIMER_TICK = 350;
 
 	static System::String^ GAME_INPUT_DIRECTORY = System::Windows::Forms::Application::StartupPath + "/../";
 	static System::String^ HELP_FILE = System::Windows::Forms::Application::StartupPath + "/../Help.txt";
 	static System::String^ RESULTS_DIRECTORY = System::Windows::Forms::Application::StartupPath + "/PatientPerformanceData/";
-
+	static difficulty_t difficulty;
+	static int difficultylevel;
 };
-
-
 //--- FROM FUNCTIONS.CPP----
 
 // Starting OpenCV tracking
