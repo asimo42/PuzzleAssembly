@@ -491,7 +491,7 @@ int RunTracking::startTrack()
 			// otherwise check. If this is the first time finding it's correct, then process placement
 			//TODO: This checkIfPlacedCorrectly should not be called every loop iteration.
 			//		It needs to run only on a regular timer to be consistent with how fast it responds.
-			bool correct = pieces[i].checkIfPlacedCorrectly();
+			bool correct = pieces[i].getIsPlacedCorrectly();
 			if (correct && !pieces[i].isTimeLocked()) {
 				// Play placed correctly sound here
 				playSoundEffect(sound_piece_placed1);

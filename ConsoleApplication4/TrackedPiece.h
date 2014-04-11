@@ -55,9 +55,15 @@ private:
 
 	// max number of values allowed in movementHistory deque
 	static const unsigned int MAX_DEQUE_SIZE = 5;
+	// number of tiemr ticks that piece has been moving to trigger a flashing hint
+	static const unsigned int NUM_TRUES_TRIGGER_FLASH = 2;
+	// max number of values allowed in placementHistory deque
 	static const unsigned int MAX_PLACEMENT_DEQUE_SIZE = 8;
+	// number of timer ticks that piece was detected in the right spot to trigger that it
+	// has been placed correctly
+	static const unsigned int NUM_TRUES_PLACED_CORRECTLY = 3;
 
-	static const unsigned int PLACED_THRESH = 20;
+	static const unsigned int PLACED_THRESH = 10;
 
 	// Holds movement history of pieces each time the timer checks for movement.
 	// Holds a max of MAX_DEQUE_SIZE elements

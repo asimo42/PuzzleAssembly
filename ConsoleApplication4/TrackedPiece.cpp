@@ -18,8 +18,12 @@ TrackedPiece::TrackedPiece(void)
 	setName("N/A");
 	setHSVmin(Scalar(0,0,0));
 	setHSVmax(Scalar(0,0,0));
-	isMoving = false;
 	timeLock = false;
+	isMoving = false;
+	isPlacedCorrectly = false;
+	flashing = false;
+	turn_off = false;
+	dimmed = false;
 }
 
 
@@ -31,8 +35,12 @@ TrackedPiece::~TrackedPiece(void)
 TrackedPiece::TrackedPiece(std::string piece_name)
 {
 	setName(piece_name);
-	isMoving = false;
 	timeLock = false;
+	isMoving = false;
+	isPlacedCorrectly = false;
+	flashing = false;
+	turn_off = false;
+	dimmed = false;
 }
 
 TrackedPiece::TrackedPiece(std::string piece_name, Scalar HSVmin, Scalar HSVmax)
@@ -40,8 +48,12 @@ TrackedPiece::TrackedPiece(std::string piece_name, Scalar HSVmin, Scalar HSVmax)
 	setName(piece_name);
 	setHSVmin(HSVmin);
 	setHSVmax(HSVmax);
-	isMoving = false;
 	timeLock = false;
+	isMoving = false;
+	isPlacedCorrectly = false;
+	flashing = false;
+	turn_off = false;
+	dimmed = false;
 }
 
 TrackedPiece::TrackedPiece(std::string piece_name, Scalar HSVmin, Scalar HSVmax, int xdest, int ydest)
@@ -51,8 +63,12 @@ TrackedPiece::TrackedPiece(std::string piece_name, Scalar HSVmin, Scalar HSVmax,
 	setHSVmax(HSVmax);
 	setXDest(xdest);
 	setYDest(ydest);
-	isMoving = false;
 	timeLock = false;
+	isMoving = false;
+	isPlacedCorrectly = false;
+	flashing = false;
+	turn_off = false;
+	dimmed = false;
 }
 
 int TrackedPiece::checkForMovement(bool justMoved)
@@ -104,7 +120,7 @@ int TrackedPiece::checkForMovement(bool justMoved)
 		flashing = true;
 		return 2;
 	}
-	else if (numTrues >= 2 )
+	else if (numTrues >= NUM_TRUES_TRIGGER_FLASH)
 	{
 		//clearStatus();
 		cout << name << " piece being placed." << endl;
@@ -133,7 +149,7 @@ bool TrackedPiece::checkIfPlacedCorrectly()
 
 	// check for consistent placement in correct position
 	int numTrues = count(placementHistory.begin(), placementHistory.end(), true);
-	if (numTrues >= 5) {
+	if (numTrues >= NUM_TRUES_PLACED_CORRECTLY) {
 		isPlacedCorrectly = true;
 		cout << name << " placed correctly!" << endl;
 		return true;

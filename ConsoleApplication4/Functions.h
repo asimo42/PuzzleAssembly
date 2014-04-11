@@ -45,15 +45,18 @@ public:
 	static const int SHAPE_LINE_WIDTH = 15;
 
 	static const int FLASH_DELAY = 400;
-	static const int TIMER_TICK = 500;
+	static const int TIMER_TICK = 350;
 
 	static System::String^ GAME_INPUT_DIRECTORY = System::Windows::Forms::Application::StartupPath + "/../";
 	static System::String^ HELP_FILE = System::Windows::Forms::Application::StartupPath + "/../Help.txt";
 	static System::String^ RESULTS_DIRECTORY = System::Windows::Forms::Application::StartupPath + "/PatientPerformanceData/";
-
+	
 };
 
-
+ref class Globals {
+  public:
+	static int difficultylevel;
+};
 //--- FROM FUNCTIONS.CPP----
 
 // Starting OpenCV tracking
