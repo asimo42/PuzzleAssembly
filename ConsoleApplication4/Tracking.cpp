@@ -61,6 +61,7 @@ void on_trackbar( int, void* )
 
 //----------------------------------------------------------------------------------------------------------
  void RunTracking::loadTrackedPieces() {
+	 pieces.clear();
 	 for (int i = 0; i < this->Game->getPieceList()->Count; i++) {
 		 pieces.push_back(puzzlePieceToTrackedPiece(this->Game->getPieceList()[i]));
 	 }
@@ -214,7 +215,7 @@ void RunTracking::drawPuzzleBoard(Mat &image)
 	//Shape shapes(&image);
 	shapes.setImage(&image);
 	shapes.Clear_To_Black(); // Must clear to black first, otherwise get exception
-	shapes.Clear_To_Gray();	
+ 	shapes.Clear_To_Gray();	
 	for (unsigned int i = 0; i < pieces.size(); i++)
 	{
 		shapes.Draw_Shape(pieces[i], 1);
