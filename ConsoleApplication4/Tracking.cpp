@@ -41,6 +41,9 @@ using namespace msclr::interop;
 vector<TrackedPiece> pieces;
 
 Mat puzzle_board;				//Puzzle board image for drawing shapes on
+int difficulty;					//Difficulty pulled from the gui
+								//  there should be a better way to access this but
+								//  I'm not sure how to do that.
 
 // Plays the audio file 'filename.' The file must be in Sounds which is two levels up from execution directory.
 int RunTracking::playSoundEffect(string filename) {
@@ -235,7 +238,9 @@ VOID CALLBACK timerTick(  _In_  HWND hwnd, _In_  UINT uMsg, _In_  UINT_PTR idEve
 {
 	int thresh = 40;
 
-	
+	for(int i = 0; i < pieces.size(); ++i)
+		pieces[i].clearStatus();
+
 	for(int i = 0; i < pieces.size(); ++i)
 	{	
 		int status = 0;
@@ -262,9 +267,46 @@ VOID CALLBACK timerTick(  _In_  HWND hwnd, _In_  UINT uMsg, _In_  UINT_PTR idEve
 			}
 		}
 
+		if (status != 0)
+		{
+			//EASY
+			if(difficulty == 1)
+			{
+				//Turn off all other pieces
+				for(int j = 0; j < pieces.size(); j++)
+				if (i != j)
+				{
+					pieces[j].clearStatus();
+					pieces[j].setTurnOff(true);
+				}
+			}
+
+			//MEDIUM
+			if(difficulty == 2)
+			{
+				//Dim all other pieces
+				for(int j = 0; j < pieces.size(); j++)
+				if (i != j)
+				{
+					pieces[j].clearStatus();
+					pieces[j].setDimmed(true);
+				}
+			}
+
+			//HARD
+			if(difficulty == 3)
+			{
+				//I don't think anything has to happen here
+			}
+		}
+
+
+
+
 		//Depending of the status returned above, this will change 
 		//if all the other pieces are turned off, turned on, etc...
-		if (status == 1 /*|| status == 0*/)
+		/*
+		if (status == 1)
 		{
 			//Turn on all other pieces
 			for(int j = 0; j < pieces.size(); j++)
@@ -293,6 +335,7 @@ VOID CALLBACK timerTick(  _In_  HWND hwnd, _In_  UINT uMsg, _In_  UINT_PTR idEve
 					pieces[j].setTurnOff(true);
 				}
 		}
+		*/
 	}
 
 	//cout << "Timer tick." << endl;
@@ -341,6 +384,8 @@ VOID CALLBACK RunTracking::static_timerTick(  _In_  HWND hwnd, _In_  UINT uMsg, 
 //----------------------------------------------------------------------------------------------------------
 int RunTracking::startTrack()
 {
+	//Get diffculty
+	difficulty = this->Game->getLevelOfDifficulty();
 
 	// set timer to periodically check piece movement
 	UINT timer_ms = Constants::TIMER_TICK;

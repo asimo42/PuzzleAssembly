@@ -78,6 +78,7 @@ void CalibrationTracking::startLocationCalibration() {
 	// display the puzzle board
 	cv::Mat board = displayPuzzleBoard();
 	imshow("game_board", board);
+	moveWindow("game_board", -1600, 0);
 
 	// wait for user to place pieces (gui form will send signal when done)
 	while (this->waitingForUserToPlacePieces) {

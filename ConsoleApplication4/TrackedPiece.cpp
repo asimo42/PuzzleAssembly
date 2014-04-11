@@ -75,7 +75,20 @@ int TrackedPiece::checkForMovement(bool justMoved)
 	int numTrues = count(movementHistory.begin(), movementHistory.end(), true);
 	//cout << "Num trues " << name << ": " << numTrues << endl;
 
-	if (numTrues >= 4 ) //&& EASY)
+	if (numTrues >= 3 )
+	{
+		cout << name << " piece being placed." << endl;
+		flashing = true;	// starts flashing
+		return 1;
+	}
+	else
+	{
+		flashing = false;	// stops flashing
+		return 0;
+	}
+
+	/*  This was for having hints occur incrementally
+	if (numTrues >= 4 )
 	{
 		//clearStatus();
 		std::cout << name << " **TURN OFF**" << endl;
@@ -83,7 +96,7 @@ int TrackedPiece::checkForMovement(bool justMoved)
 		return 3;
 	}
 
-	else if (numTrues >= 3) //&& (EASY || MEDIUM))
+	else if (numTrues >= 3)
 
 	{
 		//clearStatus();
@@ -103,6 +116,7 @@ int TrackedPiece::checkForMovement(bool justMoved)
 		flashing = false;	// stops flashing
 		return 0;
 	}
+	*/
 
 }
 
