@@ -1,3 +1,7 @@
+/* This class hold the data for an individual puzzle piece. This class is currently tailored for the KnobPuzzle, but extensions could be made. 
+Basic information included is the shape of the piece, its color, its destination coordinates, and the time at which it was placed. 
+*/
+
 #pragma once
 
 #include <Windows.h>

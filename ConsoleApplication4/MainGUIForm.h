@@ -1,4 +1,10 @@
-
+/* 
+	This form is the main GUI by which the user starts and stops games. This is also the 'entry-point' of the program. 
+	All callbacks for users selecting items on the main GUI are handled here. 
+	The 'global' class variables here hold information that is consistent through different 'phases' of the program;
+	e.g. a knobpuzzle loaded here can be transfered to calibration, or to a running game, etc, and all game results are stored
+	in these variables. This is because this is the only form/class that never closes or ends throughout a session. 
+*/
 #include <Windows.h>
 #include "stdafx.h"
 #include <WinBase.h>
@@ -33,13 +39,14 @@ namespace PuzzleAssembly {
 		{
 			InitializeComponent();
 
-			// ** THESE ARE INITIALIZED FOR TESTING PURPOSES ONLY - REMOVE FOR FINAL VERSION
+			// initialize all the status variables and the knobpuzzle class
 			turnAllButtonsOnExceptStop();
 			this->gameRunning = false;
 			this->calibrating = false;
 			this->sessionDataSaved = false;
-			this->puzzleComboBox->Text = "KNOBPUZZLE1";
+			this->puzzleComboBox->Text = "KNOBPUZZLE1";			// REMOVE FOR FINAL VERSION
 			this->currentPuzzle = gcnew KnobPuzzle();
+			this->ScoreKeeper = gcnew ScoreKeeping();
 
 			//see if the results directory for the patient results data exists yet. If not, create it. 
 			if (!System::IO::Directory::Exists(Constants::RESULTS_DIRECTORY)) {
@@ -48,7 +55,7 @@ namespace PuzzleAssembly {
 				Console::WriteLine("MainGuiForm.h::Initialize(): Created results directory " + Constants::RESULTS_DIRECTORY);
 			}
 			else {
-				Console::WriteLine("MainGuiForm.h::Initialize(): Results Directory already exists: " + Constants::RESULTS_DIRECTORY);
+				Console::WriteLine("MainGuiForm.h::Initialize(): Results Directory found: " + Constants::RESULTS_DIRECTORY);
 			}
 			//******
 
@@ -86,7 +93,7 @@ namespace PuzzleAssembly {
 	private: System::Windows::Forms::Label^  label1;
 	private: System::ComponentModel::IContainer^  components;
 	private: KnobPuzzle^ currentPuzzle;
-	private: ScoreKeeping ScoreKeeper;
+	private: ScoreKeeping^ ScoreKeeper;
 
 	// Visual Studio's GUI stuff
 	private: System::Windows::Forms::Button^  runGameButton;
@@ -235,7 +242,7 @@ namespace PuzzleAssembly {
 			this->label3->Size = System::Drawing::Size(225, 18);
 			this->label3->TabIndex = 13;
 			this->label3->Text = L"please enter exactly as it appears";
-			this->label3->Click += gcnew System::EventHandler(this, &MainGUIForm::label3_Click);
+
 			// 
 			// level1CheckBox
 			// 
@@ -392,6 +399,7 @@ namespace PuzzleAssembly {
 		}
 #pragma endregion
 
+// User hits 'Run Game'
 private: System::Void runGameButton_Click(System::Object^  sender, System::EventArgs^  e) {
 	
 			 // Lock down thread while loading puzzle, so that only one thread is accessing it (I'm not actually sure this is doing anything)
@@ -459,10 +467,10 @@ private: System::Void runGameButton_Click(System::Object^  sender, System::Event
 			 this->stopGameButton->Enabled = true;
 
 			 // now start the game by initializing the tracking. Pass in the puzzle. It will return the game stats for that game
-			 GamePlayedData^ gameResults = initializeTracking( this->currentPuzzle->returnHandle(), userName);
+			 GamePlayedData^ gameResults = initializeTracking( this->currentPuzzle, userName);
 			 
 			 //add new game results to the ScoreKeeper
-			 this->ScoreKeeper.AddNewGame(gameResults);
+			 this->ScoreKeeper->AddNewGame(gameResults);
 
 			 // reset the 'endgame' variable in KnobPuzzle (in case it was set by StopButtonClick)
 			 this->currentPuzzle->resetEndGame();
@@ -493,13 +501,13 @@ private: System::Void scoresButton_Click(System::Object^  sender, System::EventA
 			ConsoleApplication4::displayResultsForm^ displayResults = gcnew ConsoleApplication4::displayResultsForm();
 			displayResults->currentPlayer = this->playerNameComboBox->Text;
 			displayResults->currentGame = this->puzzleComboBox->Text;
-			displayResults->recordKeeper = this->ScoreKeeper.returnHandle();
+			displayResults->recordKeeper = this->ScoreKeeper;
 			// show it as a dialog, so that it pulls focus and ends when the user clicks ok or cancel.
 			System::Windows::Forms::DialogResult dialogResult = displayResults->ShowDialog(); 
-			// don't need to do anything with the dialog result
 
 		 }
 
+//----------------------------------------------------------------------------------------------------------
 // mini function to disable all buttons on the main GUI
 private: System::Void turnAllButtonsOff() {
 			 this->runGameButton->Enabled = false;
@@ -516,7 +524,7 @@ private: System::Void turnAllButtonsOnExceptStop() {
 			 this->stopGameButton->Enabled = false;
 		 }
 //----------------------------------------------------------------------------------------------------------
-		 // Handle a user clicking the "Calibrate" button
+// Handle a user clicking the "Calibrate" button
 private: System::Void calibrateButton_Click(System::Object^  sender, System::EventArgs^  e) {
 
 			 // Lock down thread for entire calibration process to minimize conflicts. I don't know if this does anything
@@ -537,17 +545,15 @@ private: System::Void calibrateButton_Click(System::Object^  sender, System::Eve
 
 			 // all buttons off while calibrating
 			 turnAllButtonsOff();
-
-			 //cv::Mat myMat = displayPuzzleBoard();
 			 this->calibrating = true;
+
 			 // create new calibration main form and pass it the puzzle. User will now enter the calibration process
 			 ConsoleApplication4::CalibrationMainPrompt^ calibForm = gcnew ConsoleApplication4::CalibrationMainPrompt();
-			 calibForm->puzzle = this->currentPuzzle->returnHandle();
+			 calibForm->puzzle = this->currentPuzzle;
 
-			 // wait until the calibration form has exited. 
+			 // show the form and wait until the calibration form has exited. 
 			 System::Windows::Forms::DialogResult dialogResult = calibForm->ShowDialog(); 
 
-			 //myMat.release();
 			 this->calibrating = false;
   		 	 ReleaseMutex(myMutex);
 
@@ -588,14 +594,14 @@ private: System::Void calibrateButton_Click(System::Object^  sender, System::Eve
     			 int success = this->currentPuzzle->SaveCalibrationSettings();
 				 if (success != 0) {
 					MessageBox::Show("Error: Failed to save settings. Calibrated values will be used for this session only.");
-					Console::WriteLine("Error: Failed to save settings. Calibrated values will be used for this session only.");
+					Console::WriteLine("Mainguiform::CalibrateButton_Click() : Failed to save settings. Calibrated values not saved for future use.");
 				 }
 			 }
 
 			 // Otherwise, cancel
 			 else if(result == System::Windows::Forms::DialogResult::No || result == System::Windows::Forms::DialogResult::Cancel)
 			 {
-			   Console::WriteLine("Not saving settings");
+			   Console::WriteLine("Mainguiform::CalibrateButton_Click() : Not saving settings.");
 			 }
 
 			 // turn buttons back on
@@ -639,7 +645,7 @@ private: int loadPuzzleFromCode() {
 			 // pull puzzle name from GUI
 			 System::String^ CodeString = this->getCodeStringFromGUI();
 			 System::String^ puzzleType = searchPuzzleType(CodeString);
-			 //KNOB PUZZLE IS STILL HARDCODED - WILL NEED TO GO THROUGH ALL CODE IF YOU WANT TO ADD NEW GAME TYPES
+			 //KNOB PUZZLE IS STILL HARDCODED HERE- WILL NEED TO GO THROUGH ALL CODE IF YOU WANT TO ADD NEW GAME TYPES
 
 			 // load up puzzle class. If unsuccessful, will return -1
 			 if (puzzleType->Equals("KnobPuzzle")) {   
@@ -656,12 +662,13 @@ private: int loadPuzzleFromCode() {
 			 }
 
 			 return success;
-		 }
+}
 
 
 //----------------------------------------------------------------------------------------------------------
 // Handle the form closing via X button
 private: System::Void MainGUIForm_FormClosing(System::Object^  sender, System::Windows::Forms::FormClosingEventArgs^  e) {
+
 			 // if game is running, need to end the game before we can quit
 			 if (this->gameRunning) {
 				 this->currentPuzzle->setEndGame();		
@@ -671,20 +678,9 @@ private: System::Void MainGUIForm_FormClosing(System::Object^  sender, System::W
 				 Console::WriteLine("MainGUIForm.h: MainGUIForm_FormClosing(): attempted to exit main gui during calibration. Cancelled exit.");
 				 e->Cancel = true;
 			 } 
-			 //if (!this->sessionDataSaved) {			 
-				// // ask user if they want to save the session results
-				//System::Windows::Forms::DialogResult result = MessageBox::Show("Do you want to save the game results for this session?", "Warning", MessageBoxButtons::YesNo, MessageBoxIcon::Warning);
+}
 
-				//// if user says yes, save the settings to the hardcoded location (user doesn't select)
-				// if(result == System::Windows::Forms::DialogResult::Yes)
-				// {
-				//	 // here I need to let the user select the Players name
-				// }
-
-			 //}
-		 }
-
-
+//----------------------------------------------------------------------------------------------------------
 // if user selects a level of difficulty box, set that box to check and uncheck the other difficulty boxes. 
 private: System::Void level2CheckBox_CheckedChanged(System::Object^  sender, System::EventArgs^  e) {
 			 if (level2CheckBox->Checked == true) { 
@@ -706,10 +702,12 @@ private: System::Void level1CheckBox_CheckedChanged(System::Object^  sender, Sys
 				level3CheckBox->Checked = false;	
 			 }
 	
-		 }
+}
+
 // display a little messagebox describing the difference between the levels of difficulty
 private: System::Void levelDescriptionsButton_Click(System::Object^  sender, System::EventArgs^  e) {
-			 System::String^ tmp = "Levels of Difficulty: \nEasy:   \n\nMedium: \n\nHard: ";
+			 System::String^ tmp = "Levels of Difficulty: \n\nEasy: Flash piece being moved, dim all other pieces, then turn off all other pieces\
+								   \nMedium: Flash piece being moved, dim all other pieces \n\nHard: Only flashes piece being moved";
 			 MessageBox::Show(tmp);
 		 }
 
@@ -719,6 +717,7 @@ private: System::String^ getCodeStringFromGUI() {
 			 System::String^ resultString = this->puzzleComboBox->Text;
 			 return resultString;
 		 }
+
 //----------------------------------------------------------------------------------------------------------
 // mini function that pulls the level of difficulty from the GUI
 private: int getLevelOfDifficulty() {
@@ -748,6 +747,7 @@ private: System::Void playerNameComboBox_Click(System::Object^  sender, System::
 			 playerNameComboBox->Items->AddRange(patientNames);
 		 }
 
+//----------------------------------------------------------------------------------------------------------
 // handle user clicking on the game text box. Generates drop down menu options
 private: System::Void puzzleComboBox_Click(System::Object^  sender, System::EventArgs^  e) {
 
@@ -786,25 +786,29 @@ private: System::Void puzzleComboBox_Click(System::Object^  sender, System::Even
 				 puzzleComboBox->Items->AddRange(result);
 			 }
 		 }
+
+//----------------------------------------------------------------------------------------------------------
+// handle user clicking the help button
 private: System::Void helpButton_Click(System::Object^  sender, System::EventArgs^  e) {
 			
-			 // pull all text from the help file into string array
-			 array<System::String^>^ fileStrings = getStringArrayFromFile(Constants::HELP_FILE);
+			 System::String^ fileName = Constants::HELP_FILE;
 
-			// if that didn't work, return an error
+			 // make sure help file exists and has content
+			 checkOrCreateFile(fileName); 
+			 array<System::String^>^ fileStrings = getStringArrayFromFile(fileName);
+			 if (fileStrings->Length == 0) {
+				 MessageBox::Show("Error: can't find help information :(");
+				 return;
+			 }
 			 if (fileStrings[0]->Equals("Error")) {
 				 MessageBox::Show("Error: can't find help information :(");
 				 return;
 			 }
 
-			// now cat all the strings together and show
-			 System::String^ final = "";
-			 for each (System::String^ line in fileStrings) {
-				 final = final + line + Environment::NewLine;  
-			 }
-			 MessageBox::Show(final);
+			 // now open up the help file in notepad
+			System::Diagnostics::Process::Start("notepad.exe", fileName);
+
 		 }
-private: System::Void label3_Click(System::Object^  sender, System::EventArgs^  e) {
-		 }
+
 };
 }

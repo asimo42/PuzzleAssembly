@@ -1,3 +1,7 @@
+/* Definitions for functions belonging to the KnobPuzzle and GameBase classes. Ex. initializers, loading the game, writing out 
+calibration settings
+*/
+
 #include "stdafx.h"
 
 #include "Functions.h"
@@ -11,11 +15,9 @@ using namespace System::Windows::Forms;
 void KnobPuzzle::Initialize() 
 {
 	this->Error = false;  // error boolean will be set if something goes wrong somewhere
-	this->errorString = ""; // if we ever want to return a string describing the error
 	this->puzzleName = gcnew System::String("KNOBPUZZLE");
 	this->puzzleType = gcnew System::String("KNOBPUZZLE");
 	this->LevelOfDifficulty = 0;
-	this->errorString = gcnew System::String("");
 	this->pieceList = gcnew List<PuzzlePiece^>();
 	this->myMutex = CreateMutex(NULL, FALSE, (LPCWSTR) "KnobPuzzle Class Mutex");
 }
@@ -28,16 +30,17 @@ KnobPuzzle::KnobPuzzle(void)
 }
 
 //----------------------------------------------------------------------------------------------------------
-// initialize a knob puzzle to a code. It will look into the game file for the matching code
 KnobPuzzle::KnobPuzzle(System::String^ code) 
 {
 	setGame(code);
 }
 
+// initialize a knob puzzle to a code. It will look into the game file for the matching code
 int KnobPuzzle::setGame(System::String^ code) {
 
 	// lock mutex for loading game data
 	WaitForSingleObject(this->myMutex, INFINITE);
+	this->Error = false; // if there was an error before, setGame might fix it
 
 	Initialize(); // re-initialize all class data
 	this->puzzleName = code; // update puzzle name
@@ -77,7 +80,6 @@ void KnobPuzzle::LookUpGame(System::String^ code)
 		// if can't find calibrated file, then use default file instead
 		Console::WriteLine("KnobPuzzle::LookUpGame() - Could not find calibrated file. Will use default instead.");
 		inputFile = defaultFile;
-		// if neither exist, error and exit.
 		if (!System::IO::File::Exists(defaultFile)) {
 			Console::WriteLine("KnobPuzzle::LookUpGame() - Could not find either calibrated or default game file");
 			this->Error = true;
@@ -192,7 +194,6 @@ void KnobPuzzle::LookUpGame(System::String^ code)
 // pull shape-drawing information from puzzle file line
 int KnobPuzzle::ParseShapeInformation(array<System::String^>^ tokens, PuzzlePiece^ piece) 
 {
-	//**Need way to not repeat the bool check in each if statement
 	System::String^ shapeType = piece->getName();
 	int point_x, point_y, height, width, length, radius;
 	bool try1 = true; bool try2 = true; bool try3 = true; bool try4 = true;
@@ -252,16 +253,19 @@ int KnobPuzzle::ParseShapeInformation(array<System::String^>^ tokens, PuzzlePiec
 			this->Error = true;
 			return -1;
 		}
+	// if any of the above parsing failed, return an error
 	if (!try1 || !try2 || !try3 ||!try4) { return -1; }
 
 	return 0;
 }
+
 //----------------------------------------------------------------------------------------------------------// 
 // user saves calibration settings
 int KnobPuzzle::SaveCalibrationSettings() { 
 	int success = WriteSettingsToFile(); 
 	return success;
 }
+
 //----------------------------------------------------------------------------------------------------------
 // Write the current KnobPuzzle calibration settings to the calibration file. THIS FUNCTION NEEDS TO BE REVAMPED TO CONSTRUCT NEW FILES WITHOUT TEMPLATE
 int KnobPuzzle::WriteSettingsToFile() {
@@ -359,15 +363,22 @@ int KnobPuzzle::WriteSettingsToFile() {
 }
 
 //----------------------------------------------------------------------------------------------------------
-// Check if the puzzle has been initialized and has pieces, and matches the code we think it should be playing. THIS NEEDS TO BE MORE COMPREHENSIVE
+// Check if the puzzle has been initialized and has pieces and is the right game
 bool KnobPuzzle::checkIsInitialized(System::String^ code) {
 	// check for errors or no pieces, and make sure name matches
 	if (!this->Error && this->pieceList->Count > 0 && this->puzzleName->Equals(code)) { return true; }
 	else { return false; }
 }
+//----------------------------------------------------------------------------------------------------------
+// Check if the puzzle has been initialized and has pieces, is the right game and right level
+bool KnobPuzzle::checkIsInitialized(System::String^ code, int level) {
+	// check for errors or no pieces, and make sure name matches
+	if (!this->Error && this->pieceList->Count > 0 && this->puzzleName->Equals(code) && this->getLevelOfDifficulty() == level) { return true; }
+	else { return false; }
+}
 
 //----------------------------------------------------------------------------------------------------------
-// Check if the puzzle has been initialized and has pieces. THIS NEEDS TO BE MORE COMPREHENSIVE
+// Check if the puzzle has been initialized and has pieces
 bool KnobPuzzle::checkIsInitialized() {
 	// see if the error is set or if there is 0 pieces (bad)
 	if (!this->Error && this->pieceList->Count > 0) { return true; }

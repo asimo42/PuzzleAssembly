@@ -1,3 +1,8 @@
+/*
+This form guides the user through the general calibration process. It launches the ColorCalibrationForm for the user to calibrate colors.
+It then uses the newly calibrated colors and launches OpenCV to record the destination locations of each piece. 
+*/
+
 #include <Windows.h>
 #include <atlstr.h>
 #include "stdafx.h"
@@ -43,13 +48,6 @@ namespace ConsoleApplication4 {
 			this->colorForm = gcnew ConsoleApplication4::ColorCalibrationForm();
 			this->myCalibrator = gcnew CalibrationTracking();
 
-			// this thread will show the gameboard through the duration of calibration
-			//showBoard^ myBoard = gcnew showBoard();
-			//this->myThreadShell.myThread = gcnew System::Threading::Thread(gcnew System::Threading::ThreadStart(myBoard, &showBoard::display));
-			//this->myThreadShell.myThread->Start(); 
-			//
-			//TODO: Add the constructor code here
-			//
 		}
 
 	protected:

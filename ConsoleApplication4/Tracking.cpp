@@ -13,6 +13,10 @@
 //The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 //-------------------------------------------------------------------------------------------------------------------------
 
+/* This  file defines all of the tracking functions and algorithms used for tracking during normal gameplay (not calibration). Most
+functions belong to the RunTracking class.
+*/
+
 #include "stdafx.h"
 
 #include <Windows.h>	// for timer
@@ -42,6 +46,7 @@ vector<TrackedPiece> pieces;
 
 Mat puzzle_board;				//Puzzle board image for drawing shapes on
 
+//----------------------------------------------------------------------------------------------------------
 // Plays the audio file 'filename.' The file must be in Sounds which is two levels up from execution directory.
 int RunTracking::playSoundEffect(string filename) {
 	System::String^ soundfile = System::Windows::Forms::Application::StartupPath + "/../../Sounds/";
@@ -51,16 +56,25 @@ int RunTracking::playSoundEffect(string filename) {
 	return 0;
 }
 
+//----------------------------------------------------------------------------------------------------------
 void on_trackbar( int, void* )
 {//This function gets called whenever a
 	// trackbar position is changed
 }
 
 //----------------------------------------------------------------------------------------------------------
- void RunTracking::loadTrackedPieces() {
+// load up the tracked pieces vector from the PuzzlePieces imported with the KnobPuzzle
+int RunTracking::loadTrackedPieces() {
+	// if there are no pieces to load, return an error
+	if (this->Game->getPieceList()->Count < 1) {
+		Console::WriteLine("RunTracking::loadTrackedPieces(): no pieces to load!");
+		return -1;
+	}
+	// otherwise, convert each PuzzlePiece to a TrackedPiece and push it onto the vector
 	 for (int i = 0; i < this->Game->getPieceList()->Count; i++) {
 		 pieces.push_back(puzzlePieceToTrackedPiece(this->Game->getPieceList()[i]));
 	 }
+	 return 0;
  }
 
 //----------------------------------------------------------------------------------------------------------
@@ -107,7 +121,7 @@ void RunTracking::drawObject(vector<TrackedPiece> pieces, Mat &frame){
 //----------------------------------------------------------------------------------------------------------
 void RunTracking::trackFilteredObject(TrackedPiece &piece, Mat &cameraFeed, Mat &threshold_image){
 
-	vector <TrackedPiece> pieces;
+	vector <TrackedPiece> pieces; // IS THIS THE SAME AS THE GLOBAL VARIABLE ABOVE???
 
 	Mat temp;
 	threshold_image.copyTo(temp);
@@ -202,10 +216,10 @@ void RunTracking::trackTrackedPiece(TrackedPiece &piece, Mat &camera_feed, Mat &
 	inRange(HSV_image, piece.getHSVmin(), piece.getHSVmax(), threshold_image);	
 	erodeAndDilate(threshold_image);
 	trackFilteredObject(piece, camera_feed, threshold_image);
-
 }
 
 //----------------------------------------------------------------------------------------------------------
+// draw the puzzleboard background by pulling shape information from the TrackedPiece vector
 void RunTracking::drawPuzzleBoard(Mat &image)
 {
 	//Shape shapes(&image);
@@ -217,8 +231,8 @@ void RunTracking::drawPuzzleBoard(Mat &image)
 		shapes.Draw_Shape(pieces[i], 1);
 	}
 }
-//----------------------------------------------------------------------------------------------------------
 
+//----------------------------------------------------------------------------------------------------------
 // This should probably be a member function of some class, but I wasn't sure where it should go.
 bool checkIfAllCorrect()
 {
@@ -230,7 +244,7 @@ bool checkIfAllCorrect()
 	}
 	return true;
 }
-
+//----------------------------------------------------------------------------------------------------------
 VOID CALLBACK timerTick(  _In_  HWND hwnd, _In_  UINT uMsg, _In_  UINT_PTR idEvent, _In_  DWORD dwTime)
 {
 	int thresh = 40;
@@ -354,14 +368,13 @@ int RunTracking::startTrack()
 	//SetTimer(NULL, 1, timer_flash, 2timerFlash);
 
 	// TRYING TO IMPORT CALIBRATED PIECES HERE::
-	this->loadTrackedPieces();
-	//pieces.push_back(TrackedPiece("Circle", Scalar(0, 130, 0), Scalar(5, 256, 256)));
-	//pieces.push_back(TrackedPiece("Rectangle", Scalar(65, 130, 0), Scalar(82, 256, 256)));
-	//pieces.push_back(TrackedPiece("Pentagon", Scalar(18, 130, 75), Scalar(30, 256, 256)));
+	int loadResult = this->loadTrackedPieces();
 
-	//
-
-	//bool calibrate_mode = false;
+	// if import failed, return error
+	if (loadResult != 0) {
+		Console::WriteLine("RunTracking::startTrack():: loadTrackedPieces() failed. Exiting.");
+		return -1;
+	}
 
 	VideoCapture capture;
 	capture.open(0);	//0 is default video device, 1 is other/USB camera
@@ -371,10 +384,10 @@ int RunTracking::startTrack()
 	
 	if (!capture.isOpened())
 	{
-		cout << "Cannot open camera." << endl;
-		return 1;
+		cout << "RunTracking::startTrack():: Cannot open camera." << endl;
+		return -1;
 	}
-	cout << "Camera opened" << endl;
+	cout << "RunTracking::startTrack():: Camera opened" << endl;
 
 	Mat camera_feed;		//raw camera image
 	Mat HSV_image;			//camera image converted to HSV
@@ -404,40 +417,27 @@ int RunTracking::startTrack()
 	// See if pausing here stops unhandled exception...
 //	Sleep(500);
 //	cout << "Done sleeping." << endl;
+
+	// go into infinite loop of reading camera input and tracking pieces
 	while(1)
 	{
 		capture.read(camera_feed);
 
 		//namedWindow(original_window);
-//		imshow(original_window, camera_feed);
 
 		//namedWindow(filtered_window);
 		try {
 			cvtColor(camera_feed, HSV_image, CV_BGR2HSV);
 		} catch (System::Exception ^e){
-		  System::Windows::Forms::MessageBox::Show("We are encountering a " + e->GetType()->ToString() + " exception!!! at Tracking.cpp::StartTrack() - cvtColor()");
-		  return -1;
+		    System::Console::WriteLine("Tracking.cpp::StartTrack():: Exception " + e->GetType()->ToString() + "  at cvtColor()");
+		    return -1;
 		}
 
-		//if(calibrate_mode)
-		//{
-		//	// Track temp puzzle piece with values from slider
-		//	TrackedPiece tmp = TrackedPiece("temp", Scalar(H_min, S_min, V_min), Scalar(H_max, S_max, V_max));
-		//	trackTrackedPiece(tmp, camera_feed, HSV_image, threshold_image);
-		//	imshow(filtered_window, threshold_image);
-		//}
-
-		//else
-		//{
-//			trackTrackedPiece(yellow, camera_feed, HSV_image, threshold_image);
-			for (int i = 0; i < pieces.size(); ++i)
-			{
-				trackTrackedPiece(pieces[i], camera_feed, HSV_image, threshold_image);
-			}
-//			trackTrackedPiece(white_square, camera_feed, HSV_image, threshold_image);
-			imshow(filtered_window, threshold_image);
-		//}
-		
+		for (int i = 0; i < pieces.size(); ++i)
+		{
+			trackTrackedPiece(pieces[i], camera_feed, HSV_image, threshold_image);
+		}
+		imshow(filtered_window, threshold_image);
 		imshow(original_window, camera_feed);
 
 		waitKey(30);
@@ -475,9 +475,8 @@ int RunTracking::startTrack()
 			}
 			KillTimer(hwnd1, myTimer); // kill the timers
 			KillTimer(hwnd2, myTimer2);
-			destroyAllWindows();
+			destroyAllWindows(); // shut everything down. 
 			endTrack();
-			_CrtDumpMemoryLeaks();
 			return 0;
 		}
 	}

@@ -52,12 +52,9 @@ void RunTracking::Test2() {
 	TrackedPiece white_square = TrackedPiece("Square", Scalar(77, 0, 168), Scalar(158, 63, 256));
 
 	// fill in all the times with junk
-	int placeTime;
 	for each (PuzzlePiece^ piece in this->Game->getPieceList())
 	{
-		placeTime = getElapsedSeconds(this->gameRecord->getTimeStarted().Ticks);
 		piece->setTimePlacedToNow();
-		Debug::WriteLine("time is " + placeTime);
 		System::Threading::Thread::Sleep(1); // wait for 1 ms
 	}
 

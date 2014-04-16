@@ -32,6 +32,6 @@ If any of the following is occurring, try recalibrating the camera:
 -	Failing to give hints for one or more pieces
 If a puzzle is failing to load:
 1) double check that the input matches the name of the puzzle (uppercase/lowercase and spacing matters)
-2) Check to see if the file is in the installation folder (the game file is a text file labeled with the name of the puzzle, with or without "_default" at the end. Ex. "KNOBPUZZLE1" corresponds to "KNOBPUZZLE1.txt" and/or "KNOBPUZZLE1_Default.txt"). If it is not there, check if it's anywhere else in the system, or if 
+2) Check to see if the file is in the installation folder (the game file is a text file labeled with the name of the puzzle, with or without "_default" at the end. Ex. "KNOBPUZZLE1" corresponds to "KNOBPUZZLE1.txt" and/or "KNOBPUZZLE1_Default.txt"). 
 
 

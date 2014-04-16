@@ -8,10 +8,9 @@ e.g. initializing, starting, ending.  Tracking functions are located in "Trackin
 #include "Functions.h"
 #include "RunTracking.h"
 
-// initialize all variables upon creation of class 
 void RunTracking::Initialize() {
 
-		this->TestCase = Constants::TESTNUMBER;
+		//this->TestCase = Constants::TESTNUMBER;
 
         this->original_window = "Original Capture";
         this->trackbar_window = "Trackbar Window";
@@ -35,19 +34,15 @@ void RunTracking::Initialize() {
         this->V_min = Constants::DEFAULT_V_MIN;
         this->V_max = Constants::DEFAULT_V_MAX;
 
-		// initialize gameRecording and set its start time to now
+		// initialize gameRecording and set its start time to now. All scores will be measured against this start time
 		this->gameRecord = gcnew GamePlayed();
 		this->gameRecord->setStartTimeToNow();
-
-		//// set up the start time to now. All scores will be measured against this start time
-		//DateTime tim = DateTime::Now;
+		this->STOP = false;
 
 		// sound file names
 		sound_piece_placed1 = "pieceplaced1.wav";
 		sound_game_start = "level_complete.wav";
 		sound_game_completed = "level_complete.wav";
-
-		this->STOP = false;
 
 		sound_player = new SoundEffectPlayer();
 
@@ -58,41 +53,43 @@ void RunTracking::Initialize() {
 //----------------------------------------------------------------------------------------------------------
 
 // start running opencv
-void RunTracking::Start() {
+int RunTracking::Start() {
 
-		//IF test is selected, go to test
-		if (this->TestCase != 0) {
-			switch(this->TestCase) {
-				case 1:  Test1();	break;
-				case 2:  Test2();	break;
-				case 3:  Test3();	break;
-				case 4:  Test4();	break;
-				case 5:  Test5();	break;
-				case 6:  Test6();	break;
-			    // add more tests here as necessary
-				default: 
-					System::String^ errorStr = "Error: Cannot find test case " + this->TestCase;
-					System::Windows::Forms::MessageBox::Show(errorStr);
-			}
-		}
-		else { startTrack(); }
+		////IF test is selected, go to test
+		//if (this->TestCase != 0) {
+		//	switch(this->TestCase) {
+		//		case 1:  Test1();	break;
+		//		case 2:  Test2();	break;
+		//		case 3:  Test3();	break;
+		//		case 4:  Test4();	break;
+		//		case 5:  Test5();	break;
+		//		case 6:  Test6();	break;
+		//	    // add more tests here as necessary
+		//		default: 
+		//			System::String^ errorStr = "Error: Cannot find test case " + this->TestCase;
+		//			System::Windows::Forms::MessageBox::Show(errorStr);
+		//	}
+		//}
+		//else { 
+		int success = startTrack(); 
+		return success;
+		//}
 }
 //----------------------------------------------------------------------------------------------------------
 
-// end tracking, 'clean up' game.  this instance of the class will now end (though that might change in the future)
+// when tracking is ended, destroy windows and compile data
 void RunTracking::endTrack() {
 
-		// end openCV stuff
-        System::Windows::Forms::MessageBox::Show("Congratulations, YOU WON!");
 		System::Console::WriteLine("RunTracking::EndTrack() : Exiting RunTracking");
-		// destroy tracking windows
 		cv::destroyAllWindows();
 
 		// if game was exited early, tell gameRecord to handle what we have
 		if (this->Game->isEndGame()) {
 			this->gameRecord->gameEndedEarly();
+			return;
 		}
-		// if game was completed, compile record for game
+		// if game was completed, compile record for game 
+        System::Windows::Forms::MessageBox::Show("Congratulations, YOU WON!");
 		this->gameRecord->setTimeCompletedToNow();
 		this->gameRecord->compileData();
 
@@ -100,13 +97,7 @@ void RunTracking::endTrack() {
 }
 
 //----------------------------------------------------------------------------------------------------------
-// return the gamePlayed^ instance that holds the scorekeeping data
-gcroot<GamePlayed^> RunTracking::returnScore() {
-        return this->gameRecord;
-}
-
-//----------------------------------------------------------------------------------------------------------
-// once you've identified which piece was placed, and that it was placed, handle it (IN PROGRESS!!!)
+// called when the tracker decides a piece was placed
 void RunTracking::processPlacementOfPiece(TrackedPiece trackedpiece) 
 {
 	// find corresponding PuzzlePiece^ in KnobPuzzleInstance, and set it's time placed to now.
@@ -117,5 +108,3 @@ void RunTracking::processPlacementOfPiece(TrackedPiece trackedpiece)
 		}
 	}
 }
-
-////----------------------------------------------------------------------------------------------------------

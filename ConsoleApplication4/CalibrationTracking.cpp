@@ -475,8 +475,7 @@ void CalibrationTracking::drawBoard() {
 	for each (PuzzlePiece^ managedPiece in this->Game->getPieceList()) {
 		trackedPieces.push_back(puzzlePieceToTrackedPiece(managedPiece));
 	}
-	puzzleBoard = displayPuzzleBoard2(puzzleBoard, trackedPieces);
-	//cv::Mat board = displayPuzzleBoard();
+	puzzleBoard = displayPuzzleBoard(puzzleBoard, trackedPieces);
 	imshow("game_board", puzzleBoard);
 	cv::moveWindow("game_board", 0, 0);
 }

@@ -1,3 +1,6 @@
+/* Definitions for functions belonging to the PuzzlePiece class
+*/
+
 #include "stdafx.h"
 
 #include "PuzzlePiece.h"
@@ -19,7 +22,6 @@ void PuzzlePiece::Initialize()
 	List<int>^ HSVmaxtmp = gcnew List<int>((IEnumerable<int>^) input);
 	setHSVmin(HSVmintmp);
 	setHSVmax(HSVmaxtmp);
-	//timePlaced = gcnew DateTime(); 
 	shape_point_x = 0; 
 	shape_point_y = 0;
 	shape_width = 0;
