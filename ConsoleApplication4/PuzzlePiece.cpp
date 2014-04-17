@@ -60,7 +60,8 @@ PuzzlePiece::PuzzlePiece(System::String^ piece_name, List<int>^ HSVmin, List<int
 void PuzzlePiece::setTimePlacedToNow()
 {
 	this->isPlaced = true;
-	this->timePlaced = this->timePlaced.Now;
+    DateTime saveNow = DateTime::Now;
+	this->timePlaced = saveNow;
 }
 
 	//Set Shape Drawing Data

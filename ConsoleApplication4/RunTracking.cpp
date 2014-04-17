@@ -83,7 +83,7 @@ void RunTracking::Start() {
 void RunTracking::endTrack() {
 
 		// end openCV stuff
-        System::Windows::Forms::MessageBox::Show("GAME OVER!");
+        System::Windows::Forms::MessageBox::Show("Congratulations, YOU WON!");
 		System::Console::WriteLine("RunTracking::EndTrack() : Exiting RunTracking");
 		// destroy tracking windows
 		cv::destroyAllWindows();

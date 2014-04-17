@@ -12,6 +12,7 @@ e.g. initializing, starting, ending.  Tracking functions are located in "Trackin
 #include "TrackedPiece.h"
 #include "Functions.h"
 #include "CalibrationTracking.h"
+#include "Shape.h"
 
 using namespace cv;
 using namespace std;
@@ -76,9 +77,11 @@ void CalibrationTracking::Start() {
 void CalibrationTracking::startLocationCalibration() {
 
 	// display the puzzle board
-	cv::Mat board = displayPuzzleBoard();
-	imshow("game_board", board);
+//	cv::Mat board = displayPuzzleBoard();
+//	imshow("game_board", board);
+	drawBoard();
 	moveWindow("game_board", -1600, 0);
+	cvSetWindowProperty("game_board", CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);	// Makes full screen
 
 	// wait for user to place pieces (gui form will send signal when done)
 	while (this->waitingForUserToPlacePieces) {
@@ -425,14 +428,17 @@ int CalibrationTracking::startTrackColor()
 	TrackedPiece tmp = puzzlePieceToTrackedPiece(this->Game->getPieceList()[this->iterator]);
 	createTrackbarWindow(tmp);
 
-	cv::Mat board = displayPuzzleBoard();
+	drawBoard();
+//	cv::Mat board = displayPuzzleBoard();
 
-	namedWindow("game_board", WINDOW_NORMAL);
-	imshow("game_board", board);
+//	namedWindow("game_board", WINDOW_NORMAL);
+//	imshow("game_board", board);
 	// Move puzzle board window to correct position on game board monitor
 	// (Puzzle board monitor needs to be set up to the left of first monitor.)
-	moveWindow("game_board", -1600, 0);
-	cvSetWindowProperty("game_board", CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);	// Makes full screen
+//	moveWindow("game_board", -1600, 0);
+//	cvSetWindowProperty("game_board", CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);	// Makes full screen
+
+	// display the puzzle board
 
 	this->iterator = 0;
 
@@ -481,5 +487,18 @@ int CalibrationTracking::startTrackColor()
 	return 0;
 }
 
-
+void CalibrationTracking::drawBoard() {
+	// display the puzzle board
+	cv::Mat puzzleBoard;
+	vector<TrackedPiece> trackedPieces = vector<TrackedPiece>(this->Game->getPieceList()->Count);
+	for each (PuzzlePiece^ managedPiece in this->Game->getPieceList()) {
+		trackedPieces.push_back(puzzlePieceToTrackedPiece(managedPiece));
+	}
+	puzzleBoard = displayPuzzleBoard2(puzzleBoard, trackedPieces);
+	//cv::Mat board = displayPuzzleBoard();
+	namedWindow("game_board", WINDOW_NORMAL);
+	imshow("game_board", puzzleBoard);
+	cv::moveWindow("game_board", -1600, 0);
+	cvSetWindowProperty("game_board", CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);	// Makes full screen
+}
 

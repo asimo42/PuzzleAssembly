@@ -39,6 +39,7 @@ namespace PuzzleAssembly {
 			this->calibrating = false;
 			this->sessionDataSaved = false;
 			this->puzzleComboBox->Text = "KNOBPUZZLE1";
+			this->currentPuzzle = gcnew KnobPuzzle();
 
 			//see if the results directory for the patient results data exists yet. If not, create it. 
 			if (!System::IO::Directory::Exists(Constants::RESULTS_DIRECTORY)) {
@@ -52,15 +53,15 @@ namespace PuzzleAssembly {
 			//******
 
 			// For me, CameraPrefs folder is located 2 folders above the consolepplication4.exe file
-			//System::String^ cameraExecutablePath = System::Windows::Forms::Application::StartupPath + "/../../CameraPrefs/CameraPrefs.exe";
-			//MessageBox::Show("Attempting to run : " + cameraExecutablePath);
-			//if (System::IO::File::Exists(cameraExecutablePath)) {
-			//	MessageBox::Show("Executable file found");
-			//	System::Diagnostics::Process^ process = System::Diagnostics::Process::Start(cameraExecutablePath);
-			//}
-			//else {
-			//	MessageBox::Show("Can't find CameraPrefs.exe. Please change my file path in MainGUIForm.h :: MainGUIform(void)");
-			//}
+			System::String^ cameraExecutablePath = System::Windows::Forms::Application::StartupPath + "/../../CameraPrefs/CameraPrefs.exe";
+			MessageBox::Show("Attempting to run : " + cameraExecutablePath);
+			if (System::IO::File::Exists(cameraExecutablePath)) {
+				MessageBox::Show("Executable file found");
+				System::Diagnostics::Process^ process = System::Diagnostics::Process::Start(cameraExecutablePath);
+			}
+			else {
+				MessageBox::Show("Can't find CameraPrefs.exe. Please change my file path in MainGUIForm.h :: MainGUIform(void)");
+			}
 
 
 		}
@@ -84,7 +85,7 @@ namespace PuzzleAssembly {
 
 	private: System::Windows::Forms::Label^  label1;
 	private: System::ComponentModel::IContainer^  components;
-	private: KnobPuzzle currentPuzzle;
+	private: KnobPuzzle^ currentPuzzle;
 	private: ScoreKeeping ScoreKeeper;
 
 	// Visual Studio's GUI stuff
@@ -150,7 +151,7 @@ namespace PuzzleAssembly {
 			this->runGameButton->AutoSizeMode = System::Windows::Forms::AutoSizeMode::GrowAndShrink;
 			this->runGameButton->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 24, static_cast<System::Drawing::FontStyle>((System::Drawing::FontStyle::Bold | System::Drawing::FontStyle::Italic)), 
 				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
-			this->runGameButton->Location = System::Drawing::Point(597, 298);
+			this->runGameButton->Location = System::Drawing::Point(597, 278);
 			this->runGameButton->Name = L"runGameButton";
 			this->runGameButton->Size = System::Drawing::Size(247, 142);
 			this->runGameButton->TabIndex = 0;
@@ -163,7 +164,7 @@ namespace PuzzleAssembly {
 			this->label1->AutoSize = true;
 			this->label1->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 15.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, 
 				static_cast<System::Byte>(0)));
-			this->label1->Location = System::Drawing::Point(12, 191);
+			this->label1->Location = System::Drawing::Point(17, 157);
 			this->label1->Name = L"label1";
 			this->label1->Size = System::Drawing::Size(132, 25);
 			this->label1->TabIndex = 7;
@@ -175,7 +176,7 @@ namespace PuzzleAssembly {
 			this->scoresButton->AutoSizeMode = System::Windows::Forms::AutoSizeMode::GrowAndShrink;
 			this->scoresButton->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 20.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, 
 				static_cast<System::Byte>(0)));
-			this->scoresButton->Location = System::Drawing::Point(12, 326);
+			this->scoresButton->Location = System::Drawing::Point(12, 306);
 			this->scoresButton->Name = L"scoresButton";
 			this->scoresButton->Size = System::Drawing::Size(277, 114);
 			this->scoresButton->TabIndex = 8;
@@ -190,7 +191,7 @@ namespace PuzzleAssembly {
 			this->calibrateButton->Enabled = false;
 			this->calibrateButton->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 20.25F, System::Drawing::FontStyle::Regular, 
 				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
-			this->calibrateButton->Location = System::Drawing::Point(322, 326);
+			this->calibrateButton->Location = System::Drawing::Point(316, 306);
 			this->calibrateButton->Name = L"calibrateButton";
 			this->calibrateButton->Size = System::Drawing::Size(256, 114);
 			this->calibrateButton->TabIndex = 9;
@@ -205,7 +206,7 @@ namespace PuzzleAssembly {
 			this->stopGameButton->Enabled = false;
 			this->stopGameButton->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 24, static_cast<System::Drawing::FontStyle>((System::Drawing::FontStyle::Bold | System::Drawing::FontStyle::Italic)), 
 				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
-			this->stopGameButton->Location = System::Drawing::Point(595, 131);
+			this->stopGameButton->Location = System::Drawing::Point(597, 94);
 			this->stopGameButton->Name = L"stopGameButton";
 			this->stopGameButton->Size = System::Drawing::Size(247, 139);
 			this->stopGameButton->TabIndex = 11;
@@ -227,13 +228,14 @@ namespace PuzzleAssembly {
 			// label3
 			// 
 			this->label3->AutoSize = true;
-			this->label3->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 14.25F, System::Drawing::FontStyle::Italic, System::Drawing::GraphicsUnit::Point, 
+			this->label3->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 11.25F, System::Drawing::FontStyle::Italic, System::Drawing::GraphicsUnit::Point, 
 				static_cast<System::Byte>(0)));
-			this->label3->Location = System::Drawing::Point(42, 65);
+			this->label3->Location = System::Drawing::Point(168, 162);
 			this->label3->Name = L"label3";
-			this->label3->Size = System::Drawing::Size(472, 24);
+			this->label3->Size = System::Drawing::Size(225, 18);
 			this->label3->TabIndex = 13;
-			this->label3->Text = L"Please enter a game code below (exactly as it appears)";
+			this->label3->Text = L"please enter exactly as it appears";
+			this->label3->Click += gcnew System::EventHandler(this, &MainGUIForm::label3_Click);
 			// 
 			// level1CheckBox
 			// 
@@ -242,7 +244,7 @@ namespace PuzzleAssembly {
 			this->level1CheckBox->CheckState = System::Windows::Forms::CheckState::Checked;
 			this->level1CheckBox->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 15.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, 
 				static_cast<System::Byte>(0)));
-			this->level1CheckBox->Location = System::Drawing::Point(166, 268);
+			this->level1CheckBox->Location = System::Drawing::Point(171, 255);
 			this->level1CheckBox->Name = L"level1CheckBox";
 			this->level1CheckBox->Size = System::Drawing::Size(79, 29);
 			this->level1CheckBox->TabIndex = 14;
@@ -255,7 +257,7 @@ namespace PuzzleAssembly {
 			this->level2CheckBox->AutoSize = true;
 			this->level2CheckBox->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 15.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, 
 				static_cast<System::Byte>(0)));
-			this->level2CheckBox->Location = System::Drawing::Point(255, 270);
+			this->level2CheckBox->Location = System::Drawing::Point(260, 257);
 			this->level2CheckBox->Name = L"level2CheckBox";
 			this->level2CheckBox->Size = System::Drawing::Size(107, 29);
 			this->level2CheckBox->TabIndex = 15;
@@ -268,7 +270,7 @@ namespace PuzzleAssembly {
 			this->level3CheckBox->AutoSize = true;
 			this->level3CheckBox->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 15.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, 
 				static_cast<System::Byte>(0)));
-			this->level3CheckBox->Location = System::Drawing::Point(368, 270);
+			this->level3CheckBox->Location = System::Drawing::Point(373, 257);
 			this->level3CheckBox->Name = L"level3CheckBox";
 			this->level3CheckBox->Size = System::Drawing::Size(77, 29);
 			this->level3CheckBox->TabIndex = 16;
@@ -281,7 +283,7 @@ namespace PuzzleAssembly {
 			this->levelDescriptionsButton->BackColor = System::Drawing::Color::Linen;
 			this->levelDescriptionsButton->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 12, System::Drawing::FontStyle::Regular, 
 				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
-			this->levelDescriptionsButton->Location = System::Drawing::Point(451, 263);
+			this->levelDescriptionsButton->Location = System::Drawing::Point(456, 250);
 			this->levelDescriptionsButton->Name = L"levelDescriptionsButton";
 			this->levelDescriptionsButton->Size = System::Drawing::Size(127, 44);
 			this->levelDescriptionsButton->TabIndex = 17;
@@ -294,7 +296,7 @@ namespace PuzzleAssembly {
 			this->label4->AutoSize = true;
 			this->label4->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 14.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, 
 				static_cast<System::Byte>(0)));
-			this->label4->Location = System::Drawing::Point(8, 270);
+			this->label4->Location = System::Drawing::Point(13, 257);
 			this->label4->Name = L"label4";
 			this->label4->Size = System::Drawing::Size(152, 24);
 			this->label4->TabIndex = 18;
@@ -305,7 +307,7 @@ namespace PuzzleAssembly {
 			this->label5->AutoSize = true;
 			this->label5->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 18, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, 
 				static_cast<System::Byte>(0)));
-			this->label5->Location = System::Drawing::Point(17, 108);
+			this->label5->Location = System::Drawing::Point(22, 74);
 			this->label5->Name = L"label5";
 			this->label5->Size = System::Drawing::Size(181, 29);
 			this->label5->TabIndex = 20;
@@ -316,7 +318,7 @@ namespace PuzzleAssembly {
 			this->playerNameComboBox->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 14.25F, System::Drawing::FontStyle::Regular, 
 				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
 			this->playerNameComboBox->FormattingEnabled = true;
-			this->playerNameComboBox->Location = System::Drawing::Point(22, 140);
+			this->playerNameComboBox->Location = System::Drawing::Point(27, 106);
 			this->playerNameComboBox->Name = L"playerNameComboBox";
 			this->playerNameComboBox->Size = System::Drawing::Size(357, 32);
 			this->playerNameComboBox->TabIndex = 21;
@@ -328,7 +330,7 @@ namespace PuzzleAssembly {
 			this->label6->AutoSize = true;
 			this->label6->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, 
 				static_cast<System::Byte>(0)));
-			this->label6->Location = System::Drawing::Point(380, 143);
+			this->label6->Location = System::Drawing::Point(385, 109);
 			this->label6->Name = L"label6";
 			this->label6->Size = System::Drawing::Size(174, 32);
 			this->label6->TabIndex = 22;
@@ -339,7 +341,7 @@ namespace PuzzleAssembly {
 			this->puzzleComboBox->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 18, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, 
 				static_cast<System::Byte>(0)));
 			this->puzzleComboBox->FormattingEnabled = true;
-			this->puzzleComboBox->Location = System::Drawing::Point(22, 225);
+			this->puzzleComboBox->Location = System::Drawing::Point(32, 193);
 			this->puzzleComboBox->Name = L"puzzleComboBox";
 			this->puzzleComboBox->Size = System::Drawing::Size(357, 37);
 			this->puzzleComboBox->TabIndex = 23;
@@ -363,7 +365,7 @@ namespace PuzzleAssembly {
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->BackColor = System::Drawing::Color::Beige;
-			this->ClientSize = System::Drawing::Size(854, 444);
+			this->ClientSize = System::Drawing::Size(854, 432);
 			this->Controls->Add(this->helpButton);
 			this->Controls->Add(this->puzzleComboBox);
 			this->Controls->Add(this->label6);
@@ -422,7 +424,7 @@ private: System::Void runGameButton_Click(System::Object^  sender, System::Event
 			 }
 
 			 // load up puzzle if not already loaded (make sure it's the same puzzle that the user has entered in the text box too). 
-			 if (!this->currentPuzzle.checkIsInitialized(this->getCodeStringFromGUI())) {
+			 if (!this->currentPuzzle->checkIsInitialized(this->getCodeStringFromGUI())) {
 				 MessageBox::Show("Loading Puzzle");
 				 Console::WriteLine("MainGUIForm.h : runGameButton_Click() : Loading Puzzle");
 
@@ -439,8 +441,8 @@ private: System::Void runGameButton_Click(System::Object^  sender, System::Event
 			 }
 
 			 // reload the level of difficulty in case it's changed
-			 this->currentPuzzle.setLevelOfDifficulty(this->getLevelOfDifficulty());
-			 if (this->currentPuzzle.getLevelOfDifficulty() == -1) {
+			 this->currentPuzzle->setLevelOfDifficulty(this->getLevelOfDifficulty());
+			 if (this->currentPuzzle->getLevelOfDifficulty() == -1) {
 					 Console::WriteLine("MainGUIForm.h : runGameButton_Click() : Error loading puzzle. Please check code string");
  		 			 ReleaseMutex(myMutex);
 					 return;
@@ -459,13 +461,13 @@ private: System::Void runGameButton_Click(System::Object^  sender, System::Event
 			 this->stopGameButton->Enabled = true;
 
 			 // now start the game by initializing the tracking. Pass in the puzzle. It will return the game stats for that game
-			 GamePlayedData^ gameResults = initializeTracking( this->currentPuzzle.returnHandle(), userName);
+			 GamePlayedData^ gameResults = initializeTracking( this->currentPuzzle->returnHandle(), userName);
 			 
 			 //add new game results to the ScoreKeeper
 			 this->ScoreKeeper.AddNewGame(gameResults);
 
 			 // reset the 'endgame' variable in KnobPuzzle (in case it was set by StopButtonClick)
-			 this->currentPuzzle.resetEndGame();
+			 this->currentPuzzle->resetEndGame();
 
 			 // Turn off 'Stop' button, and enable all other buttons
 			 turnAllButtonsOnExceptStop();
@@ -481,7 +483,7 @@ private: System::Void stopGameButton_Click(System::Object^  sender, System::Even
 			 }
 
 			 // tell KnobPuzzle to end; RunTracking will see the change in this variable and end. 
-			 this->currentPuzzle.setEndGame();		
+			 this->currentPuzzle->setEndGame();		
 			 this->gameRunning = false; // set gameRunning to false (for main gui)
 		 }
 
@@ -524,7 +526,7 @@ private: System::Void calibrateButton_Click(System::Object^  sender, System::Eve
 			 WaitForSingleObject(myMutex, INFINITE);
 
 			 // load up puzzle if not already loaded (compare current KnobPuzzle to the combobox input)
-			 if (!this->currentPuzzle.checkIsInitialized(this->getCodeStringFromGUI())) {
+			 if (!this->currentPuzzle->checkIsInitialized(this->getCodeStringFromGUI())) {
 				 MessageBox::Show("Loading Puzzle");
 				 System::Console::WriteLine("MainGUIForm.h : calibrateButton_Click() : Loading Puzzle");
 				 int success = this->loadPuzzleFromCode();
@@ -542,7 +544,7 @@ private: System::Void calibrateButton_Click(System::Object^  sender, System::Eve
 			 this->calibrating = true;
 			 // create new calibration main form and pass it the puzzle. User will now enter the calibration process
 			 ConsoleApplication4::CalibrationMainPrompt^ calibForm = gcnew ConsoleApplication4::CalibrationMainPrompt();
-			 calibForm->puzzle = this->currentPuzzle.returnHandle();
+			 calibForm->puzzle = this->currentPuzzle->returnHandle();
 
 			 // wait until the calibration form has exited. 
 			 System::Windows::Forms::DialogResult dialogResult = calibForm->ShowDialog(); 
@@ -585,7 +587,7 @@ private: System::Void calibrateButton_Click(System::Object^  sender, System::Eve
 			 if(result == System::Windows::Forms::DialogResult::Yes)
 			 {
 				 Console::WriteLine("Saving Settings");
-    			 int success = this->currentPuzzle.SaveCalibrationSettings();
+    			 int success = this->currentPuzzle->SaveCalibrationSettings();
 				 if (success != 0) {
 					MessageBox::Show("Error: Failed to save settings. Calibrated values will be used for this session only.");
 					Console::WriteLine("Error: Failed to save settings. Calibrated values will be used for this session only.");
@@ -634,7 +636,7 @@ private: int loadPuzzleFromCode() {
 				 return -1;
 			 }
 			 // load level of difficulty to puzzle
-			 else { this->currentPuzzle.setLevelOfDifficulty(level); }
+			 else { this->currentPuzzle->setLevelOfDifficulty(level); }
 
 			 // pull puzzle name from GUI
 			 System::String^ CodeString = this->getCodeStringFromGUI();
@@ -643,7 +645,9 @@ private: int loadPuzzleFromCode() {
 
 			 // load up puzzle class. If unsuccessful, will return -1
 			 if (puzzleType->Equals("KnobPuzzle")) {   
-				 success = this->currentPuzzle.setGame(CodeString); // this function will load up all puzzle data
+				 // reset the knob puzzle just to be sure everything is cleared correctly
+				 this->currentPuzzle = gcnew KnobPuzzle();
+				 success = this->currentPuzzle->setGame(CodeString); // this function will load up all puzzle data
 			 }
 
 			 // check if loading was successful
@@ -662,7 +666,7 @@ private: int loadPuzzleFromCode() {
 private: System::Void MainGUIForm_FormClosing(System::Object^  sender, System::Windows::Forms::FormClosingEventArgs^  e) {
 			 // if game is running, need to end the game before we can quit
 			 if (this->gameRunning) {
-				 this->currentPuzzle.setEndGame();		
+				 this->currentPuzzle->setEndGame();		
 			 }
 			 // if currently calibrating, just don't let the form close. User must close out of calibration first.
 			 if (this->calibrating) {
@@ -801,6 +805,8 @@ private: System::Void helpButton_Click(System::Object^  sender, System::EventArg
 				 final = final + line + Environment::NewLine;  
 			 }
 			 MessageBox::Show(final);
+		 }
+private: System::Void label3_Click(System::Object^  sender, System::EventArgs^  e) {
 		 }
 };
 }

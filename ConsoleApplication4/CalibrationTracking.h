@@ -88,4 +88,6 @@ private:
         int calibrate_V_min;
         int calibrate_V_max;
 
+		void drawBoard();
+
 };

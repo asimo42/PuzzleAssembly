@@ -17,6 +17,7 @@
 #endif
 */
 #include "SoundEffectPlayer.h"
+#include "Functions.h"
 /*
 #ifdef _DEBUG_WAS_DEFINED
 #pragma message ("     redefining _DEBUG.")

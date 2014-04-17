@@ -10,6 +10,7 @@
 
 
 
+
 #ifndef GUARD_J
 #define GUARD_J
 
@@ -107,6 +108,8 @@ public:
 void on_trackbar( int, void* );  // this one won't compile as part of RunTracking - no idea why
 
 cv::Mat displayPuzzleBoard();
+
+cv::Mat displayPuzzleBoard2(cv::Mat matName, vector<TrackedPiece>);
 
 //ref class showBoard {
 //public:

@@ -61,15 +61,15 @@ void GamePlayed::setGame(KnobPuzzle^ Puzzle)
 //----------------------------------------------------------------------------------------------------------
 void GamePlayed::setStartTimeToNow() 
 {
-	//this->timeStarted = gcnew System::DateTime();
-	this->timeStarted = this->timeStarted.Now;
+    DateTime saveNow = DateTime::Now;
+	this->timeStarted = saveNow;
 }
 
 //----------------------------------------------------------------------------------------------------------
 void GamePlayed::setTimeCompletedToNow() 
 {
-	//this->timeCompleted = gcnew System::DateTime();
-	this->timeCompleted = this->timeCompleted.Now;
+    DateTime saveNow = DateTime::Now;
+	this->timeCompleted = saveNow;
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -485,7 +485,8 @@ int GamePlayedData::Save()
 	// if file doesn't exist yet, create new file with a brief header and put the data there
 	if (!System::IO::File::Exists(outputFile)) {
 		// pull today's date and construct a header string for the file, with date and Player's name
-		DateTime today = DateTime::Now.ToLocalTime();
+		DateTime saveNow = DateTime::Now;
+		DateTime today = saveNow.ToLocalTime();
 		System::String^ introString = "Player: " + this->playerName + "\r\nSession: " + month + " " + day + ", " + year + " " + hours + Environment::NewLine;
 		// put both strings in an array to write out to file
 		array<System::String^>^ tmpArray = gcnew array<System::String^>(2);

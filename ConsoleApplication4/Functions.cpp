@@ -468,3 +468,16 @@ Mat displayPuzzleBoard() {
 		shapes.Draw_Pentagon(cv::Point(1056, 585), 173, -1);
 		return puzzle_board;
 }
+
+cv::Mat displayPuzzleBoard2(cv::Mat matName, vector<TrackedPiece> pieces) {
+	//Shape shapes(&image);
+	Shape shapes;
+	shapes.setImage(&matName);
+	shapes.Clear_To_Black(); // Must clear to black first, otherwise get exception
+	shapes.Clear_To_Gray();	
+	for (unsigned int i = 0; i < pieces.size(); i++)
+	{
+		shapes.Draw_Shape(pieces[i], 1);
+	}
+	return matName;
+}
