@@ -93,7 +93,7 @@ void RunTracking::endTrack() {
 			this->gameRecord->gameEndedEarly();
 		}
 		// if game was completed, compile record for game
-		this->gameRecord->setTimeCompletedToNow();
+		//this->gameRecord->setTimeCompletedToNow();
 		this->gameRecord->compileData();
 
 		return;

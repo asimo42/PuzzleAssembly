@@ -262,7 +262,7 @@ private: System::Void okButton_Click(System::Object^  sender, System::EventArgs^
 			 }
 
 			 // pull player name, game, and dates from text boxes and store as public variables
-			 selectedPlayer = this->playerComboBox->Text;
+			 selectedPlayer = getPlayerName(); 
 			 selectedGame = this->gameComboBox->Text;
 			 // need to convert datelistbox type to Strings
 			 System::Windows::Forms::ListBox::SelectedObjectCollection^ collection = this->dateListBox->SelectedItems;
@@ -284,7 +284,7 @@ private: System::Void cancelButton_Click(System::Object^  sender, System::EventA
 		 // find all files for the selected user, return their paths as strings
 private: array<System::String^>^ findFileNamesFromUser() {
 
-			 System::String^ player = playerComboBox->Text;
+			 System::String^ player = getPlayerName(); 
 			 System::String^ filePath = Constants::RESULTS_DIRECTORY + player;
 			 
 			 // find all files in selected user's folder, if the folder exists
@@ -307,7 +307,7 @@ private: System::Void findDatesFromUserAndGame() {
 			 // clear out all old dates in box
 			 dateListBox->Items->Clear();
 
-			 System::String^ player = playerComboBox->Text;
+			 System::String^ player = getPlayerName(); 
 			 System::String^ game = gameComboBox->Text;
 
 			// find all file names for user
@@ -368,5 +368,11 @@ private: System::Void gameComboBox_TextChanged(System::Object^  sender, System::
 			 // then refill dates if the player is present
 			 findDatesFromUserAndGame();
 		 }
+
+private: System::String^ getPlayerName()
+		 {
+			 return playerComboBox->Text->ToLower();
+		 }
+
 };
 }

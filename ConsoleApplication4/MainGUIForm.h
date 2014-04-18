@@ -398,7 +398,7 @@ private: System::Void runGameButton_Click(System::Object^  sender, System::Event
 			 HANDLE myMutex = CreateMutex(NULL, FALSE, (LPCWSTR) "runGameButton_Click : loading game");
 			 WaitForSingleObject(myMutex, INFINITE);
 
-			 System::String^ userName = playerNameComboBox->Text;
+			 System::String^ userName = playerNameComboBox->Text->ToLower();
 			 // if player is not recognized, ask if want to save new player, then do so. 
 			 if (!playerNameComboBox->Items->Contains(userName) && !userName->Equals("") && !userName->Equals("<enter name>")) 
 			 {
@@ -493,7 +493,7 @@ private: System::Void scoresButton_Click(System::Object^  sender, System::EventA
 
 			 // set up the form to display the results, and load it with the necessary data
 			ConsoleApplication4::displayResultsForm^ displayResults = gcnew ConsoleApplication4::displayResultsForm();
-			displayResults->currentPlayer = this->playerNameComboBox->Text;
+			displayResults->currentPlayer = this->playerNameComboBox->Text->ToLower();
 			displayResults->currentGame = this->puzzleComboBox->Text;
 			displayResults->recordKeeper = this->ScoreKeeper.returnHandle();
 			// show it as a dialog, so that it pulls focus and ends when the user clicks ok or cancel.

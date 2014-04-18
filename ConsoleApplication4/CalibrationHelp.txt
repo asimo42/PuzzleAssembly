@@ -1,0 +1,20 @@
+Suggested process for calibrating colors:
+
+1) Place the puzzle piece specified on the popup menu at it's assigned location on the board. 
+
+2) Start with max and min values far apart. Make sure the piece shows up as white on the filtered image - this means the camera can see it. There may also be a lot of white all over at this point. 
+
+3) HUE: adjust this first. Think of the hue values (0-256) as being like a rainbow that you are selecting a small portion of. Hue doesn't change much in lighting, so you can get this interval pretty tight.
+
+4) SATURATION: Adjust this next. The pieces will generally have pretty high saturation (intensity of color) but not always. Keep this interval wider than hue to accomodate inconsistent lighting. 
+
+5) VALUE: Value can change significantly depending on whether a piece is in shadow or light. As much as possible, try to keep this range large (the full range is best, but a half range is pretty good too) and filter mainly through hue and saturation. 
+
+6) Iteratively tighten or widen the HSV ranges until only the selected piece is white on the filtered image (a little bit of noise is okay) and the live camera feed shows crosshairs on the piece. 
+
+Hints:
+
+- If there is an orange or yellow piece on the board, and the user has light skin, put the user's hand  on the gameboard while calibrating those pieces to make sure it gets filtered out. Otherwise the camera may think that the hand is the piece. 
+
+- The color red may be tricky to calibrate because the hue rainbow starts and ends on red (so you can't really cut out the red slice properly). Sometimes you may have to use the full hue range, and filter out the other colors using saturation and value. You may also have to calibrate this piece more often, as subtle lighting changes can cause it to switch from one side of the split spectrum to the other. 
+

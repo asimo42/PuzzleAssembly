@@ -483,10 +483,17 @@ int RunTracking::startTrack()
 		}
 		// check if individual pieces are placed correctly
 		allCorrect = true;
-		for(int i = 0; i < pieces.size(); ++i)
+
+		// ADDED TEMP WORKAROUND - game will end if all pieces have been placed at least once., whether
+		// or not they are still correcly placed.
+		int numberCorrectlyPlaced = 0;
+		for(int i = 0; i < pieces.size(); i++)
 		{	
 			// if piece is already placed, continue
-			if (pieces[i].isTimeLocked()) { continue; }
+			if (pieces[i].isTimeLocked()) {
+				numberCorrectlyPlaced++;
+				continue; 
+			}
 			if (!pieces[i].isTimeLocked()) { allCorrect = false; }
 			// otherwise check. If this is the first time finding it's correct, then process placement
 			//TODO: This checkIfPlacedCorrectly should not be called every loop iteration.
@@ -500,11 +507,13 @@ int RunTracking::startTrack()
 				pieces[i].setTimeLock();
 			}
 		}
+		if (numberCorrectlyPlaced == pieces.size()) { allCorrect = true; }
 
 		if (this->Game->isEndGame() || allCorrect) {
 			if(allCorrect)
 			{
 				//play game completed sound
+				this->gameRecord->setTimeCompletedToNow();
 				playSoundEffect(sound_game_completed);
 			}
 			KillTimer(hwnd1, myTimer); // kill the timers

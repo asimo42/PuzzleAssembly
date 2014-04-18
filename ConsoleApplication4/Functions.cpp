@@ -281,7 +281,7 @@ double getElapsedSeconds(long startTime) {
 // get elapsed seconds between two DateTimes
 int secondsBetweenTwoDateTimes(DateTime time1, DateTime time2) {
 	TimeSpan span = time2.Subtract(time1);
-	return span.Seconds;
+	return span.TotalSeconds;
 }
 //----------------------------------------------------------------------------------------------------------
 // Convert a managed PuzzlePiece to an unmanaged TrackedPiece
