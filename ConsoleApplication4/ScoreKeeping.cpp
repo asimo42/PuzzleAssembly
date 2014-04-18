@@ -1,10 +1,14 @@
+/* 
+	Definitions for functions belonging to the GamePlayed, GamePlayedData, and ScoreKeeping classes
+*/
+
 #include "stdafx.h"
-#include <Windows.h>
-#include <string>
-#include <stack>
-#include <process.h>
-#using <System.dll>
-#include <stdio.h>
+//#include <Windows.h>
+//#include <string>
+//#include <stack>
+//#include <process.h>
+//#using <System.dll>
+//#include <stdio.h>
 #include "Functions.h"
 #include "GameBoard.h"
 
@@ -25,7 +29,6 @@ void GamePlayed::Initialize()
 	this->gameData = gcnew GamePlayedData();
 	this->NOT_COMPLETED = false;
 }
-GamePlayedData^ GamePlayed::getGameData() { return this->gameData; }
 
 GamePlayed::GamePlayed() 
 {
@@ -48,7 +51,7 @@ GamePlayed::GamePlayed(KnobPuzzle^ Puzzle)
 void GamePlayed::setGame(KnobPuzzle^ Puzzle)
 {
 	// the Input puzzle is just a reference, so it can be changed at any time. This means we should NEVER use 
-	// this->game outside of GamePlayed. All data variables should be set once when the game is completed and not touched again
+	// this->game's knobpuzzle outside of GamePlayed. All data variables should be set once when the game is completed and not touched again
 	// if game has already been compiled, return. The KnobPuzzle reference might have changed since then - dangerous. 
 	if (ALREADY_COMPILED) {
 		Console::WriteLine("GamePlayed.cpp::compileData():: Error - GamePlayed instance has already been compiled - can't change");
@@ -58,6 +61,7 @@ void GamePlayed::setGame(KnobPuzzle^ Puzzle)
 	this->gameType = Puzzle->getType();
 	this->gameName = Puzzle->getName();
 }
+
 //----------------------------------------------------------------------------------------------------------
 void GamePlayed::setStartTimeToNow() 
 {
@@ -152,212 +156,39 @@ int GamePlayed::compileData()
 	// set 'already compiled' to true, so that data can never be compiled again. From hereonout, the gameData instance will be returned.
 	ALREADY_COMPILED = true;
 	this->game = gcnew KnobPuzzle(); // destroy reference to the input KnobPuzzle just in case
+	this->game->setError();
 	this->gameData = gcnew GamePlayedData(this);
 	return 0;
 }
 //----------------------------------------------------------------------------------------------------------
+// if the game was ended early, void out unplaced pieces instead of compiling the data
 void GamePlayed::gameEndedEarly() {
 
 	this->NOT_COMPLETED = true;
-	// find times placed information from puzzle pieces
+
 	List<int>^ timesPlaced = gcnew List<int>();
 	Dictionary< System::String^, int >^ pieceDict= gcnew Dictionary< System::String^, int >();
 	int tim = 0;
-	Console::WriteLine("Compiling Data: showing the times that each piece was placed");
+	Console::WriteLine("GamePlayed::gameEndedEarly(): negating time placed information for pieces not placed");
 	for each (PuzzlePiece^ piece in this->game->getPieceList()) {
 		if (!piece->isPlaced) {
 			timesPlaced->Add(-1);
 			Console::WriteLine(piece->getName() + "   : NOT PLACED");
 			continue;
 		}
-		tim = secondsBetweenTwoDateTimes(this->timeStarted, piece->getTimePlaced()); // calc seconds between beginning of game and when piece was placed
+		// calc seconds between beginning of game and when piece was placed
+		tim = secondsBetweenTwoDateTimes(this->timeStarted, piece->getTimePlaced()); 
 		Console::WriteLine(piece->getName() + "   : " + tim);
 		timesPlaced->Add(tim);
-		pieceDict->Add(piece->getName(),tim); // add piece and time to dictionary (dictionary is for convenience for next step)
+		pieceDict->Add(piece->getName(),tim); // add piece and time to dictionary 
 	}
-
-
 }
-
-
-// Nice String formatting info: http://www.dotnetperls.com/string-format
-
-
 
 
 //-------------------------------------//-------------------------------------//-------------------------------------//-------------------------------------//-------------------------------------
 
 
 //-------------------------------------//-------------------------------------//-------------------------------------//-------------------------------------//-------------------------------------
-
-// SCOREKEEPING
-
-
-
-
-
-// Initialize a blank scorekeeper
-//----------------------------------------------------------------------------------------------------------
-ScoreKeeping::ScoreKeeping() {
-	this->individualGamesList = gcnew List<GamePlayedData^>();
-}
-
-//----------------------------------------------------------------------------------------------------------
-// return a string for printing out all results, to be displayed from the GUI.  
-// will calculate and all stats for individual games, the session, and through history (future addition)
-System::String^ ScoreKeeping::showFinalResults() 
-{
-	// Lock thread
-	myMutex = CreateMutex(NULL, FALSE, (LPCWSTR) "compiling results");
-	WaitForSingleObject(myMutex, INFINITE);
-
-	System::String^ finalString = "Performance and Progress\n\n";
-
-	// start off by getting the results for each individual game
-	List<System::String^>^ individualGameStrings = gcnew List<System::String^>();  // to hold each game's result string
-	System::String^ individualResult = "";
-
-	// print the results for each game and then tack them all together
-	for each (GamePlayedData^ game in this->individualGamesList)
-	{
-		individualResult = game->writeOut();
-		individualGameStrings->Add(individualResult);
-	}
-	finalString = finalString + System::String::Join("\n", individualGameStrings);
-
-	// then average stuff out for the whole session, using individualGamesList
-
-
-	// then pull in historical data and average out some more
-
-	// then cat all the strings together in the desired order, and send back!
-	// string results have been held in different arrays so they can be rearranged as desired at the end here.  
-
-	// unlock thread and return final string
-	ReleaseMutex(myMutex);
-	return finalString;
-}
-//----------------------------------------------------------------------------------------------------------
-//// find all of certain game in game list and average the scores
-//// return in a faux GamePlayed^ instance
-//// technically we don't need matching yet, since we will always be playing the same game
-//GamePlayed^ ScoreKeeping::calculateAverageForGame(System::String^ gameName)
-//{
-//	List<GamePlayed^>^ matchingGames = gcnew List<GamePlayed^>();
-//	//for each (GamePlayed^ game in this->individualGamesList) {
-//		//System::String^ listedName = game->game->puzzleName();
-//		//if (listedName->Equals(gameName)) {
-//		//	matchingGames->Add(game);
-//		//}
-//	//}
-//	// if num games is 0 or 1, take the easy route
-//	GamePlayed^ result = gcnew GamePlayed(); 
-//	//if (matchingGames->Count == 0) {
-//	//	return result;
-//	//}
-//	//if (matchingGames->Count == 1) {
-//	//	return matchingGames[0];
-//	//}
-//
-//	//System::String^ pieceName = "";
-// //   Dictionary<System::String^, List<int>^>^ dict = gcnew Dictionary<System::String^, List<int>^>();
-//	//// otherwise, start averaging via dictionary
-//	//for each (GamePlayed^ game in matchingGames) {
-//	//	for (int i = 0; i < game->orderOfPiecesPlayed->Count; i++) {
-//	//		pieceName = game->orderOfPiecesPlayed[i];
-//	//		if (!dict->ContainsKey(pieceName)) { 
-//	//			dict[pieceName] = gcnew List<int>();
-//	//			dict[pieceName][0] = game->timesBetweenPieces
-//
-//
-//	//	}
-//	//}
-//
-//	return result;
-//}
-//
-//
-//////----------------------------------------------------------------------------------------------------------
-////// save session results to the inputted file name
-////int ScoreKeeping::saveSessionResultsToFile(System::String^ fileName) {
-////
-////	// pull the final results (record of each game played this session) as one big string
-////	System::String^ finalResults = this->showFinalResults();
-////	
-////	// pull today's date and construct a header string for the file, with date and Player's name
-////	DateTime today = DateTime::Now.ToLocalTime();
-////	System::String^ introString = "Player: " + "BLANKPlayer\n" + "Session: " + today.ToString("MMMM dd, yyyy HH tt") + "\n";
-////	// put both strings in an array to write out to file
-////	array<System::String^>^ tmpArray = gcnew array<System::String^>(2);
-////	tmpArray[0] = introString; tmpArray[1] = finalResults;
-////
-////	// attempt to write to file
-////	int success = writeStringArrayToFile(tmpArray, fileName);
-////	if (success != 0) {
-////		Console::WriteLine("ScoreKeeping^::saveSessionResultsToFile(): Error - failed to write to file " + fileName);
-////		return -1;
-////	}
-////	// if successful, return without error
-////	return 0;
-////}
-////
-//////----------------------------------------------------------------------------------------------------------
-////int ScoreKeeping::loadSessionResultsFromFile(System::String^ fileName) {
-////
-////	array<System::String^>^ fileStrings = getStringArrayFromFile(fileName);
-////	if (fileStrings[0]->Equals("ERROR")) {
-////		Console::WriteLine("ScoreKeeping^::loadSessionResultsFromFile(): Error - failed to pull strings from file " + fileName);
-////		return -1;
-////	}
-////	// pull the final results (record of each game played this session) as one big string
-////	System::String^ finalResults = this->showFinalResults();
-////	
-////	// pull today's date and construct a header string for the file, with date and Player's name
-////	DateTime today = DateTime::Now.ToLocalTime();
-////	System::String^ introString = "Player: " + "BLANKPlayer\n" + "Session: " + today.ToString("MMMM dd, yyyy HH tt") + "\n";
-////	// put both strings in an array to write out to file
-////	array<System::String^>^ tmpArray = gcnew array<System::String^>(2);
-////	tmpArray[1] = introString; tmpArray[2] = finalResults;
-////
-////	// attempt to write to file
-////	int success = writeStringArrayToFile(tmpArray, fileName);
-////	if (success != 0) {
-////		Console::WriteLine("ScoreKeeping^::loadSessionResultsFromFile(): Error - failed to write to file " + fileName);
-////		return -1;
-////	}
-////	// if successful, return without error
-////	return 0;
-////}
-//
-////----------------------------------------------------------------------------------------------------------
-//System::String^ ScoreKeeping::printGamePlayedData(GamePlayed^ gamePlayed)
-//{
-//	//if (gamePlayed->getTimesOfPlacement()->Count < gamePlayed->getGame()->getPieceList()->Count) {
-//	//	System::Windows::Forms::MessageBox::Show(" Not all pieces were placed");
-//	//}
-//	//if (gamePlayed->getOrderOfPiecesPlayed()->Count == 0) { return "game not completed"; }
-//	//System::String^ resultString = "";
-//	//resultString = "Game : " + gamePlayed->getName() + Environment::NewLine;
-//	//System::String^ tim = gamePlayed->getTimeStarted().ToString("MMMM dd yyyy HH:mm");
-//	//resultString = resultString + "Time Started : " + tim + Environment::NewLine;
-//	//resultString = resultString + "Time for Completion (s): " + gamePlayed->getTimeForCompletion() + Environment::NewLine;
-//	//resultString = resultString + "Average Time Between Pieces: " + gamePlayed->getAverageTimeBetweenPieces() + "\r\n\n";
-//	//for (int i = 0; i < gamePlayed->getOrderOfPiecesPlayed()->Count; i++) 
-//	//{ 
-//	//	System::String^ val1 = "Piece : " + gamePlayed->getOrderOfPiecesPlayed()[i] + Environment::NewLine;
-//	//	System::String^ val2 = "         Time of Placement (s) :    " + gamePlayed->getTimesOfPlacement()[i] + Environment::NewLine;
-//	//	System::String^ val3 = "         Time it Took to Place (s) : " + gamePlayed->getTimesBetweenPlacements()[i] + Environment::NewLine;
-//	//	resultString = resultString + System::String::Format("{0}{1}{2}", val1, val2, val3);
-//
-//	//}
-//	System::String^ resultString = gamePlayed->getGameData()->writeOut();
-//	return resultString;
-//}
-
-//----------------------------------------------------------------------------------------------------------
-//----------------------------------------------------------------------------------------------------------
-//----------------------------------------------------------------------------------------------------------
-
 
 // GAMEPLAYED DATA
 //----------------------------------------------------------------------------------------------------------
@@ -426,7 +257,7 @@ System::String^ GamePlayedData::writeOut() {
 		return "Error";
 	}
 	if (this->NOT_COMPLETED) {
-		Console::WriteLine("GamePlayedData::WriteOut(): game was not completed");
+		Console::WriteLine("GamePlayedData::WriteOut(): Error : game was not completed");
 		System::String^ resultString = "";
 		resultString = "Player : " + this->playerName + Environment::NewLine + "Game : " + this->gameName + Environment::NewLine;
 		System::String^ tim = day + " " + month  + " " + year + " "  + hours + ":" + minutes; 
@@ -472,6 +303,7 @@ int GamePlayedData::Save()
 
 	// pull results for this game
 	System::String^ finalResults = this->writeOut();
+	if (finalResults->Contains("Error")) { return -1; }
 	// check if there is already results for that day. If so, append data
 	if (System::IO::File::Exists(outputFile)) {
 		Console::WriteLine("GamePlayedData::Save(): appending lines to file");
@@ -499,3 +331,88 @@ int GamePlayedData::Save()
 	}
 	return 0;
 }
+
+
+
+
+
+
+
+
+//-------------------------------------//-------------------------------------//-------------------------------------//-------------------------------------//-------------------------------------
+
+
+//-------------------------------------//-------------------------------------//-------------------------------------//-------------------------------------//-------------------------------------
+
+// SCOREKEEPING
+
+
+
+
+
+// Initialize a blank scorekeeper
+//----------------------------------------------------------------------------------------------------------
+ScoreKeeping::ScoreKeeping() {
+	this->individualGamesList = gcnew List<GamePlayedData^>();
+}
+
+//----------------------------------------------------------------------------------------------------------
+// return a string for printing out all results, to be displayed from the GUI.  
+System::String^ ScoreKeeping::showFinalResults() 
+{
+	System::String^ finalString = "Performance and Progress\n\n";
+
+	List<System::String^>^ individualGameStrings = gcnew List<System::String^>();  // to hold each game's result string
+	System::String^ individualResult = "";
+
+	// print the results for each game and then tack them all together
+	for each (GamePlayedData^ game in this->individualGamesList)
+	{
+		individualResult = game->writeOut();
+		if (!individualResult->Contains("Error")) {individualGameStrings->Add(individualResult); }
+	}
+	finalString = finalString + System::String::Join("\n", individualGameStrings);
+
+	return finalString;
+}
+//----------------------------------------------------------------------------------------------------------
+//// find all of certain game in game list and average the scores
+//// return in a faux GamePlayed^ instance
+//// technically we don't need matching yet, since we will always be playing the same game
+//GamePlayed^ ScoreKeeping::calculateAverageForGame(System::String^ gameName)
+//{
+//	List<GamePlayed^>^ matchingGames = gcnew List<GamePlayed^>();
+//	//for each (GamePlayed^ game in this->individualGamesList) {
+//		//System::String^ listedName = game->game->puzzleName();
+//		//if (listedName->Equals(gameName)) {
+//		//	matchingGames->Add(game);
+//		//}
+//	//}
+//	// if num games is 0 or 1, take the easy route
+//	GamePlayed^ result = gcnew GamePlayed(); 
+//	//if (matchingGames->Count == 0) {
+//	//	return result;
+//	//}
+//	//if (matchingGames->Count == 1) {
+//	//	return matchingGames[0];
+//	//}
+//
+//	//System::String^ pieceName = "";
+// //   Dictionary<System::String^, List<int>^>^ dict = gcnew Dictionary<System::String^, List<int>^>();
+//	//// otherwise, start averaging via dictionary
+//	//for each (GamePlayed^ game in matchingGames) {
+//	//	for (int i = 0; i < game->orderOfPiecesPlayed->Count; i++) {
+//	//		pieceName = game->orderOfPiecesPlayed[i];
+//	//		if (!dict->ContainsKey(pieceName)) { 
+//	//			dict[pieceName] = gcnew List<int>();
+//	//			dict[pieceName][0] = game->timesBetweenPieces
+//
+//
+//	//	}
+//	//}
+//
+//	return result;
+//}
+//
+//
+//////----------------------------------------------------------------------------------------------------------

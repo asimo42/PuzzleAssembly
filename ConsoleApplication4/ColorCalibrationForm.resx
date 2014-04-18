@@ -120,9 +120,10 @@
   <data name="label2.Text" xml:space="preserve">
     <value>Instructions:
 Place the piece (specified below) on the gameboard. 
-Look at the black and white image. The white part shows the areas of matching color.
-Adjust Hue, Saturation, and Value sliders until the white is as closely confined 
-to the area of the puzzle piece as possible.
+Look at the black and white image. The white part shows the areas 
+of matching color. Adjust Hue, Saturation, and Value sliders 
+until the white is as closely confined to the area of the 
+puzzle piece as possible.
 When satisfied, click OK to move to the next piece  </value>
   </data>
 </root>

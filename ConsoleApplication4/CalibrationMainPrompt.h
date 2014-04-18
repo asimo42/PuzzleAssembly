@@ -1,3 +1,8 @@
+/*
+This form guides the user through the general calibration process. It launches the ColorCalibrationForm for the user to calibrate colors.
+It then uses the newly calibrated colors and launches OpenCV to record the destination locations of each piece. 
+*/
+
 #include <Windows.h>
 #include <atlstr.h>
 #include "stdafx.h"
@@ -43,13 +48,6 @@ namespace ConsoleApplication4 {
 			this->colorForm = gcnew ConsoleApplication4::ColorCalibrationForm();
 			this->myCalibrator = gcnew CalibrationTracking();
 
-			// this thread will show the gameboard through the duration of calibration
-			//showBoard^ myBoard = gcnew showBoard();
-			//this->myThreadShell.myThread = gcnew System::Threading::Thread(gcnew System::Threading::ThreadStart(myBoard, &showBoard::display));
-			//this->myThreadShell.myThread->Start(); 
-			//
-			//TODO: Add the constructor code here
-			//
 		}
 
 	protected:
@@ -118,14 +116,14 @@ namespace ConsoleApplication4 {
 			// label2
 			// 
 			this->label2->AutoSize = true;
-			this->label2->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, 
+			this->label2->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, 
 				static_cast<System::Byte>(0)));
 			this->label2->Location = System::Drawing::Point(17, 44);
 			this->label2->Name = L"label2";
-			this->label2->Size = System::Drawing::Size(532, 30);
+			this->label2->Size = System::Drawing::Size(500, 32);
 			this->label2->TabIndex = 2;
 			this->label2->Text = L"To account for varying lighting conditions, calibrate color recognition before st" 
-				L"arting a new game. \r\nIf the board doesn\'t seem to be tracking correctly, try rec" 
+				L"arting \r\na new game. If the board doesn\'t seem to be tracking correctly, try rec" 
 				L"alibrating. \r\n";
 			// 
 			// calibNextButton
@@ -266,6 +264,7 @@ namespace ConsoleApplication4 {
 
 					 // change instructions from 'please place pieces' to 'please wait for locations to be calibrated'
 					 this->placePiecesLabel->Visible = false; 
+					 //this->placePiecesLabel->Text = "Please wait while locations are calibrated...";
 					 //this->pleaseWaitLabel->Visible = true;
 					 System::Threading::Thread::Sleep(100); // wait just a moment so it changes the label before the calibrator takes focus
 

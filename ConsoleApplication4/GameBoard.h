@@ -1,3 +1,9 @@
+/* These classes hold the data for each individual gameboard. There is a GameBase class which has all the basic information in it,
+and classes for individual game types can derive from it. Only the KnobPuzzle has been developed this year. An instance of the KnobPuzzle
+class contains all information as to the name, shape, location, placement, etc. of each puzzle piece for a given board. 
+This instance will be passed all around through the program, to be used by tracking, scorekeeping, and the GUI
+*/
+
 #pragma once
 #include <Windows.h>
 #using <System.dll>
@@ -8,10 +14,11 @@
 using namespace System;
 using namespace System::Collections::Generic;
 
+// generic game class, with stop/start info etc. Different types of games can inherit from this class
 public ref class GameBase {
 public:
 
-	GameBase()							   { puzzleName = ""; puzzleType = ""; errorString = ""; LevelOfDifficulty = 0; END_GAME = false;} 
+	GameBase()	{ puzzleName = ""; puzzleType = ""; LevelOfDifficulty = 0; END_GAME = false;} 
 
 	// basic gets and sets
 	virtual void setName(System::String^ Name) { this->puzzleName = Name; }
@@ -20,14 +27,14 @@ public:
 	System::String^ getType()			   { return puzzleType; }
 	void setLevelOfDifficulty(int level)   { this->LevelOfDifficulty = level; }
 	int getLevelOfDifficulty()			   { return this->LevelOfDifficulty; }
-	System::String^ getErrorString()       { return this->errorString; }
 
-	// set or reset END_GAME. This is a disguised global variable to communicate with RunTracking class
+	// set or reset END_GAME. This is a communication link between the main GUI and the RunTracking class
 	void setEndGame()				{ this->END_GAME = true; }
 	void resetEndGame()				{ this->END_GAME = false; }
 
 	// check if the game is over, or if there has been an error
 	bool isEndGame()			    { return this->END_GAME; }
+	void setError()					{ this->Error = true; }
 	bool checkIfError()				{ return this->Error; }
 
 protected:
@@ -37,8 +44,7 @@ protected:
 	bool END_GAME;
 	System::String^ puzzleName;
 	System::String^ puzzleType;
-	System::String^ errorString;
-	int LevelOfDifficulty; // level of difficulty not currently in use
+	int LevelOfDifficulty; 
 
 };
 
@@ -48,7 +54,7 @@ protected:
 //------------------------------------------------------------------------------
 
 
-// Class specific to Knob Puzzle; initializes and manages list of puzzle pieces
+// Class specific to Knob Puzzle; Inherits from GameBase. initializes and manages list of puzzle pieces for a knob puzzle
 public ref class KnobPuzzle : public GameBase
 {
 
@@ -67,13 +73,9 @@ public:
 	// check if puzzle has been initialized. Overloaded.
 	bool checkIsInitialized();   // any game loaded
 	bool checkIsInitialized(System::String^ code);   // game with given name has been loaded
-	//bool checkIsInitialized(System::String^ code, int level);   // game with given name and level of difficulty has been loaded
-
+	bool checkIsInitialized(System::String^ code, int level);   // game with given name and level of difficulty has been loaded
 
 	List<PuzzlePiece^>^ getPieceList() { return this->pieceList; }
-
-	// manipulate class
-	KnobPuzzle^ returnHandle()		 {return this;}   // return this (KnobPuzzle) as a (KnobPuzzle^)
 
 	// write out current class data to file (normally newly calibrated values)
 	int SaveCalibrationSettings();

@@ -494,9 +494,9 @@ void CalibrationTracking::drawBoard() {
 	for each (PuzzlePiece^ managedPiece in this->Game->getPieceList()) {
 		trackedPieces.push_back(puzzlePieceToTrackedPiece(managedPiece));
 	}
-	puzzleBoard = displayPuzzleBoard2(puzzleBoard, trackedPieces);
-	//cv::Mat board = displayPuzzleBoard();
-	namedWindow("game_board", WINDOW_NORMAL);
+
+	puzzleBoard = displayPuzzleBoard(puzzleBoard, trackedPieces);
+
 	imshow("game_board", puzzleBoard);
 	cv::moveWindow("game_board", -1600, 0);
 	cvSetWindowProperty("game_board", CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);	// Makes full screen

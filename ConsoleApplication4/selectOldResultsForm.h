@@ -1,3 +1,8 @@
+/*
+	This form allows the user to select old data for display. It finds what dates are available for data based on the entered 
+	username and game, and the expected location of the data. The form will return the selected player, game, and dates (not the data). 
+*/
+
 #include "Functions.h"
 #pragma once
 

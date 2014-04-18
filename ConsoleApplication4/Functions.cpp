@@ -19,13 +19,25 @@ GamePlayedData^ initializeTracking(KnobPuzzle^ %Game, System::String^ userName)
 		RunTracking* newTracker = new RunTracking();
 		newTracker->setGame(Game);
 		newTracker->setPlayer(userName);
-		newTracker->Start();
+		int success = newTracker->Start();
+
+		// if the game had an error, return an empty GamePlayedData
+		if (success != 0) {
+			Console::WriteLine("Functions::initializeTracking():: the tracker returned an error.");
+			delete newTracker;
+			return gameResults;
+		}
 
 		// Once game is over, pull the game results
 		gameResults = newTracker->returnScore()->getGameData();
 
 		// add game results to main scorekeeper instance. Show game results.
 		System::String^ results = gameResults->writeOut();	
+		if (results->Contains("Error")) {
+			delete newTracker;
+			return gameResults;
+		}
+
 		MessageBox::Show(results);
 
 		// see if user wants to save results
@@ -47,7 +59,7 @@ System::String^ searchPuzzleType(System::String^ code)
 {
 	System::String^ type = "";
 	// Here I would search some database/list sort of thing for the type of puzzle. Or it starts the code.  Ex.
-	if (code->Contains("KNOBPUZZLE")) {
+	if (code->Contains("KNOBPUZZLE")) { // tehcnically only knobpuzzles work for the current iteration of the system
 		type = gcnew System::String("KnobPuzzle");
 	}
 	if (code->Contains("BLOCKPUZZLE")) {
@@ -68,8 +80,8 @@ System::String^ getCalibratedInputPath(System::String^ code) {
 System::String^ getDefaultInputPath(System::String^ code) { 
 				System::String^ str = Constants::GAME_INPUT_DIRECTORY + code + "_Default" + ".txt"; 
 				return str; }
-//----------------------------------------------------------------------------------------------------------
 
+//----------------------------------------------------------------------------------------------------------
 // Pull all strings from a file into an array of System::Strings^
 array<System::String^>^ getStringArrayFromFile(System::String^ inputFile) {
 
@@ -97,6 +109,7 @@ array<System::String^>^ getStringArrayFromFile(System::String^ inputFile) {
 
 }
 //---------------------------------------------------------------------------------------------------------
+// quick function to see if a file already exists. If it doesn't, try to create it. 
 int checkOrCreateFile(System::String^ fileName) {
 	// if file doesn't exist yet, create it
 	if (!System::IO::File::Exists(fileName)) {
@@ -113,7 +126,7 @@ int checkOrCreateFile(System::String^ fileName) {
 	return 0;
 }
 //----------------------------------------------------------------------------------------------------------
-// write an array of strings to a file **** Currently file is harcoded here - pass as argument in future.
+// append an array of strings to a file
 int appendStringArrayToFile(array<System::String^>^ inputArray, System::String^ fileName) {
 
 	// make sure file is created
@@ -135,13 +148,10 @@ int appendStringArrayToFile(array<System::String^>^ inputArray, System::String^ 
 		return -1;
 	}
 
-	//System::String^ appendText = "This is extra text";
- //   System::IO::File::AppendAllText(path, appendText);
-
 	return 0;
 }
 //----------------------------------------------------------------------------------------------------------
-// write an array of strings to a file **** Currently file is harcoded here - pass as argument in future.
+// write an array of strings to a given file 
 int writeStringArrayToFile(array<System::String^>^ inputArray, System::String^ fileName) {
 
 	// make sure file is created
@@ -163,41 +173,9 @@ int writeStringArrayToFile(array<System::String^>^ inputArray, System::String^ f
 		return -1;
 	}
 
-
-    // Open the file to read from. 
-  //  array<System::String^>^ lines = System::IO::File::ReadAllLines(fileName);
-  //  for each (System::String^ s in lines)
-  //  {
-		//Console::WriteLine("The following was written to file " + fileName + " : ");
-  //      Console::WriteLine(s);
-  //  }
-
 	return 0;
 }
 
-
-
-//----------------------------------------------------------------------------------------------------------
-// find the index of the start of the actual puzzle info in the game file strings
-// by searching for the code string; this is always at the start of the puzzle info.
-// ** THIS FUNCTION IS NO LONGER IN USE **
-int getCodeLocation(array<System::String^>^ lines, System::String^ code)
-{
-	int index = -1;
-	// find location of start of puzzle info
-	for each (System::String^ line in lines) {
-		if(line->Contains(code)) {
-			index = System::Array::IndexOf(lines, line);
-			return index;
-		}
-	}
-	// if never found, return error.
-	if (index == -1) {
-		Console::WriteLine("Functions: GetCodeLocation() : Error - cannot find puzzle");
-	}
-	return -1;
-
-}
 //----------------------------------------------------------------------------------------------------------
 // convert an integer into a std::string
 std::string intToStdString(int number){
@@ -242,22 +220,6 @@ double averageListOfInts(List<int>^ inputList) {
 	}
 	else { return 0; }
 }
-//----------------------------------------------------------------------------------------------------------
-//bool checkBools(bool val, ...) {
-//	bool result = true;
-//    int i = val;
-//    va_list marker;
-//
-//    va_start( marker, val );
-//    while( i != -1 )
-//    { 
-//	   if (!i) { result = false; }
-//       i = va_arg( marker, int);
-//    }
-//    va_end( marker );
-//
-//	return result;
-//}
 
 //----------------------------------------------------------------------------------------------------------
 // convert a cv::scalar into a list of 3 ints (for use in managed code)
@@ -268,21 +230,23 @@ List<int>^ scalarToList(cv::Scalar scalar) {
 }
 //----------------------------------------------------------------------------------------------------------
 
-// get elapsed seconds from a start time based on number of DateTime ticks
-double getElapsedSeconds(long startTime) {
-	DateTime tim = DateTime::Now;
-	long placeTime = tim.Ticks - startTime; // 10,000 ticks in a millisecond, 1000 milliseconds in a second
-	TimeSpan^ elapsed = gcnew TimeSpan(placeTime);
-	return elapsed->TotalSeconds;
-}
+//// get elapsed seconds from a start time based on number of DateTime ticks
+//double getElapsedSeconds(long startTime) {
+//	DateTime tim = DateTime::Now;
+//	long placeTime = tim.Ticks - startTime; // 10,000 ticks in a millisecond, 1000 milliseconds in a second
+//	TimeSpan^ elapsed = gcnew TimeSpan(placeTime);
+//	return elapsed->TotalSeconds;
+//}
 
 //----------------------------------------------------------------------------------------------------------
 
 // get elapsed seconds between two DateTimes
-int secondsBetweenTwoDateTimes(DateTime time1, DateTime time2) {
-	TimeSpan span = time2.Subtract(time1);
+
+int secondsBetweenTwoDateTimes(DateTime startTime, DateTime endTime) {
+	TimeSpan span = endTime.Subtract(startTime);
 	return span.TotalSeconds;
 }
+
 //----------------------------------------------------------------------------------------------------------
 // Convert a managed PuzzlePiece to an unmanaged TrackedPiece
 TrackedPiece puzzlePieceToTrackedPiece(PuzzlePiece^ puzzlePiece) {
@@ -341,6 +305,7 @@ PuzzlePiece^ trackedPieceToPuzzlePiece(TrackedPiece trackedPiece) {
 	return result;
 }
 //----------------------------------------------------------------------------------------------------------
+// build the path to the performance data file for a given player, game and date
 System::String^ buildOutputFileName(System::String^ player, System::String^ game, System::String^ month, System::String^ day, System::String^ year) {
 	// build path
 	System::String^ pathStr = Constants::RESULTS_DIRECTORY + player + "\\";
@@ -349,10 +314,12 @@ System::String^ buildOutputFileName(System::String^ player, System::String^ game
 	System::String^ mainString = pathStr + fileStr;
 	return mainString;
 }
+
 //----------------------------------------------------------------------------------------------------------
 // find all files matching the given player, game, and date
 List<System::String^>^ findRecordFiles(System::String^ player, System::String^ game, array<System::String^>^ days) {
 
+	// find player's results directory
 	List<System::String^>^ results = gcnew List<System::String^>();
 	System::String^ dirPath = Constants::RESULTS_DIRECTORY + player;
 	if (!System::IO::Directory::Exists(dirPath)) {
@@ -448,33 +415,14 @@ GamePlayed^ fileLinesToGamePlayed(array<System::String^>^ fileLines) {
 		return result;
 }
 
+// construct and display the puzzle board background using the vector of TrackedPieces
+cv::Mat displayPuzzleBoard(cv::Mat matName, vector<TrackedPiece> pieces) {
 
-Mat displayPuzzleBoard() {
-		// display the puzzle board
-		Mat puzzle_board;
-		Shape shapes(&puzzle_board);
-		shapes.setImage(&puzzle_board);
-		shapes.Clear_To_Black();	// Must clear to black first, otherwise get exception
-		// Magic numbers below are coordinates from trail and error on 1280x1024 screen
-		shapes.setColor(Scalar(0, 0, 255));
-		shapes.Draw_Circle(cv::Point(383, 244), 125, -1);
-		shapes.setColor(cv::Scalar(255, 0, 0));
-		shapes.Draw_Square(cv::Point(748, 128), 238, -1);
-		shapes.setColor(Scalar(255, 0, 255));
-		shapes.Draw_Triangle(cv::Point(220, 600), 266, -1);
-		shapes.setColor(Scalar(0, 255, 0));
-		shapes.Draw_Rectangle(cv::Point(483, 634), 287, 175, -1);
-		shapes.setColor(Scalar(0, 255, 255));
-		shapes.Draw_Pentagon(cv::Point(1056, 585), 173, -1);
-		return puzzle_board;
-}
-
-cv::Mat displayPuzzleBoard2(cv::Mat matName, vector<TrackedPiece> pieces) {
-	//Shape shapes(&image);
 	Shape shapes;
 	shapes.setImage(&matName);
 	shapes.Clear_To_Black(); // Must clear to black first, otherwise get exception
-	shapes.Clear_To_Gray();	
+	shapes.Clear_To_Gray();	// then turn it all gray
+	// now draw out each piece
 	for (unsigned int i = 0; i < pieces.size(); i++)
 	{
 		shapes.Draw_Shape(pieces[i], 1);

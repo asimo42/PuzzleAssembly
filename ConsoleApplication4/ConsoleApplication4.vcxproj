@@ -130,7 +130,6 @@
     <ClCompile Include="selectOldResultsForm.cpp" />
     <ClCompile Include="Shape.cpp" />
     <ClCompile Include="SoundEffectPlayer.cpp" />
-    <ClCompile Include="StartTracking.cpp" />
     <ClCompile Include="TrackedPiece.cpp" />
     <ClCompile Include="Tracking.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -139,7 +138,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="TrackingTests.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="ConsoleApplication4.rc" />

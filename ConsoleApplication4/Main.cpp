@@ -31,7 +31,8 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	// Run external executable to set camera settings
 	// path can't have spaces in it or it won't work
-	System::String^ cameraprefs = System::Windows::Forms::Application::StartupPath + "/../../CameraPrefs/CameraPrefs.exe";
+//	System::String^ cameraprefs = System::Windows::Forms::Application::StartupPath + "/../../CameraPrefs/CameraPrefs.exe";
+	System::String^ cameraprefs = "C:\\CameraPrefs\\CameraPrefs.exe";
 	string stdcameraprefs = marshal_as<string>(cameraprefs);
 //	System::Console::WriteLine(cameraprefs);
 	system(stdcameraprefs.c_str());

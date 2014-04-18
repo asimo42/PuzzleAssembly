@@ -1,3 +1,8 @@
+/*
+This form guides the user through the color calibration process. It launches OpenCV tracking, and then steps through each piece in the puzzle 
+as the user calibrates.
+*/
+
 #include <Windows.h>
 #include "stdafx.h"
 #include <WinBase.h>
@@ -67,6 +72,7 @@ namespace ConsoleApplication4 {
 	private: System::Windows::Forms::Label^  label2;
 	private: System::Windows::Forms::Label^  label3;
 	private: System::Windows::Forms::Label^  currentPieceLabel;
+	private: System::Windows::Forms::Button^  hintButton;
 
 	protected: 
 
@@ -89,16 +95,17 @@ namespace ConsoleApplication4 {
 			this->label2 = (gcnew System::Windows::Forms::Label());
 			this->label3 = (gcnew System::Windows::Forms::Label());
 			this->currentPieceLabel = (gcnew System::Windows::Forms::Label());
+			this->hintButton = (gcnew System::Windows::Forms::Button());
 			this->SuspendLayout();
 			// 
 			// okButton
 			// 
 			this->okButton->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Right));
-			this->okButton->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 14.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, 
+			this->okButton->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 20.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, 
 				static_cast<System::Byte>(0)));
-			this->okButton->Location = System::Drawing::Point(322, 214);
+			this->okButton->Location = System::Drawing::Point(277, 199);
 			this->okButton->Name = L"okButton";
-			this->okButton->Size = System::Drawing::Size(110, 60);
+			this->okButton->Size = System::Drawing::Size(155, 75);
 			this->okButton->TabIndex = 0;
 			this->okButton->Text = L"OK";
 			this->okButton->UseVisualStyleBackColor = true;
@@ -118,9 +125,11 @@ namespace ConsoleApplication4 {
 			// label2
 			// 
 			this->label2->AutoSize = true;
+			this->label2->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, 
+				static_cast<System::Byte>(0)));
 			this->label2->Location = System::Drawing::Point(16, 44);
 			this->label2->Name = L"label2";
-			this->label2->Size = System::Drawing::Size(411, 78);
+			this->label2->Size = System::Drawing::Size(401, 112);
 			this->label2->TabIndex = 2;
 			this->label2->Text = resources->GetString(L"label2.Text");
 			// 
@@ -144,11 +153,24 @@ namespace ConsoleApplication4 {
 			this->currentPieceLabel->TabIndex = 4;
 			this->currentPieceLabel->Text = L"click ok to begin";
 			// 
+			// hintButton
+			// 
+			this->hintButton->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, 
+				static_cast<System::Byte>(0)));
+			this->hintButton->Location = System::Drawing::Point(376, 13);
+			this->hintButton->Name = L"hintButton";
+			this->hintButton->Size = System::Drawing::Size(56, 28);
+			this->hintButton->TabIndex = 5;
+			this->hintButton->Text = L"Tips";
+			this->hintButton->UseVisualStyleBackColor = true;
+			this->hintButton->Click += gcnew System::EventHandler(this, &ColorCalibrationForm::hintButton_Click);
+			// 
 			// ColorCalibrationForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(444, 286);
+			this->Controls->Add(this->hintButton);
 			this->Controls->Add(this->currentPieceLabel);
 			this->Controls->Add(this->label3);
 			this->Controls->Add(this->label2);
@@ -262,6 +284,23 @@ namespace ConsoleApplication4 {
 		}
 		cv::destroyAllWindows();
 	}
+private: System::Void hintButton_Click(System::Object^  sender, System::EventArgs^  e) {
+			 // pull all text from the help file into string array
+			 array<System::String^>^ fileStrings = getStringArrayFromFile(Constants::CALIBRATION_HELP_FILE);
+
+			// if that didn't work, return an error
+			 if (fileStrings[0]->Equals("Error")) {
+				 MessageBox::Show("Error: can't find hint information :(");
+				 return;
+			 }
+
+			// now cat all the strings together and show
+			 System::String^ final = "";
+			 for each (System::String^ line in fileStrings) {
+				 final = final + line + Environment::NewLine;  
+			 }
+			 MessageBox::Show(final);
+		 }
 };
 }
 

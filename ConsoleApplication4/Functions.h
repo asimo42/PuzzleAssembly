@@ -8,9 +8,6 @@
 #include "GameBoard.h"
 #include "ScoreKeeping.h"
 
-
-
-
 #ifndef GUARD_J
 #define GUARD_J
 
@@ -48,8 +45,10 @@ public:
 	static const int FLASH_DELAY = 400;
 	static const int TIMER_TICK = 350;
 
+	// Hardcoded file paths
 	static System::String^ GAME_INPUT_DIRECTORY = System::Windows::Forms::Application::StartupPath + "/../";
 	static System::String^ HELP_FILE = System::Windows::Forms::Application::StartupPath + "/../Help.txt";
+	static System::String^ CALIBRATION_HELP_FILE = System::Windows::Forms::Application::StartupPath + "/../CalibrationHelp.txt";
 	static System::String^ RESULTS_DIRECTORY = System::Windows::Forms::Application::StartupPath + "/PatientPerformanceData/";
 	
 };
@@ -60,8 +59,11 @@ ref class Globals {
 };
 //--- FROM FUNCTIONS.CPP----
 
-// Starting OpenCV tracking
+// Start up a game using RunTracking
 GamePlayedData^ initializeTracking(KnobPuzzle^ %Game, System::String^ userName);
+
+// display the puzzle board background
+cv::Mat displayPuzzleBoard(cv::Mat matName, vector<TrackedPiece>);
 
 // Unmanaged <--> Managed Conversions
 List<int>^ scalarToList(cv::Scalar scalar);
@@ -75,23 +77,23 @@ int checkOrCreateFile(System::String^ fileName);
 int writeStringArrayToFile(array<System::String^>^ inputArrray, System::String^ fileName);
 int appendStringArrayToFile(array<System::String^>^ inputArray, System::String^ fileName);
 
-int getCodeLocation(array<System::String^>^ lines, System::String^ code);
 System::String^ getCalibratedInputPath(System::String^ code);
 System::String^ getDefaultInputPath(System::String^ code);
 
-// Misc.
-std::string intToStdString(int number);
-System::String^ stdStringToSystemString(std::string str);
-std::string systemStringToStdString(System::String^ str);
-double getElapsedSeconds(long startTime);
-double averageListOfInts(List<int>^ inputList);
-//bool checkBools(bool val, ...);
-int secondsBetweenTwoDateTimes(DateTime time1, DateTime time2);
+// Timekeeping
+int secondsBetweenTwoDateTimes(DateTime startTime, DateTime endTime);
+//double getElapsedSeconds(long startTime);
 
 // performance data IO
 List<System::String^>^ findRecordFiles(System::String^ player, System::String^ game, array<System::String^>^ days);
 GamePlayed^ fileLinesToGamePlayed(array<System::String^>^ fileLines);
 System::String^ buildOutputFileName(System::String^ player, System::String^ game, System::String^ month, System::String^ day, System::String^ year);
+
+// Miscellaneous
+std::string intToStdString(int number);
+System::String^ stdStringToSystemString(std::string str);
+std::string systemStringToStdString(System::String^ str);
+double averageListOfInts(List<int>^ inputList);
 
 // workaround hack to declare a thread as a global variable in a form
 ref class ThreadShell {
@@ -101,38 +103,9 @@ public:
 	System::Threading::Thread^ myThread;
 };
 
-
-
 // ---FROM TRACKING.CPP----
 
 void on_trackbar( int, void* );  // this one won't compile as part of RunTracking - no idea why
 
-cv::Mat displayPuzzleBoard();
-
-cv::Mat displayPuzzleBoard2(cv::Mat matName, vector<TrackedPiece>);
-
-//ref class showBoard {
-//public:
-//	
-//	showBoard() { this->STOPFLAG = false; this->STOPPED = false;}
-//	~showBoard() { cv::destroyWindow("game_board"); }
-//	void display(){
-//		cv::Mat board = displayPuzzleBoard();
-//		imshow("game_board", board);
-//		while (this->STOPFLAG == false) {
-//			waitKey(30);
-//		}
-//		board.release();
-//		cv::destroyWindow("game_board");
-//		this->STOPPED = true;
-//	}
-//	void stop() {
-//		STOPFLAG = true;
-//		}
-//
-//private : 
-//	bool STOPFLAG; 
-//	bool STOPPED;
-//};
 
 #endif
