@@ -518,7 +518,7 @@ int RunTracking::startTrack()
 			bool correct = pieces[i].getIsPlacedCorrectly();
 			if (correct && !pieces[i].isTimeLocked()) {
 				// Play placed correctly sound here
-				playSoundEffect(sound_piece_placed1);
+				sound_player->playRandomPiecePlacedSound();
 
 				processPlacementOfPiece(pieces[i]);
 				pieces[i].setTimeLock();

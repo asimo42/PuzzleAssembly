@@ -40,9 +40,8 @@ void RunTracking::Initialize() {
 		this->STOP = false;
 
 		// sound file names
-		sound_piece_placed1 = "pieceplaced1.wav";
-		sound_game_start = "level_complete.wav";
-		sound_game_completed = "level_complete.wav";
+		sound_game_start = "guitar_start.mp3";
+		sound_game_completed = "guitar_end.mp3";
 
 		sound_player = new SoundEffectPlayer();
 
