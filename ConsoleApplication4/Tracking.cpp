@@ -252,7 +252,7 @@ bool checkIfAllCorrect()
 //----------------------------------------------------------------------------------------------------------
 VOID CALLBACK timerTick(  _In_  HWND hwnd, _In_  UINT uMsg, _In_  UINT_PTR idEvent, _In_  DWORD dwTime)
 {
-	int thresh = 40;
+	int thresh = 20;
 
 	for(int i = 0; i < pieces.size(); ++i)
 		pieces[i].clearStatus();

@@ -28,7 +28,7 @@ public:
     //max number of objects to be detected in frame
     static const int DEFAULT_MAX_OBJECTS_IN_FRAME =20;
     //minimum and maximum object area
-    static const int DEFAULT_MIN_OBJECT_AREA = 2500;
+    static const int DEFAULT_MIN_OBJECT_AREA = 2000;
 
 	// HSV default values (0-256)
     static const int DEFAULT_H_MIN = 0;

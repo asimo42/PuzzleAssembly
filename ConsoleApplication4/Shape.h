@@ -61,6 +61,11 @@ public:
         void Draw_Pentagon(Point top, int length, int thickness = 1, int lineType = 8);
         void Draw_Star(Point top, int length, int thickness = 1, int lineType = 8);
         void Draw_Arrow(Point begin, Point end, int thickness = 1, int lineType = 8);
+		void Draw_Isosceles(int thickness = 1, int lineType = 8);
+		void Draw_House(int thickness = 1, int lineType = 8);
+		void Draw_Tree(int thickness = 1, int lineType = 8);
+		void Draw_Door(int thickness = 1, int lineType = 8);
+		void Draw_Sun(int thickness = 1, int lineType = 8);
 
         //-----Other Methods------
         void setColor(Scalar BGR_val) {color = BGR_val;}

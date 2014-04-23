@@ -134,10 +134,18 @@ void CalibrationTracking::nextPiece() {
 		this->NEXT = false;
 }
 
+void CalibrationTracking::Stop() {
+	STOP = true; 
+	//WaitForSingleObject(myMutex, INFINITE);
+	//cv::destroyAllWindows();
+	//ReleaseMutex(myMutex);
+}
+
 //----------------------------------------------------------------------------------------------------------
 
 // end tracking, 'clean up' game.  this instance of the class will now end (though that might change in the future)
 void CalibrationTracking::endTrack() {
+		WaitForSingleObject(myMutex, INFINITE);
 		System::Console::WriteLine("CalibrationTracking::EndTrack() : Exiting CalibrationTracking");
 		cv::destroyAllWindows();
 		destroyWindow(systemStringToStdString(original_window));
@@ -145,6 +153,7 @@ void CalibrationTracking::endTrack() {
 		destroyWindow(systemStringToStdString(filtered_window));
 		destroyWindow(systemStringToStdString(puzzle_window));
 		this->IS_STOPPED = true;
+		ReleaseMutex(myMutex);
 }
 
 
@@ -428,17 +437,8 @@ int CalibrationTracking::startTrackColor()
 	TrackedPiece tmp = puzzlePieceToTrackedPiece(this->Game->getPieceList()[this->iterator]);
 	createTrackbarWindow(tmp);
 
-	drawBoard();
-//	cv::Mat board = displayPuzzleBoard();
-
-//	namedWindow("game_board", WINDOW_NORMAL);
-//	imshow("game_board", board);
-	// Move puzzle board window to correct position on game board monitor
-	// (Puzzle board monitor needs to be set up to the left of first monitor.)
-//	moveWindow("game_board", -1600, 0);
-//	cvSetWindowProperty("game_board", CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);	// Makes full screen
-
 	// display the puzzle board
+	drawBoard();
 
 	this->iterator = 0;
 

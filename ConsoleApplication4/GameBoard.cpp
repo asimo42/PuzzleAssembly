@@ -195,7 +195,7 @@ void KnobPuzzle::LookUpGame(System::String^ code)
 int KnobPuzzle::ParseShapeInformation(array<System::String^>^ tokens, PuzzlePiece^ piece) 
 {
 	System::String^ shapeType = piece->getName();
-	int point_x, point_y, height, width, length, radius;
+	int point_x, point_y, height, width, length, radius, side_length, bottom_length;
 	bool try1 = true; bool try2 = true; bool try3 = true; bool try4 = true;
 
 	if (shapeType->Equals("Circle")) {
@@ -247,6 +247,58 @@ int KnobPuzzle::ParseShapeInformation(array<System::String^>^ tokens, PuzzlePiec
 		}
 		piece->setShapePoint(point_x, point_y);
 		piece->setShapeLength(length);
+	}
+	else if (shapeType->Equals("Isosceles")) {
+		//bool try1 = Int32::TryParse(tokens[11], point_x);
+		//bool try2 = Int32::TryParse(tokens[12], point_y);
+		//bool try3 = Int32::TryParse(tokens[13], side_length);
+		//bool try4 = Int32::TryParse(tokens[14], bottom_length);
+		//if (!try1 || !try2 || !try3 || !try4) {
+		//	MessageBox::Show("KnobPuzzle::ParseShapeInformation():: Inappropriate shape drawing information for piece: " + piece->getName());
+		//	this->Error = true;
+		//	return -1;
+		//}
+		//piece->setShapePoint(point_x, point_y);
+		//piece->setShapeHeight(side_length);
+		//piece->setShapeWidth(bottom_length);
+	}
+	else if (shapeType->Equals("House")) {
+		//bool try1 = Int32::TryParse(tokens[11], point_x);
+		//bool try2 = Int32::TryParse(tokens[12], point_y);
+		//bool try3 = Int32::TryParse(tokens[13], side_length);
+		//bool try4 = Int32::TryParse(tokens[14], bottom_length);
+		//if (!try1 || !try2 || !try3 || !try4) {
+		//	MessageBox::Show("KnobPuzzle::ParseShapeInformation():: Inappropriate shape drawing information for piece: " + piece->getName());
+		//	this->Error = true;
+		//	return -1;
+		//}
+		//piece->setShapePoint(point_x, point_y);
+		//piece->setShapeHeight(side_length);
+		//piece->setShapeWidth(bottom_length);
+	}
+	else if (shapeType->Equals("Tree")) {
+		// CURRENTLY THIS IS HARDCODED INTO THE SHAPE DRAWING FUNCTION
+		//bool try1 = Int32::TryParse(tokens[11], point_x);
+		//bool try2 = Int32::TryParse(tokens[12], point_y);
+		//bool try3 = Int32::TryParse(tokens[13], radius);
+		//int corner_x, corner_y;
+		////piece->setShapePoint(point_x, point_y);
+		//bool try1 = Int32::TryParse(tokens[11], corner_x);
+		//bool try2 = Int32::TryParse(tokens[12], corner_y);
+		//bool try3 = Int32::TryParse(tokens[13], width);
+		//bool try4 = Int32::TryParse(tokens[14], height);
+		//if (!try1 || !try2 || !try3 || !try4) {
+		//	MessageBox::Show("KnobPuzzle::ParseShapeInformation():: Inappropriate shape drawing information for piece: " + piece->getName());
+		//	this->Error = true;
+		//	return -1;
+		//}
+		//piece->setShapePoint(point_x, point_y);
+		//piece->setShapeHeight(height);
+		//piece->setShapeWidth(width);
+	}
+	else if (shapeType->Equals("Door")) {
+	}
+	else if (shapeType->Equals("Sun")) {
 	}
 	else {
 			MessageBox::Show("KnobPuzzle::ParseShapeInformation():: Not a recognized shape: " + piece->getName());

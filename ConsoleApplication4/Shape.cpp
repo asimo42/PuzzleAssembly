@@ -58,6 +58,26 @@ void Shape::Draw_Shape(TrackedPiece piece, double dim_factor)
 		setColor(Scalar(0, 255 * dim_factor, 255 * dim_factor));
 		Draw_Pentagon(Point(piece.getShapePointX(),piece.getShapePointY()), piece.getShapeLength(), Constants::SHAPE_LINE_WIDTH);
 	}
+	else if (shapeType == "Isosceles") {
+		setColor(Scalar(255 * dim_factor, 0, 255 * dim_factor));
+		Draw_Isosceles(Constants::SHAPE_LINE_WIDTH);
+	}
+	else if (shapeType == "House") {
+		setColor(Scalar(0, 0, 255 * dim_factor));
+		Draw_House(Constants::SHAPE_LINE_WIDTH);
+	}
+	else if (shapeType == "Tree") {
+		setColor(Scalar(0, 255 * dim_factor, 0));
+		Draw_Tree(Constants::SHAPE_LINE_WIDTH);
+	}
+	else if (shapeType == "Door") {
+		setColor(Scalar(255 * dim_factor, 0, 0));
+		Draw_Door(Constants::SHAPE_LINE_WIDTH);
+	}
+		else if (shapeType == "Sun") {
+		setColor(Scalar(0, 255 * dim_factor, 255 * dim_factor));
+		Draw_Sun(Constants::SHAPE_LINE_WIDTH);
+	}
 	else { 
 		System::String^ str = "Error: cannot draw piece \"" + stdStringToSystemString(shapeType) + "\". Not a recognized shape.";
 		//System::Windows::Forms::MessageBox::Show(str);
@@ -322,5 +342,174 @@ void Shape::Draw_Star(Point top, int length, int thickness, int lineType)
 //Arrow
 void Shape::Draw_Arrow(Point begin, Point end, int thickness, int lineType)
 {
+	
+}
 
+//Isosceles
+void Shape::Draw_Isosceles(int thickness, int lineType)
+{
+    Point top = Point(790,70);
+    width = 420;
+    height = 220;
+
+    line_thickness = thickness;
+    start = Point(-1,-1);
+    end = Point(-1,-1);
+	
+	Point triangle_points[1][3];
+    triangle_points[0][0] = Point(top.x, top.y);
+    triangle_points[0][1] = Point(top.x - (width/2), top.y + height);
+    triangle_points[0][2] = Point(top.x + (width/2), top.y + height);
+
+
+    if (thickness == -1)
+    {
+        const Point* ppt[1] = {triangle_points[0]};
+        int npt[] = {3};
+        fillPoly(*image,
+                      ppt,
+                      npt,
+                      1,
+                      color,
+                      lineType);
+        }
+        else
+        {
+            line(*image,
+					  Point(triangle_points[0][0].x, triangle_points[0][0].y),
+			          Point(triangle_points[0][1].x, triangle_points[0][1].y),
+                      color,
+                      thickness,
+                      lineType);
+
+            line(*image,
+                        Point(triangle_points[0][1].x, triangle_points[0][1].y),
+                        Point(triangle_points[0][2].x, triangle_points[0][2].y),
+                        color,
+                        thickness,
+                        lineType);
+
+            line(*image,
+                        Point(triangle_points[0][2].x, triangle_points[0][2].y),
+                        Point(triangle_points[0][0].x, triangle_points[0][0].y),
+                        color,
+                        thickness,
+                        lineType);
+        }
+}
+
+//House
+void Shape::Draw_House(int thickness, int lineType)
+{
+	//Top Rectangle
+	Point startingPoint = Point(582,355);
+    int wid = 420;
+    int heig = 100;
+    line_thickness = thickness;
+    start = Point(-1,-1);
+    end = Point(-1,-1);
+
+    rectangle(*image,
+					startingPoint,
+					Point(startingPoint.x+wid, startingPoint.y+heig),
+					color,
+					thickness,
+					lineType);
+
+	//Left Rectangle
+	startingPoint = Point(582,355);
+    wid = 85;
+    heig = 403;
+    line_thickness = thickness;
+    start = Point(-1,-1);
+    end = Point(-1,-1);
+
+    rectangle(*image,
+					startingPoint,
+					Point(startingPoint.x+wid, startingPoint.y+heig),
+					color,
+					thickness,
+					lineType);
+
+	//Right Rectangle
+	startingPoint = Point(917,355);
+    wid = 85;
+    heig = 403;
+    line_thickness = thickness;
+    start = Point(-1,-1);
+    end = Point(-1,-1);
+
+    rectangle(*image,
+					startingPoint,
+					Point(startingPoint.x+wid, startingPoint.y+heig),
+					color,
+					thickness,
+					lineType);
+
+}
+
+//Tree
+void Shape::Draw_Tree(int thickness, int lineType)
+{
+    //Draw the Rectangle
+	Point startingPoint = Point(230,585);
+    int wid = 85;
+    int heig = 165;
+    line_thickness = thickness;
+    start = Point(-1,-1);
+    end = Point(-1,-1);
+
+    rectangle(*image,
+					startingPoint,
+					Point(startingPoint.x+wid, startingPoint.y+heig),
+					color,
+					thickness,
+					lineType);
+	//Draw the Circle
+	Point middle = Point(272,455);
+    int radius = 130;
+    line_thickness = thickness;
+    start = Point(-1,-1);
+    end = Point(-1,-1);
+
+    circle(*image,
+                middle,
+                radius,
+                color,
+                thickness,
+                lineType);
+}
+
+//Door
+void Shape::Draw_Door(int thickness, int lineType)
+{
+        Point startingPoint = Point(722,515);
+        int wid = 139;
+        int heig = 224;
+        line_thickness = thickness;
+        start = Point(-1,-1);
+        end = Point(-1,-1);
+
+        rectangle(*image,
+						startingPoint,
+						Point(startingPoint.x+wid, startingPoint.y+heig),
+						color,
+						thickness,
+						lineType);
+}
+
+void Shape::Draw_Sun(int thickness, int lineType)
+{
+	Point middle = Point(1316,193);
+    int radius = 115;
+    line_thickness = thickness;
+    start = Point(-1,-1);
+    end = Point(-1,-1);
+
+    circle(*image,
+                middle,
+                radius,
+                color,
+                thickness,
+                lineType);
 }

@@ -439,7 +439,6 @@ private: System::Void runGameButton_Click(System::Object^  sender, System::Event
 
 			 // load up puzzle if not already loaded (make sure it's the same puzzle that the user has entered in the text box too). 
 			 if (!this->currentPuzzle->checkIsInitialized(this->getCodeStringFromGUI())) {
-				 MessageBox::Show("Loading Puzzle");
 				 Console::WriteLine("MainGUIForm.h : runGameButton_Click() : Loading Puzzle");
 
 				 // load the puzzle from the given code
@@ -541,7 +540,7 @@ private: System::Void calibrateButton_Click(System::Object^  sender, System::Eve
 
 			 // load up puzzle if not already loaded (compare current KnobPuzzle to the combobox input)
 			 if (!this->currentPuzzle->checkIsInitialized(this->getCodeStringFromGUI())) {
-				 MessageBox::Show("Loading Puzzle");
+				 //MessageBox::Show("Loading Puzzle");
 				 System::Console::WriteLine("MainGUIForm.h : calibrateButton_Click() : Loading Puzzle");
 				 int success = this->loadPuzzleFromCode();
 				 if (success == -1) {
