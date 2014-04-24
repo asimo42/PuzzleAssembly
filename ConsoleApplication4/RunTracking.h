@@ -28,7 +28,6 @@ class RunTracking
 		gcroot<GamePlayed^> returnScore() { return this->gameRecord;}
 
 		virtual void setPlayer(System::String^ name) { this->gameRecord->setPlayer(name); }
-		int playSoundEffect(string filename);
 
 
 protected:

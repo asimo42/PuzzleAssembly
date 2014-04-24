@@ -2,6 +2,9 @@
 #include "SoundEffectPlayer.h"
 #include <cstdlib>
 #include <time.h>
+#include <msclr\marshal_cppstd.h> //to convert managed string to std::string
+
+using namespace msclr::interop;
 
 SoundEffectPlayer::SoundEffectPlayer(void)
 {
@@ -32,10 +35,16 @@ SoundEffectPlayer::~SoundEffectPlayer(void)
     CoUninitialize();
 }
 
+//----------------------------------------------------------------------------------------------------------
+// Plays the audio file 'filename.' The file must be in Sounds directory which is two levels up from execution directory.
 int SoundEffectPlayer::play_Sound(std::string filename)
 {
+	System::String^ soundfile = System::Windows::Forms::Application::StartupPath + "/../../Sounds/";
+	string stdsoundfile = marshal_as<std::string>(soundfile);
+	stdsoundfile += filename;
+
 	// Conver string to wide-character string
-	std::wstring stemp = std::wstring(filename.begin(), filename.end());
+	std::wstring stemp = std::wstring(stdsoundfile.begin(), stdsoundfile.end());
 	LPCWSTR sw = stemp.c_str();
 
     pGraph = NULL;
@@ -119,5 +128,6 @@ string SoundEffectPlayer::getSound(int sound_num)
 			break;
 		default:
 			printf("getSound(): Sound not available.");
+			return "";
 		}
 }

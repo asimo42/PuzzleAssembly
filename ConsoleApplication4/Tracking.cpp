@@ -50,16 +50,6 @@ int difficulty;					//Difficulty pulled from the gui
 								//  I'm not sure how to do that.
 
 //----------------------------------------------------------------------------------------------------------
-// Plays the audio file 'filename.' The file must be in Sounds which is two levels up from execution directory.
-int RunTracking::playSoundEffect(string filename) {
-	System::String^ soundfile = System::Windows::Forms::Application::StartupPath + "/../../Sounds/";
-	string stdsoundfile = marshal_as<string>(soundfile);
-	stdsoundfile += filename;
-	sound_player->play_Sound(stdsoundfile);
-	return 0;
-}
-
-//----------------------------------------------------------------------------------------------------------
 void on_trackbar( int, void* )
 {//This function gets called whenever a
 	// trackbar position is changed
@@ -531,7 +521,7 @@ int RunTracking::startTrack()
 			{
 				//play game completed sound
 				this->gameRecord->setTimeCompletedToNow();
-				playSoundEffect(sound_game_completed);
+				sound_player->play_Sound(sound_game_completed);
 			}
 			KillTimer(hwnd1, myTimer); // kill the timers
 			KillTimer(hwnd2, myTimer2);

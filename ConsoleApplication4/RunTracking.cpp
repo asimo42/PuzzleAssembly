@@ -46,7 +46,7 @@ void RunTracking::Initialize() {
 		sound_player = new SoundEffectPlayer();
 
 		//Can play game start sound here
-		playSoundEffect(sound_game_start);
+		sound_player->play_Sound(sound_game_start);
 		
 }
 //----------------------------------------------------------------------------------------------------------
