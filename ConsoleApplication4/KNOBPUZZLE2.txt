@@ -1,0 +1,19 @@
+KNOBPUZZLE2
+Difficulty 1
+LOC 346 151 COLOR 0 172 216 217 256 256 House 0 0
+LOC 501 57 COLOR 21 50 122 38 256 255 Sun 0 0
+LOC 334 193 COLOR 108 153 87 130 256 238 Door 0 0
+LOC 334 65 COLOR 118 85 138 140 256 256 Isosceles 0 0
+LOC 166 154 COLOR 36 33 88 58 180 256 Tree 0 0
+
+----------------------------------------------------------------
+
+** note: LOC xloc yloc COLOR Hmin Smin Vmin Hmax Smax Vmax name (shapedrawing specifics)
+*** Shapedrawing data will vary as follows:
+Circle: middle_x, middle_y, radius
+Rectangle: corner_x, corner_y, width, height
+Square: corner_x, corner_y, width
+Triangle: top_x, top_y, length
+Pentagon: top_x, top_y, length
+Isosceles: top_x, top_y, side_length, bottom_length
+Tree: middle_x, middle_y, radius, corner_x, corner_y, width, height

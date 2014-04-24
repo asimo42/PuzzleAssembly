@@ -410,10 +410,13 @@ int RunTracking::startTrack()
 	// if import failed, return error
 	if (loadResult != 0) {
 		Console::WriteLine("RunTracking::startTrack():: loadTrackedPieces() failed. Exiting.");
+		KillTimer(hwnd1, myTimer); // kill the timers
+		KillTimer(hwnd2, myTimer2);
 		return -1;
 	}
 
 	VideoCapture capture;
+
 	capture.open(0);	//0 is default video device, 1 is other/USB camera
 	//set height and width of capture frame
 	capture.set(CV_CAP_PROP_FRAME_WIDTH,FRAME_WIDTH);
@@ -422,6 +425,9 @@ int RunTracking::startTrack()
 	if (!capture.isOpened())
 	{
 		cout << "RunTracking::startTrack():: Cannot open camera." << endl;
+		KillTimer(hwnd1, myTimer); // kill the timers
+		KillTimer(hwnd2, myTimer2);
+		System::Windows::Forms::MessageBox::Show("Can't access the camera!");
 		return -1;
 	}
 	cout << "RunTracking::startTrack():: Camera opened" << endl;
@@ -469,7 +475,9 @@ int RunTracking::startTrack()
 			cvtColor(camera_feed, HSV_image, CV_BGR2HSV);
 		} catch (System::Exception ^e){
 		    System::Console::WriteLine("Tracking.cpp::StartTrack():: Exception " + e->GetType()->ToString() + "  at cvtColor()");
-		    return -1;
+			KillTimer(hwnd1, myTimer); // kill the timers
+			KillTimer(hwnd2, myTimer2);
+			return -1;
 		}
 
 			for (int i = 0; i < pieces.size(); ++i)

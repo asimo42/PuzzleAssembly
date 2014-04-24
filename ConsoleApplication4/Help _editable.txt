@@ -1,0 +1,37 @@
+The Assisted Puzzle Assembly device helps developmentally delayed children solve basic puzzles by giving them visual and audio hints and feedback as they play. Hints can be set to easy, medium, or hard. For each game session, record is kept of the time taken to place each piece and complete the puzzle. 
+
+Scroll down for:
+-	How to Play a Game
+-	Record keeping
+-	How to Calibrate the Camera
+-	Overview of how the system works
+-	Troubleshooting
+
+How to Play a Game:
+1) Type in the name of the puzzle you would like to play. A list of included games should have been provided, but if this is lost, check installation folder of this program. There will be files named by the puzzle name (ignore the '_default') - these files hold the puzzle information. Make sure the name matches exactly. 
+2) Calibrate the camera if necessary (see below). This will likely be necessary if the game has been moved to a new location or the lighting situation has changed. 
+3) Hit "Run Game." This will initialize the camera tracking and gameplay.
+4) Play the game. Hints will be given based on the child's perceived actions. The game will end when every piece is placed, or when the user hits the "Stop Game" button.
+5) Performance information can be found by hitting "Performance". This will show data for every game played in that session. 
+
+How to see scores:
+The results for each game will be shown after the game is completed.
+For more, hit the "Performance" button. All results from the current session will be shown.
+To see old data, go to the Performance section, then hit 'look at old data'. Select the child and the game you want to see results for, and the program will find what dates are available. Select one or more dates to see the results from those dates. 
+
+How to Calibrate the Camera:
+1) Hit "Calibrate". A prompt will appear to guide you through the process.
+2) Calibrate colors. As instructed, place the selected piece somewhere on the gameboard and adjust the sliders until the filtered window (black & white image) shows only the puzzle piece and/or the track marker shows steady on the camera feed.  Repeat for each piece.
+3) Calibrate Locations. When instructed, place every piece in its assigned location on the puzzle board. Click "Next" and wait. The program will find and memorize the location of each piece, and use this information to tell when a piece has been correctly placed. 
+4) Save calibration settings if desired. If settings not saved, settings will hold for the duration of the session, but revert to the last calibration for future sessions.
+
+Troubleshooting
+If any of the following is occurring, try recalibrating the camera:
+-	Does not seem to recognize when a piece is properly placed (e.g. no feedback)
+-	Saying a piece is properly placed when it isn't (please note that with the current design of the system, a piece that is placed in the right area will read as properly placed even if it is in the wrong orientation or is not fitted in its groove (e.g a pentagon has been placed in the right spot, but is not rotated correctly). This will hopefully be fixed in future development of the system.
+-	Failing to give hints for one or more pieces
+If a puzzle is failing to load:
+1) double check that the input matches the name of the puzzle (uppercase/lowercase and spacing matters)
+2) Check to see if the file is in the installation folder (the game file is a text file labeled with the name of the puzzle, with or without "_default" at the end. Ex. "KNOBPUZZLE1" corresponds to "KNOBPUZZLE1.txt" and/or "KNOBPUZZLE1_Default.txt"). 
+
+

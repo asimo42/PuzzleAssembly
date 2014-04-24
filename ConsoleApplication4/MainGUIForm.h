@@ -61,15 +61,15 @@ namespace PuzzleAssembly {
 
 			// For me, CameraPrefs folder is located 2 folders above the consolepplication4.exe file
 //			System::String^ cameraExecutablePath = System::Windows::Forms::Application::StartupPath + "/../../CameraPrefs/CameraPrefs.exe";
-			System::String^ cameraExecutablePath = "C:\\CameraPrefs\\CameraPrefs.exe";
-			MessageBox::Show("Attempting to run : " + cameraExecutablePath);
-			if (System::IO::File::Exists(cameraExecutablePath)) {
-				MessageBox::Show("Executable file found");
-				System::Diagnostics::Process^ process = System::Diagnostics::Process::Start(cameraExecutablePath);
-			}
-			else {
-				MessageBox::Show("Can't find CameraPrefs.exe. Please change my file path in MainGUIForm.h :: MainGUIform(void)");
-			}
+			//System::String^ cameraExecutablePath = "C:\\CameraPrefs\\CameraPrefs.exe";
+			//MessageBox::Show("Attempting to run : " + cameraExecutablePath);
+			//if (System::IO::File::Exists(cameraExecutablePath)) {
+			//	MessageBox::Show("Executable file found");
+			//	System::Diagnostics::Process^ process = System::Diagnostics::Process::Start(cameraExecutablePath);
+			//}
+			//else {
+			//	MessageBox::Show("Can't find CameraPrefs.exe. Please change my file path in MainGUIForm.h :: MainGUIform(void)");
+			//}
 
 
 		}
